@@ -1,0 +1,83 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<title>MASAS Mobile</title> 
+		<meta name="viewport" content="initial-scale=1.0,width=device-width,height=device-height,user-scalable=no,target-densitydpi=device-dpi" />
+		<link rel="stylesheet" type="text/css" href="jquery/mobile/jquery.mobile-1.1.1.min.css" />
+		
+		<script type="text/javascript" src="jquery/jquery-1.7.2.min.js"></script>
+		<!-- NOTE: This needs to be here to modify the JQM defaults -->
+		<script type="text/javascript" src="js/application.js"></script>
+		<script type="text/javascript" src="jquery/mobile/jquery.mobile-1.1.1.min.js"></script>
+		<script type="text/javascript" src="cordova-2.0.0.js" ></script>
+		
+		<script type="text/javascript" src="js/reportObj.js"></script>
+		<script type="text/javascript" src="js/reports.js"></script>
+		<script type="text/javascript" src="js/frmReport.js"></script>
+		<script type="text/javascript" src="js/frmShowImage.js"></script>
+	</head> 
+
+	<body> 
+		<!-- Start of first page -->
+		<div data-role="page" id="FormReport">
+
+			<div data-role="header" data-position="fixed">
+				<button id="frmReport_btnBack" data-icon="back" data-mini="true" class="ui-btn-left">Back</button>
+				<h1 id="frmReport_headerTitle">New Report</h1>
+			</div><!-- /header -->
+
+			<div data-role="content">
+
+				<div class="ui-grid-a" id="frmReport_gridModifyReport">
+					<div class="ui-block-a"><button id="frmReport_btnPicture" data-icon="add">Picture</button></div>
+					<div class="ui-block-b"><button id="frmReport_btnGPS" data-icon="refresh">Update Location</button></div>
+				</div>
+				
+				<p>
+					<label><strong>Location: </strong></label><label id="frmReport_lblPosition">N/A</label>
+				</p>
+						
+				<label for="txtReportTitle"><strong>Title:</strong></label>
+				<input type="text" name="title" id="txtReportTitle" value="" />
+				
+				<label for="txtReportDescription"><strong>Description:</strong></label>
+				<textarea name="description" id="txtReportDescription"></textarea>
+				
+				<label for="txtReportNotes"><strong>Notes:</strong></label>
+				<textarea name="textarea" id="txtReportNotes"></textarea>
+				
+				<ul id="lstReportAttachments" data-role="listview" data-inset="true" >
+					<li data-role="list-divider">Attachments<span class="ui-li-count" id="lstReportAttachmentCount">0</span></li>
+					<li data-masas-report-attachment>
+						<a href="index.html">
+							<h3>Image1.jpg</h3>
+							<div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+						</a>
+					</li>
+					<li data-masas-report-attachment>
+						<a href="index.html">
+							<h3>Voice1.wav</h3>
+							<div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+						</a>
+					</li>
+				</ul>
+				
+				<div class="ui-grid-a" id="frmReport_gridReportActions">
+					<div class="ui-block-a"><button id="frmReport_btnSend">Send</button></div>
+					<div class="ui-block-b"><a href="frmConfirmReportDelete.html" data-rel="dialog" id="frmReport_btnDelete" data-role="button" data-icon="delete">Delete</a></div>
+				</div>
+				
+				<div class="ui-grid-a">
+					<div class="ui-block-a"><p><label><strong>Created: </strong></label><label id="lblReportCreated">dd/mm/yyyy HH:MM</label></p></div>
+					<div class="ui-block-b"><p><label><strong>Updated: </strong></label><label id="lblReportUpdated">dd/mm/yyyy HH:MM<label></p></div>
+				</div>
+		
+			</div><!-- /content -->
+
+			<div data-role="footer" data-position="fixed">
+			</div><!-- /footer -->
+		</div><!-- /page -->
+
+		
+	</body>
+</html>

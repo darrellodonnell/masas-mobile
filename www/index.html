@@ -1,0 +1,49 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<title>MASAS Mobile</title> 
+		<meta name="viewport" content="initial-scale=1.0,width=device-width,height=device-height,user-scalable=no,target-densitydpi=device-dpi" />
+		<link rel="stylesheet" type="text/css" href="jquery/mobile/jquery.mobile-1.1.1.min.css" />
+		
+		<script type="text/javascript" src="json2.js" ></script>
+		<script type="text/javascript" src="jquery/jquery-1.7.2.min.js"></script>
+		<!-- NOTE: This needs to be here to modify the JQM defaults -->
+		<script type="text/javascript" src="js/reportObj.js"></script>
+		<script type="text/javascript" src="js/application.js"></script>
+		<script type="text/javascript" src="jquery/mobile/jquery.mobile-1.1.1.min.js"></script>
+		<script type="text/javascript" src="cordova-2.0.0.js" ></script>
+
+		<script type="text/javascript" src="js/reports.js"></script>
+		<script type="text/javascript" src="js/frmReport.js"></script>
+		<script type="text/javascript" src="js/frmSettings.js"></script>
+		<script type="text/javascript" src="js/frmShowImage.js"></script>
+		<script type="text/javascript" src="js/frmConfirmImageDelete.js"></script>
+		<script type="text/javascript" src="js/frmConfirmReportDelete.js"></script>
+		<script type="text/javascript" src="js/frmQuickReport.js"></script>
+		<script type="text/javascript" src="js/MASAS.js"></script>
+	</head> 
+	<body> 
+
+		<!-- Start of first page -->
+		<div data-role="page" id="Main">
+
+			<div data-role="header" data-position="fixed">
+				<a href="frmSettings.html" data-icon="gear" class="ui-btn-right">Options</a>
+				<h1>MASAS Mobile</h1>
+			</div><!-- /header -->
+
+			<div data-role="content">	
+				
+				<div class="ui-grid-a">
+					<div class="ui-block-a"><a href="frmQuickReport.html" data-role="button">Check In/Out</a></div>
+					<div class="ui-block-b"><a href="reports.html" data-role="button">Reports</a></div>
+				</div><!-- /grid-a -->
+
+			</div><!-- /content -->
+			
+			<div data-role="footer" data-position="fixed">
+			</div><!-- /footer -->
+		</div><!-- /page -->
+
+	</body>
+</html>

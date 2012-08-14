@@ -1,0 +1,39 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+		<title>MASAS Mobile</title> 
+		<meta name="viewport" content="initial-scale=1.0,width=device-width,height=device-height,user-scalable=no,target-densitydpi=device-dpi" />
+		<link rel="stylesheet" type="text/css" href="jquery/mobile/jquery.mobile-1.1.1.min.css" />
+		
+		<script type="text/javascript" src="jquery/jquery-1.7.2.min.js"></script>
+		<!-- NOTE: This needs to be here to modify the JQM defaults -->
+		<script type="text/javascript" src="js/application.js"></script>
+		<script type="text/javascript" src="jquery/mobile/jquery.mobile-1.1.1.min.js"></script>
+		<script type="text/javascript" src="cordova-2.0.0.js" ></script>
+		
+		<script type="text/javascript" src="js/reportObj.js"></script>
+		<script type="text/javascript" src="js/reports.js"></script>
+		<script type="text/javascript" src="js/frmReport.js"></script>
+		<script type="text/javascript" src="js/frmShowImage.js"></script>
+	</head> 
+
+	<body> 
+
+		<div data-role="page" id="frmViewImage" >
+
+			<div data-role="header" data-position="fixed">
+				<button id="frmViewImage_btnBack" data-icon="back" data-mini="true" class="ui-btn-left">Back</button>
+				<h1>Image</h1>
+				<a href="frmConfirmImageDelete.html" data-rel="dialog" id="frmViewImage_btnDelete" data-role="button" data-icon="delete" data-mini="true" class="ui-btn-right">Delete</a>
+			</div><!-- /header -->
+
+			<div data-role="content">
+				<img id="frmViewImage_MainImage" src="test.jpg"/>
+			</div><!-- /content -->
+			
+			<div data-role="footer">
+			</div><!-- /footer -->
+		</div>
+
+	</body>
+</html>
