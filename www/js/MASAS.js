@@ -1,5 +1,5 @@
-var MASAS_FEED_URL = 'https://sandbox2.masas-sics.ca/hub/feed';
-var MASAS_USER_SECRET = 'ma649e';
+var MASAS_FEED_URL = '';
+var MASAS_USER_SECRET = '';
 
 function MASAS_createNewEntry( entry )
 {
