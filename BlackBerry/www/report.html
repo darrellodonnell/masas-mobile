@@ -1,0 +1,66 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	</head>
+	
+	<body> 
+
+		<div data-role="page" id="Report">
+
+			<div data-role="header" data-position="fixed">
+				<h1 id="report_headerTitle">Report: New Report</h1>
+			</div>
+
+			<div data-role="content">
+
+				<div class="ui-grid-a">
+					<div class="ui-block-a"><p><label><strong>Location: </strong></label><label id="report_lblPosition">N/A</label></p></div>
+					<div class="ui-block-b"><div id="report_btnGPS" class="ui-masas-bb7-btn" data-role="button" data-icon="refresh">Update Location</div></div>
+				</div>
+						
+				<label for="txtReportTitle"><strong>Title:</strong></label>
+				<input type="text" name="title" id="txtReportTitle" value="" />
+				
+				<label for="txtReportDescription"><strong>Description:</strong></label>
+				<textarea name="description" id="txtReportDescription"></textarea>
+				
+				<ul id="lstReportAttachments" data-role="listview" data-inset="true" >
+					<li data-role="list-divider">Attachments<span class="ui-li-count" id="lstReportAttachmentCount">0</span></li>
+                    <!-- NOTE: These Items are here as a template only, they are removed when the page is loaded! -->
+					<li data-masas-report-attachment>
+						<a href="index.html">
+							<h3>Image1.jpg</h3>
+							<div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+						</a>
+					</li>
+					<li data-masas-report-attachment>
+						<a href="index.html">
+							<h3>Voice1.wav</h3>
+							<div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+						</a>
+					</li>
+				</ul>
+			
+				<div class="ui-grid-a">
+					<div class="ui-block-a"><p><label><strong>Created: </strong></label><label id="lblReportCreated">dd/mm/yyyy HH:MM</label></p></div>
+					<div class="ui-block-b"><p><label><strong>Updated: </strong></label><label id="lblReportUpdated">dd/mm/yyyy HH:MM</label></p></div>
+				</div>
+		
+			</div>
+
+			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar" data-iconpos="bottom">
+					<ul>
+						<li><a href="#" id="report_btnBack" data-icon="grid">Reports</a></li>
+						<li><a href="#" id="report_btnPicture" data-icon="plus">Picture</a></li>
+						<li><a href="#" id="report_btnAudio" data-icon="plus">Audio</a></li>
+						<li><a href="#" id="report_btnSend" data-icon="arrow-u">Send</a></li>
+						<li><a href="confirmReportDelete.html" id="report_btnDelete" data-rel="dialog" data-icon="delete">Delete</a></li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+</html>

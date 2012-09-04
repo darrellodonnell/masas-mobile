@@ -1,0 +1,60 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	</head>
+	
+	<body> 
+
+		<div data-role="page" id="settings">
+
+			<div data-role="header" data-position="fixed">
+				<h1>MASAS Mobile - Settings</h1>
+			</div>
+
+			<div data-role="content">
+				<div data-role="collapsible" data-collapsed="false" data-content-theme="c" >
+					<h3>Hub Configuration</h3>
+					<div data-role="fieldcontain">
+						<label for="settings_hubURL">Hub URI:</label>
+						<input type="text" name="settings_hubURL" id="settings_hubURL" value="https://"  />
+					</div>
+					<div data-role="fieldcontain">
+						<label for="settings_hubKey">Hub key:</label>
+						<input type="text" name="settings_hubKey" id="settings_hubKey" value=""  />
+					</div>
+				</div>
+				
+				<div data-role="collapsible" data-content-theme="c">
+					<h3>Connection</h3>
+					<div data-role="fieldcontain">
+						<label for="select-choice-0" class="select">Connection:</label>
+						<select name="select-choice-0" id="select-choice-0">
+						   <option value="both">WIFI/Cellular</option>
+						   <option value="wifi">WIFI only</option>
+						   <option value="cellular">Cellular only</option>
+						</select>
+					</div>
+				</div>
+				
+				<div data-role="collapsible" data-content-theme="c">
+					<h3>Data</h3>
+					<div id="settings_btnClearReports" class="ui-masas-bb7-btn" data-role="button" data-icon="delete">Clear Reports</div>
+					<div id="settings_btnResetSettings" class="ui-masas-bb7-btn"  data-role="button" data-icon="delete">Reset Settings</div>
+				</div>
+
+			</div>
+			
+			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar" data-iconpos="bottom">
+					<ul>
+						<li><a href="index.html" data-icon="home" >Home</a></li>
+						<li><a href="viewReports.html" data-icon="grid" >Reports</a></li>
+						<li><a href="settings.html" data-icon="gear" class="ui-btn-active ui-state-persist">Settings</a></li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+</html>

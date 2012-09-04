@@ -1,0 +1,32 @@
+<!DOCTYPE html> 
+<html> 
+	<head>
+	</head>
+
+	<body> 
+
+		<div data-role="page" id="viewAttachment" >
+
+			<div data-role="header" data-position="fixed">
+				<h1 id="viewAttachment_Header">Image</h1>
+			</div>
+
+			<div data-role="content">
+				<img id="viewAttachment_previewImage" src=""/>
+                <audio id="viewAttachment_previewAudio" src="" controls="true" />
+                <div id="viewAttachment_unknown"><p>Cannot preview the selected attachment.</p></div>
+			</div>
+			
+			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar" data-iconpos="bottom">
+					<ul>
+						<li><a href="#" id="viewAttachment_btnBack" data-icon="back" >Back</a></li>
+						<li><a href="confirmAttachmentDelete.html" data-rel="dialog" id="viewAttachment_btnDelete" data-role="button" data-icon="delete">Delete</a></li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+</html>
