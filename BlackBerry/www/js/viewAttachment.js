@@ -3,11 +3,11 @@ var viewAttachment_isReadOnly = true;
 $( document ).delegate("#viewAttachment", "pagebeforecreate", function()
 {
     viewAttachment_isReadOnly = true;
-	if( currentReport.State != 'Sent' )
-	{
+    if( currentReport.State != 'Sent' )
+    {
         viewAttachment_isReadOnly = false;
-	}
-	$("#viewAttachment_Header").text( currentAttachment.Path.replace(/^.*[\\\/]/, '') );
+    }
+    $("#viewAttachment_Header").text( currentAttachment.Path.replace(/^.*[\\\/]/, '') );
 
     $("#viewAttachment_previewImage").hide();
     $("#viewAttachment_previewAudio").hide();
@@ -28,14 +28,14 @@ $( document ).delegate("#viewAttachment", "pagebeforecreate", function()
         $("#viewAttachment_unknown").show();
     }
 
-	if( viewAttachment_isReadOnly )
-	{
-		$('#viewAttachment_btnDelete').parent().remove();
-	}
-	
+    if( viewAttachment_isReadOnly )
+    {
+        $('#viewAttachment_btnDelete').parent().remove();
+    }
+
 });
 
 $( document ).delegate("#viewAttachment_btnBack", "vclick", function(event, ui)
 {
-	$.mobile.changePage( "report.html", {} );
+    $.mobile.changePage( "report.html", {} );
 });

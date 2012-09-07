@@ -1,21 +1,21 @@
 
 .ui-masas-index-btn { 
-	height: 100px;
-	line-height: 100px;
+    height: 100px;
+    line-height: 100px;
 }
 
 .ui-masas-index-btn .ui-btn-inner { 
-	font-size: 24px;
-	padding: 0;
+    font-size: 24px;
+    padding: 0;
 }
 
 .ui-masas-bb7-btn {
-	height:54px;
-	line-height:54px;
+    height:54px;
+    line-height:54px;
 }
 
 .ui-masas-bb7-btn .ui-btn-inner { 
-	padding: 0;
+    padding: 0;
 }
 
 #viewAttachment_previewImage {
