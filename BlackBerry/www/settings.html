@@ -12,19 +12,20 @@
 			</div>
 
 			<div data-role="content">
-				<div data-role="collapsible" data-collapsed="false" data-content-theme="c" >
+
+                <div>
 					<h3>Hub Configuration</h3>
 					<div data-role="fieldcontain">
 						<label for="settings_hubURL">Hub URI:</label>
-						<input type="text" name="settings_hubURL" id="settings_hubURL" value="https://"  />
+						<input type="text" name="settings_hubURL" id="settings_hubURL" value=""  />
 					</div>
 					<div data-role="fieldcontain">
 						<label for="settings_hubKey">Hub key:</label>
 						<input type="text" name="settings_hubKey" id="settings_hubKey" value=""  />
 					</div>
 				</div>
-				
-				<div data-role="collapsible" data-content-theme="c">
+				<hr />
+                <!--div>
 					<h3>Connection</h3>
 					<div data-role="fieldcontain">
 						<label for="select-choice-0" class="select">Connection:</label>
@@ -34,13 +35,69 @@
 						   <option value="cellular">Cellular only</option>
 						</select>
 					</div>
-				</div>
-				
-				<div data-role="collapsible" data-content-theme="c">
-					<h3>Data</h3>
-					<div id="settings_btnClearReports" class="ui-masas-bb7-btn" data-role="button" data-icon="delete">Clear Reports</div>
-					<div id="settings_btnResetSettings" class="ui-masas-bb7-btn"  data-role="button" data-icon="delete">Reset Settings</div>
-				</div>
+				</div-->
+
+                <div>
+                    <h3>Vehicle Information</h3>
+                    <div data-role="fieldcontain">
+                        <label for="settings_vehicleID">Vehicle ID:</label>
+                        <input type="text" name="settings_vehicleID" id="settings_vehicleID" value=""  />
+                    </div>
+
+                    <div data-role="fieldcontain">
+                        <label for="settings_vehicleType">Vehicle Type:</label>
+                        <select name="settings_vehicleType" id="settings_vehicleType">
+                            <option value="Unknown">Unknown</option>
+                            <option value="EMS">EMS</option>
+                            <option value="Fire">Fire</option>
+                            <option value="Police">Police</option>
+                        </select>
+                    </div>
+                </div>
+                <hr />
+                <div>
+                    <h3>Reporting (Advance)</h3>
+                    <h4>MASAS Reports</h4>
+
+                    <div data-role="fieldcontain">
+                        <label for="settings_reportStatus">Status:</label>
+                        <select name="settings_reportStatus" id="settings_reportStatus">
+                            <option value="Test">Test</option>
+                            <option value="Actual">Actual</option>
+                        </select>
+                    </div>
+
+                    <label for="settings_reportExpiration">Expiration:</label>
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">
+                            <input type="number" name="settings_reportExpiration" id="settings_reportExpiration" min="1" max="365" value="1" />
+                        </div>
+                        <div class="ui-block-b">
+                            <select name="settings_reportExpirationContext" id="settings_reportExpirationContext">
+                                <option value="Minutes">Minutes</option>
+                                <option value="Hours">Hours</option>
+                                <option value="Days">Days</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h4>Check In/Out Reports</h4>
+                    <div data-role="fieldcontain">
+                        <label for="settings_reportCheckIn">Check in:</label>
+                        <input type="text" name="settings_reportCheckIn" id="settings_reportCheckIn" value=""  />
+                    </div>
+                    <div data-role="fieldcontain">
+                        <label for="settings_reportCheckOut">Check out:</label>
+                        <input type="text" name="settings_reportCheckOut" id="settings_reportCheckOut" value=""  />
+                    </div>
+                </div>
+                <hr />
+                <div>
+                    <h3>Data</h3>
+                    <div id="settings_btnClearReports" class="ui-masas-bb7-btn" data-role="button" data-icon="delete">Clear Reports</div>
+                    <div id="settings_btnResetSettings" class="ui-masas-bb7-btn"  data-role="button" data-icon="delete">Reset Settings</div>
+                </div>
 
 			</div>
 			
