@@ -43,7 +43,7 @@ $( document ).delegate("#Report", "pagebeforecreate", function()
 
 $( document ).delegate("#Report", "pagebeforeshow", function( event, ui )
 {
-    if( ui.prevPage.attr('id') == "location" )
+    if( ui.prevPage.attr('id') == "location" && location_latitude != undefined && location_longitude != undefined )
     {
         currentReport.LookupLocation.Location = {
                 'latitude': location_latitude,
