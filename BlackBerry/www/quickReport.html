@@ -8,18 +8,50 @@
         <div data-role="page" id="quickReport">
 
             <div data-role="header" data-position="fixed">
-                <h1>MASAS Mobile - Check In/Out</h1>
+                <!--h1>MASAS Mobile - Check In/Out</h1-->
+                <div data-role="navbar" data-iconpos="bottom">
+                    <ul>
+                        <li><a href="#" id="quickReport_btnGPS" data-icon="refresh" >Update My Location</a></li>
+                        <li><a href="location.html" id="quickReport_btnLocation" data-icon="search" >Find a location...</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div data-role="content">
 
-                <div class="ui-grid-a">
-                    <div class="ui-block-a"><p><label><strong>Location: </strong></label><label id="quickReport_lblPosition">N/A</label></p></div>
-                    <div class="ui-block-b"><div id="quickReport_btnGPS" class="ui-masas-bb7-btn" data-role="button" data-icon="refresh">Update Location</div></div>
-                </div>
-
                 <label for="quickReport_txtNotes"><strong>Notes:</strong></label>
                 <textarea name="quickReport_txtNotes" id="quickReport_txtNotes"></textarea>
+
+                <table>
+                    <tbody>
+                        <tr>
+                            <th style="text-align:right">
+                            </th>
+                            <th>
+                                <fieldset data-role="controlgroup" data-type="horizontal" >
+                                    <input type="radio" name="quickReport_locationChoice" id="quickReport_choiceGPS" value="GPS" checked="checked" />
+                                    <label for="quickReport_choiceGPS">My location</label>
+
+                                    <input type="radio" name="quickReport_locationChoice" id="quickReport_choiceLookup" value="Lookup"  />
+                                    <label for="quickReport_choiceLookup">Searched location</label>
+                                </fieldset>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right"><label><strong>My location: </strong></label></th>
+                            <th style="text-align:right"><label id="quickReport_lblPosition">N/A</label></th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right"><label><strong>Searched location: </strong></label></th>
+                            <th style="text-align:right"><label id="quickReport_lblLookupPosition">N/A</label></th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"><label id="quickReport_lblLookupPositionDesc">N/A</label></th>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
 
                 <div class="ui-grid-a">
                     <div class="ui-block-a"><div id="quickReport_btnArrived" class="ui-masas-bb7-btn" data-role="button">Arriving at Scene</div></div>
@@ -31,7 +63,7 @@
             <div data-role="footer" data-position="fixed">
                 <div data-role="navbar" data-iconpos="bottom">
                     <ul>
-                        <li><a href="index.html" data-icon="back" >Back</a></li>
+                        <li><a href="index.html" id="quickReport_btnBack" data-icon="back" >Back</a></li>
                     </ul>
                 </div>
             </div>

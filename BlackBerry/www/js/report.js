@@ -7,7 +7,7 @@ $( document ).delegate("#Report", "pagebeforecreate", function()
     if( currentReport == null )
     {
         isNewReport = true;
-        currentReport = new reportObj( 'Untitled Report' );
+        currentReport = new reportObj();
         localReports.push( currentReport );
     }
 
@@ -41,6 +41,22 @@ $( document ).delegate("#Report", "pagebeforecreate", function()
 
 });
 
+$( document ).delegate("#Report", "pagebeforeshow", function( event, ui )
+{
+    if( ui.prevPage.attr('id') == "location" )
+    {
+        currentReport.LookupLocation.Location = {
+                'latitude': location_latitude,
+                'longitude': location_longitude
+        }
+
+        currentReport.LookupLocation.Lookup = location_selectedlookup;
+
+        report_updateLookupLocation();
+        report_saveReport();
+    }
+});
+
 $( document ).delegate("#report_btnPicture", "vclick", function(event, ui)
 {
     report_takePicture();
@@ -69,12 +85,39 @@ $( document ).delegate("#report_btnBack", "vclick", function(event, ui)
 
 $( document ).delegate("#report_btnSend", "vclick", function(event, ui)
 {
-    $( '#report_btnSend' ).attr( "disabled", true );
+    report_enableControls( false );
     report_saveReport();
 
     $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
     appSendReportToMASAS( currentReport, report_reportSendSuccess, report_reportSendFail );
 });
+
+function report_enableControls( enable )
+{
+    $( '#txtReportTitle' ).attr( "readonly", !enable );
+    $( '#txtReportDescription' ).attr( "readonly", !enable );
+
+    if( enable )
+    {
+        $('#report_btnGPS').removeClass('ui-disabled');
+        $('#report_btnLocation').removeClass('ui-disabled');
+        $('#report_btnBack').removeClass('ui-disabled');
+        $('#report_btnPicture').removeClass('ui-disabled');
+        $('#report_btnAudio').removeClass('ui-disabled');
+        $('#report_btnSend').removeClass('ui-disabled');
+        $('#report_btnDelete').removeClass('ui-disabled');
+    }
+    else
+    {
+        $('#report_btnGPS').addClass('ui-disabled');
+        $('#report_btnLocation').addClass('ui-disabled');
+        $('#report_btnBack').addClass('ui-disabled');
+        $('#report_btnPicture').addClass('ui-disabled');
+        $('#report_btnAudio').addClass('ui-disabled');
+        $('#report_btnSend').addClass('ui-disabled');
+        $('#report_btnDelete').addClass('ui-disabled');
+    }
+}
 
 function report_reportSendSuccess()
 {
@@ -83,6 +126,7 @@ function report_reportSendSuccess()
     report_saveReport();
     currentReport = null;
 
+    report_enableControls( true );
     $.mobile.hidePageLoadingMsg();
     $.mobile.changePage( "viewReports.html", {} );
 }
@@ -90,6 +134,7 @@ function report_reportSendSuccess()
 function report_reportSendFail()
 {
     console.log( 'Report could not be sent!' );
+    report_enableControls( true );
     $.mobile.hidePageLoadingMsg();
 }
 
@@ -112,7 +157,14 @@ function report_loadReport()
     }
     $('#lstReportAttachmentCount').text( currentReport.Attachments.length );
 
+    // Set the location toggle...
+    $('input:radio[value=' + currentReport.UseLocation + ']').attr('checked',true);
+
+    // Set the locations...
+    report_updateLookupLocation();
     report_updateLocation();
+
+    // Set the timestamps.
     report_updateTimeStamps();
 }
 
@@ -133,6 +185,19 @@ function report_updateLocation()
         $('#report_lblPosition').text( "N/A" );
     }
 }
+function report_updateLookupLocation()
+{
+    if( currentReport.LookupLocation.Location != undefined )
+    {
+        $('#report_lblLookupPosition').text( currentReport.LookupLocation.Location.latitude + ", " + currentReport.LookupLocation.Location.longitude );
+        $('#report_lblLookupPositionDesc').text( currentReport.LookupLocation.Lookup );
+    }
+    else
+    {
+        $('#report_lblLookupPosition').text( "N/A" );
+        $('#report_lblLookupPositionDesc').text( "" );
+    }
+}
 
 function report_saveReport()
 {
@@ -141,6 +206,8 @@ function report_saveReport()
         currentReport.Title = $('#txtReportTitle').val();
         currentReport.Description = $('#txtReportDescription').val();
         currentReport.Updated = new Date();
+
+        currentReport.UseLocation = $('input:radio[name=report_locationChoice]:checked').val();
 
         appSaveData();
     }

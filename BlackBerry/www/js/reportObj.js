@@ -7,7 +7,14 @@ function reportObj( obj )
     this.Created = new Date();
     this.Updated = new Date();
     this.Attachments = [];
+
+    this.UseLocation = 'GPS'; // GPS, Lookup
     this.Location = undefined;
+
+    // Lookup's Location structure...
+    // { 'latitude': 0.0,
+    //   'longitude': 0.0 }
+    this.LookupLocation = { 'Location': undefined, 'Lookup': '' };
 
     // FileType: File, Image, Audio
     this.AddAttachment = function( type, filePath ) {

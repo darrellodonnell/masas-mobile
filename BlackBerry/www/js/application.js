@@ -221,15 +221,28 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
             "attachments":  []
         };
 
-    if( report.Location != undefined && report.Location != null )
+    // Default location...
+    app_generatedMasasEntry.point = app_DefaultLocation;
+
+    // Figure out the real location, if it exists...
+    if( report.UseLocation == "GPS" )
     {
-        app_generatedMasasEntry.point = {
-                "latitude":     report.Location.latitude,
-                "longitude":    report.Location.longitude
-            }
+        if( report.Location != undefined && report.Location != null )
+        {
+            app_generatedMasasEntry.point = {
+                    "latitude":     report.Location.latitude,
+                    "longitude":    report.Location.longitude
+                }
+        }
     }
     else {
-        app_generatedMasasEntry.point = app_DefaultLocation;
+        if( report.LookupLocation.Location != undefined && report.LookupLocation.Location != null )
+        {
+            app_generatedMasasEntry.point = {
+                "latitude":     report.LookupLocation.Location.latitude,
+                "longitude":    report.LookupLocation.Location.longitude
+            }
+        }
     }
 
     app_generatedMasasEntry.attachments = [];

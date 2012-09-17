@@ -1,0 +1,52 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	</head>
+	
+	<body> 
+
+		<div data-role="page" id="location">
+
+			<div data-role="header" data-position="fixed">
+				<h1>MASAS Mobile - Location</h1>
+			</div>
+
+			<div data-role="content">
+
+                <label for="location_txtSearchQuery">Search Input:</label>
+                <input type="search" name="location_txtSearchQuery" id="location_txtSearchQuery" value="" />
+
+                <div>
+                    <h4>Results:</h4>
+                    <p></label><label id="location_resultStatus"></label></p>
+                </div>
+
+                <ul id="location_lstResults" data-role="listview" data-inset="true" >
+                    <!-- NOTE: These Items are here as a template only, they are removed when the page is loaded! -->
+                    <li data-masas-location-result-id='0'>
+                        <a href="#">
+                            <h3>Lookup location #1</h3>
+                        </a>
+                    </li>
+                    <li data-masas-location-result-id='1'>
+                        <a href="#">
+                            <h3>Lookup location #2</h3>
+                        </a>
+                    </li>
+                </ul>
+
+                <p>Data © OpenStreetMap contributors, ODbL 1.0.<br><a href="#" id="location_osmCopyrightLink">http://www.openstreetmap.org/copyright</a></p>
+			</div>
+			
+			<div data-role="footer" data-position="fixed">
+				<div data-role="navbar" data-iconpos="bottom">
+					<ul>
+                        <li><a href="#" id="location_btnBack" data-icon="back" >Back</a></li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+</html>

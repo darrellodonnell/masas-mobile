@@ -85,11 +85,15 @@ $( document ).delegate("li", "vclick", function(event, ui)
     else if( $.mobile.activePage.attr('id') == 'Report' )
     {
         var jsonStr = $(this).attr( 'data-masas-report-attachment' );
-        var attachment = JSON.parse( jsonStr.replace(/'/g, '"') );
 
-        if( attachment != null )
+        if( jsonStr != undefined )
         {
-            viewAttachment( attachment );
+            var attachment = JSON.parse( jsonStr.replace(/'/g, '"') );
+
+            if( attachment != null )
+            {
+                viewAttachment( attachment );
+            }
         }
     }
 });

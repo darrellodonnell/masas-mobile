@@ -33,10 +33,14 @@
     <feature id="blackberry.system.event" required="true" version="1.0.0.0"/>
     <feature id="blackberry.media.camera" />
     <feature id="blackberry.media.microphone" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.invoke" required="true" version="1.0.0.0"/>
+    <feature id="blackberry.invoke.BrowserArguments" required="true" version="1.0.0.0"/>
 
     <access subdomains="true" uri="file:///store/home" />
     <access subdomains="true" uri="file:///SDCard" />
     <access subdomains="true" uri="*" />
+    <access subdomains="true" uri="http://www.openstreetmap.org" />
+    <access subdomains="true" uri="http://nominatim.openstreetmap.org" />
 
     <rim:permissions>
         <rim:permit>use_camera</rim:permit>
@@ -52,5 +56,5 @@
     </rim:connection>
 
     <rim:cache disableAllCache="false" />
-  
+
 </widget>

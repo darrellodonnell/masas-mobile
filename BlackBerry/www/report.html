@@ -8,15 +8,18 @@
         <div data-role="page" id="Report">
 
             <div data-role="header" data-position="fixed">
-                <h1 id="report_headerTitle">Report: New Report</h1>
+                <!--h1 id="report_headerTitle">Report: New Report</h1-->
+                <div data-role="navbar" data-iconpos="bottom">
+                    <ul>
+                        <li><a href="#" id="report_btnPicture" data-icon="plus">Picture</a></li>
+                        <li><a href="#" id="report_btnAudio" data-icon="plus">Audio</a></li>
+                        <li><a href="#" id="report_btnGPS" data-icon="refresh" >Update My location</a></li>
+                        <li><a href="location.html" id="report_btnLocation" data-icon="search" >Find a location...</a></li>
+                    </ul>
+                </div>
             </div>
 
             <div data-role="content">
-
-                <div class="ui-grid-a">
-                    <div class="ui-block-a"><p><label><strong>Location: </strong></label><label id="report_lblPosition">N/A</label></p></div>
-                    <div class="ui-block-b"><div id="report_btnGPS" class="ui-masas-bb7-btn" data-role="button" data-icon="refresh">Update Location</div></div>
-                </div>
 
                 <label for="txtReportTitle"><strong>Title:</strong></label>
                 <input type="text" name="title" id="txtReportTitle" value="" />
@@ -41,6 +44,37 @@
                     </li>
                 </ul>
 
+                <table>
+                    <tbody>
+                        <tr>
+                            <th style="text-align:right">
+                            </th>
+                            <th>
+                                <fieldset data-role="controlgroup" data-type="horizontal" >
+                                    <input type="radio" name="report_locationChoice" id="report_choiceGPS" value="GPS" checked="checked" />
+                                    <label for="report_choiceGPS">My location</label>
+
+                                    <input type="radio" name="report_locationChoice" id="report_choiceLookup" value="Lookup"  />
+                                    <label for="report_choiceLookup">Searched location</label>
+                                </fieldset>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right"><strong>My location: </strong></th>
+                            <th style="text-align:right"><label id="report_lblPosition">N/A</label></th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right"><strong>Searched location: </strong></th>
+                            <th style="text-align:right"><label id="report_lblLookupPosition">N/A</label></th>
+                        </tr>
+                        <tr>
+                            <th style="text-align:right"></th>
+                            <th style="text-align:right"><label id="report_lblLookupPositionDesc">N/A</label></th>
+                        </tr>
+                    </tbody>
+                </table>
+                <hr>
+
                 <div class="ui-grid-a">
                     <div class="ui-block-a"><p><label><strong>Created: </strong></label><label id="lblReportCreated">dd/mm/yyyy HH:MM</label></p></div>
                     <div class="ui-block-b"><p><label><strong>Updated: </strong></label><label id="lblReportUpdated">dd/mm/yyyy HH:MM</label></p></div>
@@ -52,8 +86,6 @@
                 <div data-role="navbar" data-iconpos="bottom">
                     <ul>
                         <li><a href="#" id="report_btnBack" data-icon="grid">Reports</a></li>
-                        <li><a href="#" id="report_btnPicture" data-icon="plus">Picture</a></li>
-                        <li><a href="#" id="report_btnAudio" data-icon="plus">Audio</a></li>
                         <li><a href="#" id="report_btnSend" data-icon="arrow-u">Send</a></li>
                         <li><a href="confirmReportDelete.html" id="report_btnDelete" data-rel="dialog" data-icon="delete">Delete</a></li>
                     </ul>
