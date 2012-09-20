@@ -43,7 +43,11 @@ function reports_addListItem( listId, reportIdentifier, report )
     // Create our list item
     listItem = document.createElement('li');
     listItem.setAttribute( 'data-masas-report-id', reportIdentifier );
-    listItem.innerHTML = '<a><h3>' + report.Title + '</h3>' + '<p><strong>' + report.Description + '</strong></p><div class="ui-li-aside"><p><strong>' + report.Updated.toDateString() + '</strong></p><p><strong>' + report.Updated.toLocaleTimeString() + '</strong></p></div></a>';
+
+    var itemHTML  = '<a>';
+    itemHTML += '<h3>' + report.Title + '</h3>' + '<p><strong>' + report.Description + '</strong></p><div class="ui-li-aside"><p><strong>' + report.Updated.toDateString() + '</strong></p><p><strong>' + report.Updated.toLocaleTimeString() + '</strong></p></div></a>';
+
+    listItem.innerHTML = itemHTML;
 
     // Append the item
     dataList.insertBefore( listItem, dataListHeader.nextSibling );

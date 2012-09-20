@@ -22,14 +22,15 @@ $( document ).delegate("#Report", "pagebeforecreate", function()
 
     if( report_isReadOnly )
     {
-        $('#txtReportTitle').attr("readonly", true);
-        $('#txtReportDescription').attr("readonly", true);
+        $('#report_txtTitle').attr("readonly", true);
+        $('#report_txtDescription').attr("readonly", true);
 
         $('#report_btnGPS').remove();
         $('#report_btnPicture').parent().remove();
         $('#report_btnAudio').parent().remove();
         $('#report_btnSend').parent().remove();
         $('#report_btnDelete').parent().remove();
+        $('#report_btnLocation').parent().remove();
     }
     else
     {
@@ -92,10 +93,24 @@ $( document ).delegate("#report_btnSend", "vclick", function(event, ui)
     appSendReportToMASAS( currentReport, report_reportSendSuccess, report_reportSendFail );
 });
 
+$( document).delegate("#report_txtTitle", "change", function( event, ui )
+{
+    report_saveReport();
+});
+
+$( document).delegate("#report_txtDescription", "change", function( event, ui )
+{
+    report_saveReport();
+});
+
+$( document).delegate("#report_choiceSymbol", "change", function( event, ui )
+{
+    report_saveReport();
+});
 function report_enableControls( enable )
 {
-    $( '#txtReportTitle' ).attr( "readonly", !enable );
-    $( '#txtReportDescription' ).attr( "readonly", !enable );
+    $( '#report_txtTitle' ).attr( "readonly", !enable );
+    $( '#report_txtDescription' ).attr( "readonly", !enable );
 
     if( enable )
     {
@@ -148,8 +163,10 @@ function report_resetList()
 function report_loadReport()
 {
     $('#report_headerTitle').text( 'Report: ' + currentReport.Title );
-    $('#txtReportTitle').val( currentReport.Title );
-    $('#txtReportDescription').val( currentReport.Description );
+    $('#report_txtTitle').val( currentReport.Title );
+    $('#report_txtDescription').val( currentReport.Description );
+
+    $("#report_choiceSymbol").val( currentReport.Symbol );
 
     for( var i=0; i<currentReport.Attachments.length; i++ )
     {
@@ -203,8 +220,10 @@ function report_saveReport()
 {
     if( !report_isReadOnly )
     {
-        currentReport.Title = $('#txtReportTitle').val();
-        currentReport.Description = $('#txtReportDescription').val();
+        currentReport.Title = $('#report_txtTitle').val();
+        currentReport.Description = $('#report_txtDescription').val();
+        currentReport.Symbol = $("#report_choiceSymbol").val();
+
         currentReport.Updated = new Date();
 
         currentReport.UseLocation = $('input:radio[name=report_locationChoice]:checked').val();
@@ -289,10 +308,14 @@ function report_getCurrentPosition() {
     navigator.geolocation.getCurrentPosition(report_onGetCurPosSuccess, report_onGetCurPosFail, gpsOptions);
 }
 
-function report_onGetCurPosSuccess( position ) {
-    currentReport.Location = position.coords;
-    report_updateLocation();
-    report_saveReport();
+function report_onGetCurPosSuccess( position )
+{
+    if( position != null )
+    {
+        currentReport.Location = position.coords;
+        report_updateLocation();
+        report_saveReport();
+    }
 }
 
 function report_onGetCurPosFail(message) {

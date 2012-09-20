@@ -13,12 +13,22 @@ $( document ).delegate("#quickReport_btnGPS", "vclick", function(event, ui)
 
 $( document ).delegate("#quickReport_btnArrived", "vclick", function(event, ui)
 {
+    quickReport_sendQuickReport( app_Settings.reportCheckIn );
+});
+
+$( document ).delegate("#quickReport_btnDeparted", "vclick", function(event, ui)
+{
+    quickReport_sendQuickReport( app_Settings.reportCheckOut );
+});
+
+function quickReport_sendQuickReport( reportTitle )
+{
     $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
     quickReport_enableControls( false );
 
     var report = new shortReportObj();
 
-    report.Title = app_Settings.reportCheckIn;
+    report.Title = reportTitle;
     report.Description = $('#quickReport_txtNotes').val();
 
     var locationValue = $('input:radio[name=quickReport_locationChoice]:checked').val();
@@ -37,24 +47,7 @@ $( document ).delegate("#quickReport_btnArrived", "vclick", function(event, ui)
     delete report;
 
     MASAS_createNewEntry( entry, quickReport_reportSendSuccess, quickReport_reportSendFail );
-});
-
-$( document ).delegate("#quickReport_btnDeparted", "vclick", function(event, ui)
-{
-    quickReport_enableControls( false );
-    $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
-
-    var report = new shortReportObj();
-
-    report.Title = app_Settings.reportCheckOut;
-    report.Description = $('#quickReport_txtNotes').val();
-    report.Location = quickReport_curPosition;
-
-    var entry = appShortReportToMASAS( report );
-    delete report;
-
-    MASAS_createNewEntry( entry, quickReport_reportSendSuccess, quickReport_reportSendFail );
-});
+}
 
 function quickReport_reportSendSuccess()
 {

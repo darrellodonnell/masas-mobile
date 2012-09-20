@@ -39,7 +39,7 @@ function appResetSettingsToDefault()
         url: 'https://sandbox2.masas-sics.ca/hub',
         token: '12345',
         vehicleId: '',
-        vehicleType: 'Unknown', // Unknown, EMS, Fire, Police
+        vehicleType: 'EmergencyTeam', // EmergencyTeam, EMS, Fire, Police, Other
         reportStatus: 'Test', // Test, Actual
         reportExpiresOffset: '60',
         reportExpiresContext: "Minutes", // Minutes, Hours, Days
@@ -146,7 +146,7 @@ function appShortReportToMASAS( report )
             "title":    augmentedTitle,
             "content":  report.Description,
             "status":   app_Settings.reportStatus,
-            "icon":     appGetReportIcon(),
+            "icon":     appGetSimpleReportIcon(),
             "expires":  appGetReportExpiration()
         };
 
@@ -216,7 +216,7 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
             "title":        augmentedTitle,
             "content":      report.Description,
             "status":       app_Settings.reportStatus,
-            "icon":	        appGetReportIcon(),
+            "icon":         appGetReportIcon( report.Symbol ),
             "expires":      appGetReportExpiration(),
             "attachments":  []
         };
@@ -338,13 +338,16 @@ function app_checkIfAllAttachmentsLoaded()
     }
 }
 
-function appGetReportIcon()
+function appGetSimpleReportIcon()
 {
     var returnVal = 'other';
 
     // Setup the icon based on the desired type...
     switch( app_Settings.vehicleType )
     {
+        case "EmergencyTeam":
+            returnVal = 'ems/operations/emergency/emergencyTeam';
+            break;
         case "EMS":
             returnVal = 'ems/operations/emergencyMedical/ambulance';
             break;
@@ -354,12 +357,33 @@ function appGetReportIcon()
         case "Police":
             returnVal = 'ems/operations/lawEnforcement/policeCar';
             break;
+        case "Other":
+            returnVal = 'other';
+            break;
         default:
             returnVal = 'other';
             break;
     }
 
     // Return the proper value.
+    return returnVal;
+}
+
+function appGetReportIcon( symbol )
+{
+    var returnVal = "";
+
+    if( symbol == "ems.other.other" )
+    {
+        returnVal = "other";
+    }
+    else
+    {
+        returnVal = symbol.replace(/\./g, "/" );
+    }
+
+    console.log( "Symbol: " + returnVal );
+
     return returnVal;
 }
 

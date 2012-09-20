@@ -1,6 +1,6 @@
 function reportObj( obj )
 {
-    //this.Identifier = nextReportIdentifier++;
+    this.Symbol = 'ems.operations.emergency';
     this.Title = '';
     this.Description = '';
     this.State = 'Draft';  // States: Draft, Sent

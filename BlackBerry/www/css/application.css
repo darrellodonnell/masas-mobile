@@ -23,3 +23,9 @@
     margin: 1em auto 0;
     width: 95%;
 }
+
+#main_disclaimer {
+    font-size: 1.25em;
+    color: red;
+    text-align:center;
+}

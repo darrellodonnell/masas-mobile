@@ -21,11 +21,49 @@
 
             <div data-role="content">
 
-                <label for="txtReportTitle"><strong>Title:</strong></label>
-                <input type="text" name="title" id="txtReportTitle" value="" />
+                <label for="report_txtTitle"><strong>Title:</strong></label>
+                <input type="text" name="title" id="report_txtTitle" value="" />
 
-                <label for="txtReportDescription"><strong>Description:</strong></label>
-                <textarea name="description" id="txtReportDescription"></textarea>
+                <label for="report_txtDescription"><strong>Description:</strong></label>
+                <textarea name="description" id="report_txtDescription"></textarea>
+
+                <label for="report_symbolPane"><strong>Symbol:</strong></label>
+                <div name="report_symbolPane" id="report_symbolPane">
+                    <table style="width:100%">
+                        <col>
+                        <col style="width:96px;">
+                        <tbody style="width:100%">
+                        <tr>
+                            <th>
+                                <select name="report_choiceSymbol" id="report_choiceSymbol">
+                                    <optgroup label="Operations">
+                                        <option value="ems.operations.emergency">Emergency</option>
+                                        <option value="ems.operations.emergencyFire">Fire</option>
+                                        <option value="ems.operations.emergencyMedical">Medical</option>
+                                        <option value="ems.operations.lawEnforcement">Police</option>
+                                    </optgroup>
+                                    <optgroup label="Incident">
+                                        <option value="ems.incident.roadway">Roadway</option>
+                                        <option value="ems.incident.railway">Railway</option>
+                                        <option value="ems.incident.fire">Fire</option>
+                                        <option value="ems.incident.civil">Civil</option>
+                                        <option value="ems.incident.crime">Crime</option>
+                                        <option value="ems.incident.hazardousMaterial">Hazardous material</option>
+                                        <option value="ems.other.other">Other</option>
+                                    </optgroup>
+                                    <optgroup label="Infrastructure">
+                                        <option value="ems.infrastructure.communicationsAndIT">Communications</option>
+                                        <option value="ems.infrastructure.energy">Energy</option>
+                                        <option value="ems.infrastructure.transportation">Transportation</option>
+                                        <option value="ems.infrastructure.water">Water</option>
+                                        <option value="ems.infrastructure.education">Education</option>
+                                    </optgroup>
+                                </select>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <ul id="lstReportAttachments" data-role="listview" data-inset="true" >
                     <li data-role="list-divider">Attachments<span class="ui-li-count" id="lstReportAttachmentCount">0</span></li>
