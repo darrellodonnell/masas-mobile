@@ -301,8 +301,9 @@ function viewAttachment( attachment ) {
     $.mobile.changePage( "viewAttachment.html" );
 }
 
-function report_getCurrentPosition() {
-    var gpsOptions = { maximumAge: 5000, timeout: 10000, enableHighAccuracy: true };
+function report_getCurrentPosition()
+{
+    var gpsOptions = { maximumAge: 0, timeout: 10000, enableHighAccuracy: true };
 
     $('#report_lblPosition').text( 'Waiting for location...' );
     navigator.geolocation.getCurrentPosition(report_onGetCurPosSuccess, report_onGetCurPosFail, gpsOptions);

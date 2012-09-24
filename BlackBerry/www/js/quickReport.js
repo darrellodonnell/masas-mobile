@@ -105,8 +105,9 @@ function quickReport_updateLocation()
     }
 }
 
-function quickReport_getCurrentPosition() {
-    var gpsOptions = { maximumAge: 5000, timeout: 10000, enableHighAccuracy: true };
+function quickReport_getCurrentPosition()
+{
+    var gpsOptions = { maximumAge: 0, timeout: 10000, enableHighAccuracy: true };
 
     $('#quickReport_lblPosition').text( 'Waiting for location...' );
     navigator.geolocation.getCurrentPosition(quickReport_onGetCurPosSuccess, quickReport_onGetCurPosFail, gpsOptions);
