@@ -249,11 +249,11 @@ function report_addListItem( attachment )
     }
     else if( attachment.Type.indexOf( 'audio' ) != -1 )
     {
-        itemHTML  += '<img src="res/icon/icon.jpg" />';
+        itemHTML  += '<img src="res/icon/MASAS-Mobile_icon.png" />';
     }
     else
     {
-        itemHTML  += '<img src="res/icon/icon.jpg" />';
+        itemHTML  += '<img src="res/icon/MASAS-Mobile_icon.png" />';
     }
 
     itemHTML += '<h3>' + splitPath[splitPath.length-1] + '</h3>';

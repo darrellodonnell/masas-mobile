@@ -8,11 +8,11 @@
     <description>MASAS Mobile Application for BlackBerry</description>
     <author></author>
 
-    <icon rim:hover="false" src="res/icon/cordova_bb_80.png" />
-    <icon rim:hover="true" src="res/icon/cordova_bb_80.png" />
+    <icon rim:hover="false" src="res/icon/MASAS-Mobile_icon.png" />
+    <icon rim:hover="true" src="res/icon/MASAS-Mobile_icon.png" />
 
     <rim:loadingScreen backgroundColor="#CFCFCF"
-                       foregroundImage="res/screen/blackberry_transparent_300.png"
+                       foregroundImage="res/screen/MASAS-Mobile.png"
                        onFirstLaunch="true">
         <rim:transitionEffect type="fadeOut" />
     </rim:loadingScreen>
