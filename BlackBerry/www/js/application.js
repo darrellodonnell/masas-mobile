@@ -17,17 +17,81 @@ $(document).on("mobileinit", function(){
 
     appLoadData();
 
-    if( window.blackberry && blackberry.system && blackberry.system.event && blackberry.system.event.onHardwareKey )
+    // Attach to some BlackBerry specific events...
+    if( blackberry && blackberry.system && blackberry.system.event )
     {
-        blackberry.system.event.onHardwareKey( blackberry.system.event.KEY_BACK, app_onBackKey );
+        if( blackberry.system.event.onHardwareKey )
+        {
+            blackberry.system.event.onHardwareKey( blackberry.system.event.KEY_BACK, app_onBackKey );
+        }
+
+        if( blackberry.system.event.onCoverageChange )
+        {
+            blackberry.system.event.onCoverageChange( app_onCoverageChange );
+        }
     }
 
+    if( blackberry && blackberry.app && blackberry.app.event )
+    {
+
+        if( blackberry.app.event.onForeground )
+        {
+            blackberry.app.event.onForeground( app_onForeground );
+        }
+    }
+
+});
+
+$( document ).delegate("#Main", "pagebeforeshow", function( event, ui )
+{
+    app_onCoverageChange();
 });
 
 function app_onBackKey() {
    history.back();
    return false;
 }
+
+function app_onCoverageChange()
+{
+    var status = $('#app_dataStatus');
+
+    if( blackberry.system.hasDataCoverage() )
+    {
+        if( status )
+        {
+            status.data('icon', 'check');
+            $("#app_dataStatus .ui-icon").addClass("ui-icon-check").removeClass("ui-icon-alert");
+        }
+    }
+    else
+    {
+        if( status )
+        {
+            status.data('icon', 'alert');
+            $("#app_dataStatus .ui-icon").addClass("ui-icon-alert").removeClass("ui-icon-check");
+        }
+    }
+}
+
+function app_onForeground()
+{
+    // update the coverage icon if needed...
+    app_onCoverageChange();
+}
+
+$( document ).delegate("#app_dataStatus", "vclick", function(event, ui)
+{
+    if( blackberry.system.hasDataCoverage() )
+    {
+        alert( "Data coverage is available!");
+    }
+    else
+    {
+        alert( "Data coverage is currently unavailable!");
+    }
+
+});
 
 Date.prototype.toJSON = function (key) {
     return this.toISOString();

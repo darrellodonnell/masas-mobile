@@ -56,6 +56,8 @@ $( document ).delegate("#Report", "pagebeforeshow", function( event, ui )
         report_updateLookupLocation();
         report_saveReport();
     }
+
+    app_onCoverageChange();
 });
 
 $( document ).delegate("#report_btnPicture", "vclick", function(event, ui)
@@ -86,11 +88,18 @@ $( document ).delegate("#report_btnBack", "vclick", function(event, ui)
 
 $( document ).delegate("#report_btnSend", "vclick", function(event, ui)
 {
-    report_enableControls( false );
-    report_saveReport();
+    if( blackberry.system.hasDataCoverage() )
+    {
+        report_enableControls( false );
+        report_saveReport();
 
-    $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
-    appSendReportToMASAS( currentReport, report_reportSendSuccess, report_reportSendFail );
+        $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
+        appSendReportToMASAS( currentReport, report_reportSendSuccess, report_reportSendFail );
+    }
+    else
+    {
+        alert( "Data coverage in unavailable! Please try again later.");
+    }
 });
 
 $( document).delegate("#report_txtTitle", "change", function( event, ui )
@@ -107,6 +116,7 @@ $( document).delegate("#report_choiceSymbol", "change", function( event, ui )
 {
     report_saveReport();
 });
+
 function report_enableControls( enable )
 {
     $( '#report_txtTitle' ).attr( "readonly", !enable );

@@ -8,6 +8,11 @@ $( document ).delegate("#location", "pagebeforecreate", function()
     location_resetList();
 });
 
+$( document ).delegate("#location", "pagebeforeshow", function( event, ui )
+{
+    app_onCoverageChange();
+});
+
 $( document ).delegate( "#location_txtSearchQuery", "keypress", function( event )
 {
     if ( event.which == 13 )
@@ -68,51 +73,58 @@ $( document ).delegate( "#location_btnBack", "vclick", function()
 
 function location_search( searchQuery )
 {
-    location_resetList();
-    $('#location_lstResults').listview('refresh');
-    $('#location_resultStatus').text( 'Searching...' );
-
-    console.log( 'Searching...' );
-
-    var params = '';
-    params += '?q=';
-    if( searchQuery != null && searchQuery.length > 0 )
+    if( blackberry.system.hasDataCoverage() )
     {
-        params += searchQuery.replace( / /g, '+' );
+        location_resetList();
+        $('#location_lstResults').listview('refresh');
+        $('#location_resultStatus').text( 'Searching...' );
+
+        console.log( 'Searching...' );
+
+        var params = '';
+        params += '?q=';
+        if( searchQuery != null && searchQuery.length > 0 )
+        {
+            params += searchQuery.replace( / /g, '+' );
+        }
+
+        params += '&format=json';
+        params += '&addressdetails=1';
+        params += '&limit=3';
+
+        // Get the email address for the query...
+        // NOTE: This is required by Nominatim as per their usage policy:
+        //       http://wiki.openstreetmap.org/wiki/Nominatim_usage_policy
+        if( blackberry && blackberry.app && blackberry.app.authorEmail )
+        {
+            params += '&email=' + blackberry.app.authorEmail;
+        }
+
+        console.log( params );
+
+        var request = $.ajax({
+            type: 'GET',
+            url: 'http://nominatim.openstreetmap.org/search' + params,
+            timeout: 120000
+        });
+
+        request.done( function( msg ) {
+            console.log( msg );
+            location_results = msg;
+            location_loadResults( location_results );
+        });
+
+        request.fail( function(jqXHR, textStatus) {
+            var failureMsg = 'Location retrieval failed! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
+            console.log( failureMsg );
+            alert( failureMsg );
+
+        });
     }
-
-    params += '&format=json';
-    params += '&addressdetails=1';
-    params += '&limit=3';
-
-    // Get the email address for the query...
-    // NOTE: This is required by Nominatim as per their usage policy:
-    //       http://wiki.openstreetmap.org/wiki/Nominatim_usage_policy
-    if( blackberry && blackberry.app && blackberry.app.authorEmail )
+    else
     {
-        params += '&email=' + blackberry.app.authorEmail;
+        alert( "Data coverage in unavailable! Please try again later.");
     }
-
-    console.log( params );
-
-    var request = $.ajax({
-        type: 'GET',
-        url: 'http://nominatim.openstreetmap.org/search' + params,
-        timeout: 60000
-    });
-
-    request.done( function( msg ) {
-        console.log( msg );
-        location_results = msg;
-        location_loadResults( location_results );
-    });
-
-    request.fail( function(jqXHR, textStatus) {
-        var failureMsg = 'Location retrieval failed! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
-        console.log( failureMsg );
-        alert( failureMsg );
-
-    });
 }
 
 function location_loadResults( results )

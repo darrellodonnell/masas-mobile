@@ -59,7 +59,7 @@ function MASAS_postNewEntry( entryData, contentType )
         headers: {'Content-Type': contentType,
                   'Authorization': 'MASAS-Secret ' + app_Settings.token },
         data: entryData,
-        timeout: 60000
+        timeout: 120000
     });
 
     request.done( function(msg) {

@@ -6,6 +6,11 @@ $( document ).delegate("#quickReport", "pagebeforecreate", function()
     quickReport_getLookupLocation();
 });
 
+$( document ).delegate("#quickReport", "pagebeforeshow", function( event, ui )
+{
+    app_onCoverageChange();
+});
+
 $( document ).delegate("#quickReport_btnGPS", "vclick", function(event, ui)
 {
      quickReport_getCurrentPosition();
@@ -23,30 +28,37 @@ $( document ).delegate("#quickReport_btnDeparted", "vclick", function(event, ui)
 
 function quickReport_sendQuickReport( reportTitle )
 {
-    $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
-    quickReport_enableControls( false );
-
-    var report = new shortReportObj();
-
-    report.Title = reportTitle;
-    report.Description = $('#quickReport_txtNotes').val();
-
-    var locationValue = $('input:radio[name=quickReport_locationChoice]:checked').val();
-    if( locationValue == 'GPS' )
+    if( blackberry.system.hasDataCoverage() )
     {
-        report.Location = quickReport_curPosition;
-    }
-    else if( locationValue == 'Lookup' ){
-        report.Location = {
-            latitude: location_latitude,
-            longitude: location_longitude
-        };
-    }
+        $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
+        quickReport_enableControls( false );
 
-    var entry = appShortReportToMASAS( report );
-    delete report;
+        var report = new shortReportObj();
 
-    MASAS_createNewEntry( entry, quickReport_reportSendSuccess, quickReport_reportSendFail );
+        report.Title = reportTitle;
+        report.Description = $('#quickReport_txtNotes').val();
+
+        var locationValue = $('input:radio[name=quickReport_locationChoice]:checked').val();
+        if( locationValue == 'GPS' )
+        {
+            report.Location = quickReport_curPosition;
+        }
+        else if( locationValue == 'Lookup' ){
+            report.Location = {
+                latitude: location_latitude,
+                longitude: location_longitude
+            };
+        }
+
+        var entry = appShortReportToMASAS( report );
+        delete report;
+
+        MASAS_createNewEntry( entry, quickReport_reportSendSuccess, quickReport_reportSendFail );
+    }
+    else
+    {
+        alert( "Data coverage in unavailable! Please try again later.");
+    }
 }
 
 function quickReport_reportSendSuccess()

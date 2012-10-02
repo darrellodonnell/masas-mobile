@@ -3,6 +3,10 @@ $( document ).delegate("#ViewReports", "pagebeforecreate", function() {
     reports_loadReports();
 });
 
+$( document ).delegate("#ViewReports", "pagebeforeshow", function() {
+    app_onCoverageChange();
+});
+
 function reports_resetList()
 {
     // Remove all the <li> with containing the 'data-masas-report-id' attribute from the list.

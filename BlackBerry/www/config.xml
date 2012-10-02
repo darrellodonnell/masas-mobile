@@ -50,9 +50,13 @@
         <rim:permit>record_audio</rim:permit>
     </rim:permissions>
 
-    <rim:connection timeout="30000">
+    <rim:connection timeout="15000">
+        <id>MDS</id>
+        <id>BIS-B</id>
         <id>TCP_WIFI</id>
         <id>TCP_CELLULAR</id>
+        <!--id>WAP2</id-->
+        <!--id>WAP</id-->
     </rim:connection>
 
     <rim:cache disableAllCache="false" />
