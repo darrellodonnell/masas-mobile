@@ -75,6 +75,17 @@ $( document ).delegate("#report_btnGPS", "vclick", function(event, ui)
      report_getCurrentPosition();
 });
 
+$( document ).delegate("#report_btnHome", "vclick", function(event, ui)
+{
+    if( !report_isReadOnly )
+    {
+        report_saveReport();
+    }
+
+    currentReport = null;
+    $.mobile.changePage( "index.html", {} );
+});
+
 $( document ).delegate("#report_btnBack", "vclick", function(event, ui)
 {
     if( !report_isReadOnly )
