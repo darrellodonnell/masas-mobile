@@ -1,4 +1,10 @@
-//var nextReportIdentifier = 0;
+/**
+ * MASAS Mobile - Application Core
+ * Updated: Oct 05, 2012
+ * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
+ * under the Modified BSD license.  See license.txt for the full text of the license.
+ */
+
 var localReports = [];
 
 var app_Settings = null;
@@ -15,6 +21,10 @@ $(document).on("mobileinit", function(){
     $.mobile.defaultDialogTransition = 'none';
     $.mobile.allowCrossDomainPages = true;
 
+    // Load the menu...
+    menu_initMenu();
+
+    // Load the application data...
     appLoadData();
 
     // Attach to some BlackBerry specific events...
@@ -481,4 +491,10 @@ function appGetReportExpiration()
     console.log( 'Modified Date by ' + app_Settings.reportExpiresOffset + ' ' + app_Settings.reportExpiresContext +':' + reportExpires.toISOString() );
     // Return the expiration time.
     return reportExpires;
+}
+
+function appGetSymbolPath( symbol )
+{
+    var path = "res/EMS/tier1/BlackBorder/ems_tier1_64/" + symbol + ".png";
+    return path;
 }

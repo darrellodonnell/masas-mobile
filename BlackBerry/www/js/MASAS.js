@@ -1,3 +1,10 @@
+/**
+ * MASAS Mobile - MASAS helper functions
+ * Updated: Oct 5, 2012
+ * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+ * under the Modified BSD license.  See license.txt for the full text of the license.
+ */
+
 var currentEntry = null;
 
 var MASAS_callback_createNewEntry_success = null;

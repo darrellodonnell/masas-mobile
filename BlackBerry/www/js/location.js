@@ -1,3 +1,10 @@
+/**
+ * MASAS Mobile - Location Page
+ * Updated: Oct 5, 2012
+ * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+ * under the Modified BSD license.  See license.txt for the full text of the license.
+ */
+
 var location_latitude = undefined;
 var location_longitude = undefined;
 var location_selectedlookup = "";

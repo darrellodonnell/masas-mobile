@@ -29,3 +29,9 @@
     color: red;
     text-align:center;
 }
+
+.report_icon_wrapper {
+    padding:1px 10px 1px 1px;
+    text-align:center;
+    float:left;
+}

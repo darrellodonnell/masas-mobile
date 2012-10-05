@@ -1,3 +1,9 @@
+/**
+ * MASAS Mobile - Settings Page
+ * Updated: Oct 5, 2012
+ * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+ * under the Modified BSD license.  See license.txt for the full text of the license.
+ */
 
 $( document ).delegate("#settings", "pagebeforecreate", function()
 {

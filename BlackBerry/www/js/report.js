@@ -1,3 +1,10 @@
+/**
+ * MASAS Mobile - Full Report Page
+ * Updated: Oct 5, 2012
+ * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+ * under the Modified BSD license.  See license.txt for the full text of the license.
+ */
+
 var report_isReadOnly = true;
 
 $( document ).delegate("#Report", "pagebeforecreate", function()
@@ -125,6 +132,7 @@ $( document).delegate("#report_txtDescription", "change", function( event, ui )
 
 $( document).delegate("#report_choiceSymbol", "change", function( event, ui )
 {
+    report_updateSymbol( $("#report_choiceSymbol").val() );
     report_saveReport();
 });
 
@@ -188,6 +196,7 @@ function report_loadReport()
     $('#report_txtDescription').val( currentReport.Description );
 
     $("#report_choiceSymbol").val( currentReport.Symbol );
+    report_updateSymbol( currentReport.Symbol );
 
     for( var i=0; i<currentReport.Attachments.length; i++ )
     {
@@ -235,6 +244,11 @@ function report_updateLookupLocation()
         $('#report_lblLookupPosition').text( "N/A" );
         $('#report_lblLookupPositionDesc').text( "" );
     }
+}
+
+function report_updateSymbol( symbol )
+{
+    $("#report_symbol").attr("src", appGetSymbolPath( symbol ) );
 }
 
 function report_saveReport()
