@@ -26,7 +26,7 @@ $( document ).delegate( "#about_btnMASASMobileLicense", "vclick", function( even
 
 $( document ).delegate( "#about_btnJQMLicense", "vclick", function( event )
 {
-    about_showLicense( "jQuery Mobile License", "licenses/jquery/MIT-LICENSE.txt" );
+    about_showLicense( "jQuery Mobile License", "licenses/jQuery/MIT-LICENSE.txt" );
 });
 
 $( document ).delegate( "#about_btnCordovaLicense", "vclick", function( event )
