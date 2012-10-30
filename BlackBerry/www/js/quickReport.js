@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Quick Report Page
- * Updated: Oct 5, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -35,7 +35,7 @@ $( document ).delegate("#quickReport_btnDeparted", "vclick", function(event, ui)
 
 function quickReport_sendQuickReport( reportTitle )
 {
-    if( blackberry.system.hasDataCoverage() )
+    if( app_hasDataCoverage() )
     {
         $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
         quickReport_enableControls( false );

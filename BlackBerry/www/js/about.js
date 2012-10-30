@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - About Page
- * Updated: Oct 5, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -9,10 +9,20 @@ var about_components = null;
 
 $( document ).delegate("#about", "pagebeforecreate", function()
 {
-    $('#about_lblDescription').text( blackberry.app.description );
-    $('#about_lblCopyright').text( blackberry.app.copyright );
-    $('#about_lblVersion').text( "Version " + blackberry.app.version );
-    $('#about_lblURL').text( blackberry.app.authorURL );
+    if( blackberry && blackberry.app )
+    {
+        // Load the data from the BlackBerry API (taken from config.xml).
+        $('#about_lblDescription').text( blackberry.app.description );
+        $('#about_lblCopyright').text( blackberry.app.copyright );
+        $('#about_lblVersion').text( "Version " + blackberry.app.version );
+        $('#about_lblURL').text( blackberry.app.authorURL );
+    }
+    else
+    {
+        // TODO: Add support to load this data from an external source.
+        //       Cordova currently does not do this.
+        $('#about_lblVersion' ).hide();
+    }
 });
 
 $( document ).delegate("#about", "pagebeforeshow", function( event, ui )
@@ -21,7 +31,7 @@ $( document ).delegate("#about", "pagebeforeshow", function( event, ui )
 
 $( document ).delegate( "#about_btnMASASMobileLicense", "vclick", function( event )
 {
-    about_showTextLicense( "MASAS Mobile License", blackberry.app.license );
+    about_showLicense( "MASAS Mobile License", "licenses/LICENSE.txt" );
 });
 
 $( document ).delegate( "#about_btnJQMLicense", "vclick", function( event )
@@ -48,9 +58,18 @@ function about_showTextLicense( licenseTitle, license )
 {
     try
     {
-        var buttons = ["OK"];
-        var ops = { title : licenseTitle, size : blackberry.ui.dialog.SIZE_TALL, position : blackberry.ui.dialog.CENTER };
-        blackberry.ui.dialog.customAskAsync( license, buttons, about_dialogCallBack, ops );
+        if( blackberry && blackberry.ui )
+        {
+            // Use BlackBerry specific dialog...
+            var buttons = ["OK"];
+            var ops = { title : licenseTitle, size : blackberry.ui.dialog.SIZE_TALL };
+            blackberry.ui.dialog.customAskAsync( license, buttons, about_dialogCallBack, ops );
+        }
+        else
+        {
+            // Use the Cordova dialog...
+            navigator.notification.confirm( license, about_dialogCallBack, licenseTitle, "OK" );
+        }
     }
     catch( e )
     {

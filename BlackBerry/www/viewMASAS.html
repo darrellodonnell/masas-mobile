@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+MASAS View Tool
+Updated: Oct 30, 2012
+Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+under the Modified BSD license.  See license.txt for the full text of the license.
+-->
+<html>
+    <head>
+    </head>
+
+    <body>
+
+        <div data-role="page" id="viewMASAS">
+            <!--div data-role="header" data-position="fixed" data-tap-toggle="false">
+                <h1>MASAS Mobile - Home</h1>
+                <a href="#" id="app_dataStatus" data-icon="check" class="ui-btn-right" data-mini="true" data-inline="true" data-iconpos="notext" ></a>
+            </div-->
+
+            <div data-role="content" class="ui-masas-no-padding">
+
+                <div class="ui-masas-left-panel" >
+                    <div data-role="navbar" data-iconpos="bottom" data-iscroll-fixed>
+                        <ul>
+                            <li>
+                                <select name="select-choice-0" id="select-choice-0" data-corners=false>
+                                    <option value="All">All Entries</option>
+                                    <option value="View">Current View</option>
+                                    <option value="Mine">My Entries</option>
+                                </select>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div  id="scrollPanel" data-iscroll>
+                        <ul data-role="listview" id="viewMASAS_lstEntries" >
+                        </ul>
+                    </div>
+
+                    <div data-role="navbar" data-iscroll-fixed>
+                        <ul>
+                            <li><a href="#" data-icon="grid">MAP</a></li>
+                            <li><a href="#" data-icon="info">Entries</a></li>
+                            <li><a href="#" data-icon="add">New</a></li>
+                            <li><a href="#" id="viewMASAS_btnRefreshList" data-icon="refresh">Refresh</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="ui-masas-right-panel">
+                    <div id="map_content">
+                        <div id="map_canvas"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+                <div data-role="navbar" data-iconpos="bottom">
+                    <ul>
+                        <li><a href="index.html" data-icon="home">Home</a></li>
+                        <li><a href="viewReports.html" data-icon="grid" >Reports</a></li>
+                        <li><a href="" id="mainNav_viewMASAS" data-icon="grid" class="ui-btn-active ui-state-persist" >View MASAS</a></li>
+                        <li><a href="settings.html" data-icon="gear" >Settings</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+</html>

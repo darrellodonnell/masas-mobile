@@ -1,13 +1,24 @@
 /**
  * MASAS Mobile - Full Report Page
- * Updated: Oct 5, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
 
 var report_isReadOnly = true;
 
-$( document ).delegate("#Report", "pagebeforecreate", function()
+// The create event is used when the report is loaded with the lists of reports
+// and not as a JQM page.
+$( document ).delegate("#Report", "create", function()
+{
+    report_pagebeforecreate();
+    report_pagebeforeshow();
+} );
+
+$( document ).delegate("#Report", "pagebeforecreate", report_pagebeforecreate );
+$( document ).delegate("#Report", "pagebeforeshow", report_pagebeforeshow );
+
+function report_pagebeforecreate()
 {
     var isNewReport = false;
 
@@ -46,12 +57,11 @@ $( document ).delegate("#Report", "pagebeforecreate", function()
             report_getCurrentPosition();
         }
     }
+}
 
-});
-
-$( document ).delegate("#Report", "pagebeforeshow", function( event, ui )
+function report_pagebeforeshow()
 {
-    if( ui.prevPage.attr('id') == "location" && location_latitude != undefined && location_longitude != undefined )
+    if( location_latitude != undefined && location_longitude != undefined )
     {
         currentReport.LookupLocation.Location = {
                 'latitude': location_latitude,
@@ -65,7 +75,7 @@ $( document ).delegate("#Report", "pagebeforeshow", function( event, ui )
     }
 
     app_onCoverageChange();
-});
+}
 
 $( document ).delegate("#report_btnPicture", "vclick", function(event, ui)
 {
@@ -106,7 +116,7 @@ $( document ).delegate("#report_btnBack", "vclick", function(event, ui)
 
 $( document ).delegate("#report_btnSend", "vclick", function(event, ui)
 {
-    if( blackberry.system.hasDataCoverage() )
+    if( app_hasDataCoverage() )
     {
         report_enableControls( false );
         report_saveReport();
@@ -134,6 +144,21 @@ $( document).delegate("#report_choiceSymbol", "change", function( event, ui )
 {
     report_updateSymbol( $("#report_choiceSymbol").val() );
     report_saveReport();
+});
+
+$( document ).delegate( "li[data-masas-report-attachment]", "vclick", function( event )
+{
+    var jsonStr = $(this).attr( 'data-masas-report-attachment' );
+
+    if( jsonStr != undefined )
+    {
+        var attachment = JSON.parse( jsonStr.replace(/'/g, '"') );
+
+        if( attachment != null )
+        {
+            viewAttachment( attachment );
+        }
+    }
 });
 
 function report_enableControls( enable )

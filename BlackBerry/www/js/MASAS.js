@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS helper functions
- * Updated: Oct 5, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -9,6 +9,9 @@ var currentEntry = null;
 
 var MASAS_callback_createNewEntry_success = null;
 var MASAS_callback_createNewEntry_failure = null;
+
+var MASAS_callback_getEntries_success = null;
+var MASAS_callback_getEntries_failure = null;
 
 function MASAS_createNewEntry( entry, callback_success, callback_fail )
 {
@@ -120,4 +123,44 @@ function MASAS_postNewEntryWithAttachments( entryData, attachments )
     newData += '--0.a.unique.value.0--\r\n';
 
     MASAS_postNewEntry( newData, 'multipart/related; boundary=0.a.unique.value.0' );
+}
+
+function MASAS_getEntries( callback_success, callback_fail )
+{
+    console.log( 'MASAS_getEntries' );
+
+    MASAS_callback_getEntries_success = callback_success;
+    MASAS_callback_getEntries_failure = callback_fail;
+
+    var request = $.ajax({
+        type: 'GET',
+        url: app_Settings.url + '/feed',
+        headers: {
+            'Authorization': 'MASAS-Secret ' + app_Settings.token
+        },
+        timeout: 120000
+    });
+
+    request.done( function( responseMsg ) {
+        console.log( 'MASAS Entries successfully retrieved!' );
+
+        if( MASAS_callback_getEntries_success && typeof( MASAS_callback_getEntries_success ) === "function" )
+        {
+            MASAS_callback_getEntries_success( responseMsg );
+        }
+    });
+
+    request.fail( function(jqXHR, textStatus) {
+        console.log( jqXHR );
+        console.log( 'Fail status: ' + textStatus );
+
+        var failureMsg = 'Failed to retrieve MASAS Entries! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
+        console.log( failureMsg );
+
+        if( MASAS_callback_getEntries_failure && typeof( MASAS_callback_getEntries_failure ) === "function" )
+        {
+            MASAS_callback_getEntries_failure();
+        }
+
+    });
 }

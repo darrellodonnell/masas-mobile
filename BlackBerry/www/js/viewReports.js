@@ -1,16 +1,24 @@
 /**
  * MASAS Mobile - Report Overview Page
- * Updated: Oct 5, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
 
-$( document ).delegate("#ViewReports", "pagebeforecreate", function() {
+$( document ).delegate("#ViewReports", "pagebeforecreate", function()
+{
+    // Hide the viewMASAS button if needed...
+    if( app_isDeviceBB567() )
+    {
+        $( "#mainNav_viewMASAS" ).parent().remove();
+    }
+
     reports_resetList();
     reports_loadReports();
 });
 
-$( document ).delegate("#ViewReports", "pagebeforeshow", function() {
+$( document ).delegate("#ViewReports", "pagebeforeshow", function()
+{
     app_onCoverageChange();
 });
 
@@ -20,7 +28,7 @@ function reports_resetList()
     $('#lstReports').children().remove( 'li[data-masas-report-id]' );
 }
 
-function reports_loadReports()
+function reports_loadReports( selectionId )
 {
     // Counters for the groups
     var pending = 0, sent = 0;
@@ -30,6 +38,7 @@ function reports_loadReports()
     {
         for( var i=0; i<localReports.length; i++ )
         {
+            var selected = (i == selectionId);
             if( localReports[i].State == 'Draft' ) {
                 reports_addListItem( 'lstReportsPending', i, localReports[i] );
                 pending++;
@@ -67,51 +76,52 @@ function reports_addListItem( listId, reportIdentifier, report )
     dataList.insertBefore( listItem, dataListHeader.nextSibling );
 }
 
-$( document ).delegate("span .ui-icon", "vclick", function(event, ui)
+$( document ).delegate( "li[data-masas-report-id]", "vclick", function( event )
 {
-    var path = $(this).attr( 'data-masas-report-attachment' );
+    var reportId = $(this).attr( 'data-masas-report-id' );
 
-    if( path != undefined )
+    if( reportId != undefined )
     {
-        //currentReport.removeAttachment( path );
-    }
+        currentReport = localReports[reportId];
 
-});
-
-$( document ).delegate("li", "vclick", function(event, ui)
-{
-    if( $.mobile.activePage.attr('id') == 'ViewReports' )
-    {
-        var reportId = $(this).attr( 'data-masas-report-id' );
-
-        if( reportId != undefined )
+        if( currentReport != null )
         {
-            currentReport = localReports[reportId];
-
-            if( currentReport != null )
+            if( $("#viewReport_rightPanel").css("display") == "none" )
             {
+                // Small screen... open the report in a separate page...
                 $.mobile.changePage( "report.html" );
             }
             else
             {
-                alert( 'Error: The selected report could not be found!' );
-                reports_resetList();
-                reports_loadReports();
+                // Large Screen... open the report in a second column...
+                viewReports_selectListItem( reportId );
+
+                $("#Report").load( "report.html div[data-role='content']", function()
+                {
+                    $(this).trigger("create");
+                });
             }
         }
-    }
-    else if( $.mobile.activePage.attr('id') == 'Report' )
-    {
-        var jsonStr = $(this).attr( 'data-masas-report-attachment' );
-
-        if( jsonStr != undefined )
+        else
         {
-            var attachment = JSON.parse( jsonStr.replace(/'/g, '"') );
-
-            if( attachment != null )
-            {
-                viewAttachment( attachment );
-            }
+            alert( 'Error: The selected report could not be found!' );
+            reports_resetList();
+            reports_loadReports();
         }
     }
 });
+
+function viewReports_selectListItem( selectionId )
+{
+    var liCurSelect = $("li[class*='ui-masas-list-item-selected']");
+
+    if( liCurSelect.length > 0 )
+    {
+        liCurSelect.removeClass( "ui-masas-list-item-selected" );
+    }
+
+    var liToSelect = $("li[data-masas-report-id='" + selectionId + "']");
+    liToSelect.addClass( "ui-masas-list-item-selected" );
+
+    $("#lstReports").listview("refresh");
+}

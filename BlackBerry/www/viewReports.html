@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <!--
 MASAS View Tool
-Updated: Oct 5, 2012
+Updated: Oct 30, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
-<html> 
+<html>
     <head>
     </head>
 
@@ -19,39 +19,45 @@ under the Modified BSD license.  See license.txt for the full text of the licens
             </div>
 
             <div data-role="content">
-                <a href="report.html" class="ui-masas-bb7-btn" data-role="button">New Report</a>
+                <div id="viewReport_leftPanel">
+                    <a href="report.html" class="ui-masas-bb7-btn" data-role="button">New Report</a>
 
-                <ul data-role="listview" data-inset="true" id="lstReports">
-                    <li data-role="list-divider" id="lstReportsPending">Pending Reports<span class="ui-li-count" id="lstReportPendingCount">0</span></li>
+                    <ul data-role="listview" data-inset="true" id="lstReports">
+                        <li data-role="list-divider" id="lstReportsPending">Pending Reports<span class="ui-li-count" id="lstReportPendingCount">0</span></li>
 
-                    <!-- NOTE: This will be removed once the screen is loaded code -->
-                    <li data-masas-report-id='0'>
-                        <a>
-                            <h3>Report title</h3>
-                            <p><strong>Description</strong></p>
-                            <div class="ui-li-aside"><p><strong>dd/mm/yyyy</strong></p><p><strong>HH:MM:SS</strong></p></div>
-                        </a>
-                    </li>
+                        <!-- NOTE: This will be removed once the screen is loaded code -->
+                        <li data-masas-report-id='0'>
+                            <a>
+                                <h3>Report title</h3>
+                                <p><strong>Description</strong></p>
+                                <div class="ui-li-aside"><p><strong>dd/mm/yyyy</strong></p><p><strong>HH:MM:SS</strong></p></div>
+                            </a>
+                        </li>
 
-                    <li data-role="list-divider" id="lstReportsSent">Sent Reports<span class="ui-li-count" id="lstReportSentCount">0</span></li>
+                        <li data-role="list-divider" id="lstReportsSent">Sent Reports<span class="ui-li-count" id="lstReportSentCount">0</span></li>
 
-                    <!-- NOTE: This will be removed once the screen is loaded code -->
-                    <li data-masas-report-id='0'>
-                        <a>
-                            <h3>Report title</h3>
-                            <p><strong>Description</strong></p>
-                            <div class="ui-li-aside"><p><strong>dd/mm/yyyy</strong></p><p><strong>HH:MM:SS</strong></p></div>
-                        </a>
-                    </li>
-                </ul>
-
+                        <!-- NOTE: This will be removed once the screen is loaded code -->
+                        <li data-masas-report-id='0'>
+                            <a>
+                                <h3>Report title</h3>
+                                <p><strong>Description</strong></p>
+                                <div class="ui-li-aside"><p><strong>dd/mm/yyyy</strong></p><p><strong>HH:MM:SS</strong></p></div>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="viewReport_rightPanel">
+                    <div id="Report">
+                    </div>
+                </div>
             </div>
 
             <div data-role="footer" data-position="fixed">
                 <div data-role="navbar" data-iconpos="bottom">
                     <ul>
                         <li><a href="index.html" data-icon="home" >Home</a></li>
-                        <li><a href="viewReports.html" data-icon="grid" class="ui-btn-active ui-state-persist" >Reports</a></li>
+                        <li><a href="" data-icon="grid" class="ui-btn-active ui-state-persist" >Reports</a></li>
+                        <li><a href="viewMASAS.html" id="mainNav_viewMASAS" data-icon="grid" >View MASAS</a></li>
                         <li><a href="settings.html" data-icon="gear" >Settings</a></li>
                     </ul>
                 </div>

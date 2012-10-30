@@ -1,9 +1,22 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Oct 05, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
+
+var app_GoogleAPIKey = "";
+
+var bb = {
+    device: {
+        isHighRes: false,
+        isBB5: false,
+        isBB6: false,
+        isBB7: false,
+        isBB10: false,
+        isPlayBook: false
+    }
+}
 
 var localReports = [];
 
@@ -13,6 +26,10 @@ var currentReport = null;
 var currentAttachment = null;
 var app_DefaultLocation = { latitude: 42.999444, longitude: -82.308889 };
 
+var app_IsAppInitialized = false;
+var app_IsMapSupported = false;
+var app_MapScriptState = "NONE"; // NONE, LOADING, LOADED, READY;
+
 $(document).on("mobileinit", function(){
     jQuery.support.cors = true;
     $.mobile.ajaxEnable = false;
@@ -21,52 +38,115 @@ $(document).on("mobileinit", function(){
     $.mobile.defaultDialogTransition = 'none';
     $.mobile.allowCrossDomainPages = true;
 
-    // Load the menu...
-    menu_initMenu();
-
-    // Load the application data...
-    appLoadData();
-
-    // Attach to some BlackBerry specific events...
-    if( blackberry && blackberry.system && blackberry.system.event )
-    {
-        if( blackberry.system.event.onHardwareKey )
-        {
-            blackberry.system.event.onHardwareKey( blackberry.system.event.KEY_BACK, app_onBackKey );
-        }
-
-        if( blackberry.system.event.onCoverageChange )
-        {
-            blackberry.system.event.onCoverageChange( app_onCoverageChange );
-        }
-    }
-
-    if( blackberry && blackberry.app && blackberry.app.event )
-    {
-
-        if( blackberry.app.event.onForeground )
-        {
-            blackberry.app.event.onForeground( app_onForeground );
-        }
-    }
-
+    app_initApplication();
 });
 
-$( document ).delegate("#Main", "pagebeforeshow", function( event, ui )
+$(document).ready( function()
 {
-    app_onCoverageChange();
+    // Handler for .ready() called.
+    document.addEventListener("deviceready", app_onDeviceReady, false);
 });
+
+function app_onDeviceReady()
+{
+    // Cordova is loaded...
+    document.addEventListener("online", app_onDeviceOnline, false);
+    document.addEventListener("offline", app_onDeviceOffline, false);
+}
+
+function app_initApplication()
+{
+    if( !app_IsAppInitialized )
+    {
+        // Initialize the app...
+        app_getDeviceInfo();
+
+        // Enable Maps Support if needed...
+        if( bb.device.isPlayBook || bb.device.isBB10 )
+        {
+            app_IsMapSupported = true;
+            app_loadMapScript();
+        }
+
+        // Load the menu...
+        menu_initMenu();
+
+        // Load the application data...
+        appLoadData();
+
+        // Attach to some BlackBerry specific events...
+        if( app_isDeviceBB567() && blackberry && blackberry.system && blackberry.system.event )
+        {
+            if( blackberry.system.event.onHardwareKey )
+            {
+                blackberry.system.event.onHardwareKey( blackberry.system.event.KEY_BACK, app_onBackKey );
+            }
+
+            if( blackberry.system.event.onCoverageChange )
+            {
+                blackberry.system.event.onCoverageChange( app_onCoverageChange );
+            }
+        }
+
+        // TODO: Verify if we need this of BB10
+        if( ( app_isDeviceBB567() || bb.device.isPlaybook ) && blackberry && blackberry.app && blackberry.app.event )
+        {
+            if( blackberry.app.event.onForeground )
+            {
+                blackberry.app.event.onForeground( app_onForeground );
+            }
+        }
+    }
+}
+
+function app_getDeviceInfo()
+{
+    // Let's figure out what platform we are on...
+    bb.device.isPlayBook = ( navigator.userAgent.indexOf( 'PlayBook' ) >= 0 ) || ( ( window.innerWidth == 1024 && window.innerHeight == 600 ) || ( window.innerWidth == 600 && window.innerHeight == 1024 ) );
+    bb.device.isBB10 = ( navigator.userAgent.indexOf( 'Version/10.0' ) >= 0 );
+    bb.device.isBB7 = ( navigator.userAgent.indexOf( '7.0.0' ) >= 0 ) || ( navigator.userAgent.indexOf( '7.1.0' ) >= 0 );
+    bb.device.isBB6 = navigator.userAgent.indexOf( '6.0.0' ) >= 0;
+    bb.device.isBB5 = navigator.userAgent.indexOf( '5.0.0 ') >= 0;
+
+    // Determine if we have a high resolution screen...
+    bb.device.isHighRes = screen.width > 480 || screen.height > 480;
+}
+
+function app_isDeviceBB567()
+{
+    return ( bb.device.isBB7 || bb.device.isBB6 || bb.device.isBB5 );
+}
+
+function app_isDevicePlayBook()
+{
+    return bb.device.isPlayBook;
+}
+
+function app_isDeviceBB10()
+{
+    return bb.device.isBB10;
+}
 
 function app_onBackKey() {
    history.back();
    return false;
 }
 
+function app_onDeviceOnline()
+{
+    app_onCoverageChange();
+}
+
+function app_onDeviceOffline()
+{
+    app_onCoverageChange();
+}
+
 function app_onCoverageChange()
 {
     var status = $('#app_dataStatus');
 
-    if( blackberry.system.hasDataCoverage() )
+    if( app_hasDataCoverage() )
     {
         if( status )
         {
@@ -84,24 +164,28 @@ function app_onCoverageChange()
     }
 }
 
+function app_hasDataCoverage()
+{
+    var hasDataCoverage = false;
+
+    if( blackberry && blackberry.system )
+    {
+        hasDataCoverage = blackberry.system.hasDataCoverage();
+    }
+    else
+    {
+        var networkState = navigator.network.connection.type;
+        hasDataCoverage = !( networkState == Connection.NONE);
+    }
+
+    return hasDataCoverage;
+}
+
 function app_onForeground()
 {
     // update the coverage icon if needed...
     app_onCoverageChange();
 }
-
-$( document ).delegate("#app_dataStatus", "vclick", function(event, ui)
-{
-    if( blackberry.system.hasDataCoverage() )
-    {
-        alert( "Data coverage is available!");
-    }
-    else
-    {
-        alert( "Data coverage is currently unavailable!");
-    }
-
-});
 
 Date.prototype.toJSON = function (key) {
     return this.toISOString();
@@ -339,8 +423,10 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
         {
             console.log( 'Opening file: ' + report.Attachments[i].Path );
 
-            if( blackberry.io.file.exists(report.Attachments[i].Path) ) {
-                blackberry.io.file.readFile(report.Attachments[i].Path, app_handleOpenedFile);
+            // TODO: Change to PhoneGap logic...
+            if( blackberry && blackberry.io.file.exists( report.Attachments[i].Path ) )
+            {
+                blackberry.io.file.readFile( report.Attachments[i].Path, app_handleOpenedFile );
             }
             else
             {
@@ -379,7 +465,16 @@ function app_handleOpenedFile( fullPath, blobData )
 
      if( attachment != null )
      {
-        attachment.base64 = blackberry.utils.blobToString( blobData, 'BASE64' );
+        // TODO: Add PhoneGap support.
+        if( blackberry && blackberry.utils )
+        {
+            attachment.base64 = blackberry.utils.blobToString( blobData, 'BASE64' );
+        }
+        else
+        {
+            console.log( 'Error: Platform not supported!' );
+        }
+
      }
      else {
         console.log( 'Error: Could not match the attachment!' );
@@ -495,6 +590,38 @@ function appGetReportExpiration()
 
 function appGetSymbolPath( symbol )
 {
-    var path = "res/EMS/tier1/BlackBorder/ems_tier1_64/" + symbol + ".png";
+    var path;
+    var symbolSplit = symbol.split( '.' );
+
+    if( symbolSplit.length > 3 )
+    {
+        path = "res/EMS/tier2/BlackBorder/ems_tier2_64/" + symbol + ".png";
+    }
+    else {
+        path = "res/EMS/tier1/BlackBorder/ems_tier1_64/" + symbol + ".png";
+    }
+
     return path;
+}
+
+function app_loadMapScript()
+{
+    if( app_MapScriptState == "NONE" )
+    {
+        app_MapScriptState = "LOADING";
+
+        // NOTE: The callback is needed, otherwise loading the script will not initialize the internal objects...
+        var googleScriptURL = "http://maps.googleapis.com/maps/api/js?key=" + app_GoogleAPIKey + "&sensor=false&callback=app_mapScriptLoaded";
+
+        $.getScript( googleScriptURL, function( data, textStatus, jqxhr ) {
+            console.log('Google Maps script has been loaded.');
+            app_MapScriptState = "LOADED";
+        });
+    }
+}
+
+function app_mapScriptLoaded()
+{
+    console.log('Google Maps script has been initialized.');
+    app_MapScriptState = "READY";
 }

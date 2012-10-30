@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Location Page
- * Updated: Oct 5, 2012
+ * Updated: Oct 30, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -67,8 +67,12 @@ $( document ).delegate( "li[data-masas-location-result-id]", "vclick", function(
 
 $( document).delegate( "#location_osmCopyrightLink", "vclick", function()
 {
-    var args = new blackberry.invoke.BrowserArguments('http://www.openstreetmap.org/copyright');
-    blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+    // TODO: Add PhoneGap support.
+    if( blackberry && blackberry.invoke )
+    {
+        var args = new blackberry.invoke.BrowserArguments('http://www.openstreetmap.org/copyright');
+        blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
+    }
 });
 
 $( document ).delegate( "#location_btnBack", "vclick", function()
@@ -80,7 +84,7 @@ $( document ).delegate( "#location_btnBack", "vclick", function()
 
 function location_search( searchQuery )
 {
-    if( blackberry.system.hasDataCoverage() )
+    if( app_hasDataCoverage() )
     {
         location_resetList();
         $('#location_lstResults').listview('refresh');
@@ -99,6 +103,7 @@ function location_search( searchQuery )
         params += '&addressdetails=1';
         params += '&limit=3';
 
+        // TODO: Add PhoneGap support.
         // Get the email address for the query...
         // NOTE: This is required by Nominatim as per their usage policy:
         //       http://wiki.openstreetmap.org/wiki/Nominatim_usage_policy
