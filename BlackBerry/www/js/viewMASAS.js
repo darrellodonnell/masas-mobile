@@ -84,12 +84,17 @@ function viewMASAS_addListItem( listId, index, title, description, symbol )
     itemHTML += '<img src="' + appGetSymbolPath( symbol ) + '" style="max-width:48px;max-height:48px;" />';
     itemHTML += '</div>';
     itemHTML += '<h3>' + title + '</h3>' + '<p>' + description + '</p></a>';
-    itemHTML += '<a href="#" data-icon="grid" data-theme="c"></a>';
+    //itemHTML += '<a href="#" data-icon="grid" data-theme="c"></a>';
 
     listItem.innerHTML = itemHTML;
 
     // Append the item
     dataList.appendChild( listItem );
+}
+
+function viewMASAS_refreshList()
+{
+    $("#viewMASAS_lstEntries").listview("refresh");
 }
 
 function viewMASAS_selectListItem( selectionId )
@@ -120,7 +125,7 @@ function viewMASAS_selectListItem( selectionId )
         markers[selectionId].setVisible( true );
     }
 
-    $("#viewMASAS_lstEntries").listview("refresh");
+    viewMASAS_refreshList();
 }
 
 function viewMASAS_initializeMap()
@@ -208,9 +213,7 @@ function viewMASAS_getEntriesSuccess( xmlFeed )
         }
     }
 
-    $("#viewMASAS_lstEntries").listview("refresh");
-    $("#scrollPanel").iscrollview("resizeWrapper");
-
+    viewMASAS_refreshList();
 }
 
 function viewMASAS_getEntriesFailure()
