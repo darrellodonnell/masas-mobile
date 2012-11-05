@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS helper functions
- * Updated: Oct 30, 2012
+ * Updated: Nov 05, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -125,16 +125,32 @@ function MASAS_postNewEntryWithAttachments( entryData, attachments )
     MASAS_postNewEntry( newData, 'multipart/related; boundary=0.a.unique.value.0' );
 }
 
-function MASAS_getEntries( callback_success, callback_fail )
+function MASAS_getEntries( options, callback_success, callback_fail )
 {
     console.log( 'MASAS_getEntries' );
 
     MASAS_callback_getEntries_success = callback_success;
     MASAS_callback_getEntries_failure = callback_fail;
 
+    var url = app_Settings.url + '/feed';
+
+    if( options != undefined )
+    {
+        var params = '?';
+        if( options.hasOwnProperty( 'geoFilter' ) )
+        {
+            params +=  options.geoFilter;
+        }
+
+        if( params.length > 1 )
+        {
+            url += params;
+        }
+    }
+
     var request = $.ajax({
         type: 'GET',
-        url: app_Settings.url + '/feed',
+        url: url,
         headers: {
             'Authorization': 'MASAS-Secret ' + app_Settings.token
         },
@@ -156,6 +172,7 @@ function MASAS_getEntries( callback_success, callback_fail )
 
         var failureMsg = 'Failed to retrieve MASAS Entries! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
         console.log( failureMsg );
+        alert( failureMsg );
 
         if( MASAS_callback_getEntries_failure && typeof( MASAS_callback_getEntries_failure ) === "function" )
         {

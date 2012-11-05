@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Oct 30, 2012
+ * Updated: Nov 05, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -18,6 +18,8 @@ $( document ).delegate( "#viewMASAS", "pagebeforecreate", function( event, ui )
 
 $( document ).delegate( "#viewMASAS", "pageshow", function( event, ui )
 {
+    viewMASAS_resizePage();
+
     if( app_IsMapSupported ) {
         viewMASAS_initializeMap();
     }
@@ -34,6 +36,13 @@ $( document ).delegate( "#viewMASAS", "pagehide", function( event, ui )
 $( document ).delegate( "#viewMASAS_btnRefreshList", "click", function( event, ui )
 {
     viewMASAS_refreshListOfEntries();
+});
+
+$( document ).delegate( "#viewMASAS_popupPanel", "popupbeforeposition", function()
+{
+    // Set the popup's height to that of the window...
+    var h = $( window ).height();
+    $( "#viewMASAS_popupPanel" ).height( h );
 });
 
 $( document ).delegate( "li[data-masas-entry-index]", "vclick", function( event )
@@ -69,6 +78,34 @@ $( document ).delegate( "li[data-masas-entry-index]", "vclick", function( event 
         }
     }
 });
+
+$( document ).delegate( "#viewMASAS_btnDefaultView", "vclick", function( event )
+{
+    var mapCenter = map.getCenter();
+
+    app_Settings.map.defaultZoom = map.getZoom();
+    app_Settings.map.defaultCenter.lat = mapCenter.lat();
+    app_Settings.map.defaultCenter.lon = mapCenter.lng();
+
+    appSaveSettingsData();
+});
+
+$( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
+{
+    var mapBounds = map.getBounds();
+    var llSW = mapBounds.getSouthWest();
+    var llNE = mapBounds.getNorthEast();
+
+    app_Settings.hub.filter.enable = true;
+    app_Settings.hub.filter.param = 'bbox=' + llSW.lng() + ',' + llSW.lat() + ',' + llNE.lng() + ',' + llNE.lat();
+
+    appSaveSettingsData();
+});
+
+function viewMASAS_showMenu()
+{
+    $( "#viewMASAS_popupPanel" ).popup( "open", { transition : 'slide'} );
+}
 
 function viewMASAS_addListItem( listId, index, title, description, symbol )
 {
@@ -132,7 +169,7 @@ function viewMASAS_initializeMap()
 {
     if (!mapInitialized)
     {
-        var latlng = new google.maps.LatLng( 45.3225, -75.6692 );
+        var defaultCenter = new google.maps.LatLng( app_Settings.map.defaultCenter.lat, app_Settings.map.defaultCenter.lon );
 
         var myOptions = {
             zoomControl: true,
@@ -141,8 +178,8 @@ function viewMASAS_initializeMap()
                 position: google.maps.ControlPosition.RIGHT_BOTTOM
             },
             mapTypeControl: true,
-            zoom: 10,
-            center: latlng,
+            zoom: app_Settings.map.defaultZoom,
+            center: defaultCenter,
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
@@ -159,7 +196,14 @@ function viewMASAS_initializeMap()
 
 function viewMASAS_refreshListOfEntries()
 {
-    MASAS_getEntries( viewMASAS_getEntriesSuccess, viewMASAS_getEntriesFailure );
+    var options = null;
+
+    if( app_Settings.hub.filter.enable )
+    {
+        options = { 'geoFilter': app_Settings.hub.filter.param };
+    }
+
+    MASAS_getEntries( options, viewMASAS_getEntriesSuccess, viewMASAS_getEntriesFailure );
 }
 
 function viewMASAS_getEntriesSuccess( xmlFeed )
@@ -364,4 +408,16 @@ function viewMASAS_clearListOfEntriesFromMap()
     }
 
     markers = [];
+}
+
+function viewMASAS_resizePage()
+{
+    var footer_height  = $.mobile.activePage.children('[data-role="footer"]').height();
+    var entryTopNav_height  = $('#viewMASAS_entryTopNavBar').height();
+    var entryBottomNav_height  = $('#viewMASAS_entryBottomNavBar').height();
+    var window_height  = $(window).height();
+
+    var height = (window_height - footer_height - entryTopNav_height - entryBottomNav_height);
+
+    $('#viewMASAS_lstEntries' ).height( height );
 }

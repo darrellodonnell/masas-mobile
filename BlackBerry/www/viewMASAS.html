@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 MASAS View Tool
-Updated: Oct 30, 2012
+Updated: Nov 05, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -19,8 +19,13 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
             <div data-role="content" class="ui-masas-no-padding">
 
+                <div data-role="popup" id="viewMASAS_popupPanel" data-corners="false" data-theme="none" data-shadow="false" data-tolerance="0,0">
+                    <a href="" id="viewMASAS_btnDefaultView" data-role="button" data-theme="a" data-icon="home">Default View</a>
+                    <a href="" id="viewMASAS_btnAddFilter" data-role="button" data-theme="a" data-icon="star">Set View as filter</a>
+                </div>
+
                 <div class="ui-masas-left-panel" >
-                    <div data-role="navbar" data-iconpos="bottom">
+                    <div id="viewMASAS_entryTopNavBar" data-role="navbar" data-iconpos="bottom">
                         <ul>
                             <li>
                                 <select name="select-choice-0" id="select-choice-0" data-corners=false>
@@ -32,13 +37,12 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                         </ul>
                     </div>
 
-                    <div  id="scrollPanel">
-                        <ul data-role="listview" id="viewMASAS_lstEntries">
-                        </ul>
-                    </div>
+                    <ul data-role="listview" id="viewMASAS_lstEntries">
+                    </ul>
 
-                    <div data-role="navbar">
+                    <div id="viewMASAS_entryBottomNavBar" data-role="navbar">
                         <ul>
+                            <li><a href="#viewMASAS_popupPanel" data-rel="popup" data-transition="slide" data-position-to="window" data-role="button">Menu</a></li>
                             <li><a href="#" data-icon="grid">MAP</a></li>
                             <li><a href="#" data-icon="info">Entries</a></li>
                             <li><a href="#" data-icon="add">New</a></li>

@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Oct 30, 2012
+ * Updated: Nov 05, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -47,6 +47,14 @@ $(document).ready( function()
     document.addEventListener("deviceready", app_onDeviceReady, false);
 });
 
+$(window).bind( 'orientationchange', function(e)
+{
+    if( $.mobile.activePage.attr('id') == "viewMASAS" )
+    {
+        viewMASAS_resizePage();
+    }
+});
+
 function app_onDeviceReady()
 {
     // Cordova is loaded...
@@ -75,7 +83,7 @@ function app_initApplication()
         appLoadData();
 
         // Attach to some BlackBerry specific events...
-        if( app_isDeviceBB567() && blackberry && blackberry.system && blackberry.system.event )
+        if( app_isDeviceBB567() )
         {
             if( blackberry.system.event.onHardwareKey )
             {
@@ -89,11 +97,21 @@ function app_initApplication()
         }
 
         // TODO: Verify if we need this of BB10
-        if( ( app_isDeviceBB567() || bb.device.isPlaybook ) && blackberry && blackberry.app && blackberry.app.event )
+        if( ( app_isDeviceBB567() || app_isDevicePlayBook() ) )
         {
             if( blackberry.app.event.onForeground )
             {
                 blackberry.app.event.onForeground( app_onForeground );
+            }
+
+
+        }
+
+        if( app_isDevicePlayBook() )
+        {
+            if( blackberry.app.event.onSwipeDown )
+            {
+                blackberry.app.event.onSwipeDown( app_onSwipeDown );
             }
         }
     }
@@ -187,6 +205,14 @@ function app_onForeground()
     app_onCoverageChange();
 }
 
+function app_onSwipeDown()
+{
+    if( $.mobile.activePage.attr('id') == "viewMASAS" )
+    {
+        viewMASAS_showMenu();
+    }
+}
+
 Date.prototype.toJSON = function (key) {
     return this.toISOString();
 };
@@ -202,7 +228,20 @@ function appResetSettingsToDefault()
         reportExpiresOffset: '60',
         reportExpiresContext: "Minutes", // Minutes, Hours, Days
         reportCheckIn: "Arriving at Scene",
-        reportCheckOut: "Departing Scene"
+        reportCheckOut: "Departing Scene",
+        map: {
+            defaultCenter: {
+                lat: 65.0,
+                lon: -109.0
+            },
+            defaultZoom: 3
+        },
+        hub : {
+            filter: {
+                enable: false,
+                param: ''
+            }
+        }
     };
 }
 
