@@ -225,7 +225,7 @@ function appResetSettingsToDefault()
         vehicleId: '',
         vehicleType: 'EmergencyTeam', // EmergencyTeam, EMS, Fire, Police, Other
         reportStatus: 'Test', // Test, Actual
-        reportExpiresOffset: '60',
+        reportExpiresOffset: 60,
         reportExpiresContext: "Minutes", // Minutes, Hours, Days
         reportCheckIn: "Arriving at Scene",
         reportCheckOut: "Departing Scene",
@@ -237,10 +237,11 @@ function appResetSettingsToDefault()
             defaultZoom: 3
         },
         hub : {
-            filter: {
-                enable: false,
-                param: ''
-            }
+            filters: [ {
+                    enable: false,
+                    type: 'bbox',  // box, radius
+                    data: ''
+            } ]
         }
     };
 }
@@ -604,18 +605,28 @@ function appGetReportExpiration()
     // Make sure our offset is an integer...
     var expiresOffset = parseInt( app_Settings.reportExpiresOffset, 10 );
 
+    // Validate the range, just in case...
+    if( expiresOffset > 14400 ) {
+        expiresOffset = 14400;
+    }
+    else if( expiresOffset < 1 ) {
+        expiresOffset = 1;
+    }
+
     // What's the context, and offset the time accordingly...
     switch( app_Settings.reportExpiresContext )
     {
         case "Minutes":
             reportExpires.setMinutes( reportExpires.getMinutes() + expiresOffset );
             break;
-        case "Hours":
-            reportExpires.setHours( reportExpires.getHours() + expiresOffset );
-            break;
-        case "Days":
-            reportExpires.setDate( reportExpires.getDate() + expiresOffset );
-            break;
+        // NOTE: UI has been restricted to Minutes only due to long expiry dates being used.
+        // Logic is also being modified do to possible issue.
+//        case "Hours":
+//            reportExpires.setHours( reportExpires.getHours() + expiresOffset );
+//            break;
+//        case "Days":
+//            reportExpires.setDate( reportExpires.getDate() + expiresOffset );
+//            break;
         default:
             // Add nothing, we should never be in this state.
             Console.log( 'Error: Invalid content for the report expiration values.');

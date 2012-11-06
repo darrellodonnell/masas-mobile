@@ -96,8 +96,12 @@ $( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
     var llSW = mapBounds.getSouthWest();
     var llNE = mapBounds.getNorthEast();
 
-    app_Settings.hub.filter.enable = true;
-    app_Settings.hub.filter.param = 'bbox=' + llSW.lng() + ',' + llSW.lat() + ',' + llNE.lng() + ',' + llNE.lat();
+    app_Settings.hub.filters[0].enable = true;
+    app_Settings.hub.filters[0].type = "bbox";
+    app_Settings.hub.filters[0].data = { "swLat": llSW.lat(),
+                                         "swLon": llSW.lng(),
+                                         "neLat": llNE.lat(),
+                                         "neLon": llNE.lng() };
 
     appSaveSettingsData();
 });
@@ -197,10 +201,11 @@ function viewMASAS_initializeMap()
 function viewMASAS_refreshListOfEntries()
 {
     var options = null;
+    var filter = app_Settings.hub.filters[0];
 
-    if( app_Settings.hub.filter.enable )
+    if( filter.enable )
     {
-        options = { 'geoFilter': app_Settings.hub.filter.param };
+        options = { 'geoFilter': filter.type + '=' + filter.data.swLon + ',' + filter.data.swLat + ',' + filter.data.neLon + ',' + filter.data.neLat };
     }
 
     MASAS_getEntries( options, viewMASAS_getEntriesSuccess, viewMASAS_getEntriesFailure );

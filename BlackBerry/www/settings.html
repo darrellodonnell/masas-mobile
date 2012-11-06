@@ -29,6 +29,38 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 						<label for="settings_hubKey">Hub key:</label>
 						<input type="text" name="settings_hubKey" id="settings_hubKey" value=""  />
 					</div>
+
+                    <h4>Data Filter</h4>
+
+                    <div data-role="fieldcontain">
+                        <label for="settings_hubFilterEnabled">Enable geospatial filter:</label>
+                        <select name="settings_hubFilterEnabled" id="settings_hubFilterEnabled" data-role="slider">
+                            <option value="no">No</option>
+                            <option value="yes">Yes</option>
+                        </select>
+                    </div>
+
+                    <div id="settings_hubFilter">
+                        <strong>South West Corner</strong>
+                        <div data-role="fieldcontain">
+                            <label for="settings_hubFilterSWLat">Latitude:</label>
+                            <input type="number" id="settings_hubFilterSWLat" min="-90.0" max="90.0" value="0.0"  />
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="settings_hubFilterSWLon">Longitude:</label>
+                            <input type="number"  id="settings_hubFilterSWLon" min="-180.0" max="180.0" value="0.0"  />
+                        </div>
+
+                        <strong>North East Corner</strong>
+                        <div data-role="fieldcontain">
+                            <label for="settings_hubFilterNELat">Latitude:</label>
+                            <input type="number" id="settings_hubFilterNELat" min="-90.0" max="90.0" value="0.0"  />
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="settings_hubFilterNELon">Longitude:</label>
+                            <input type="number" id="settings_hubFilterNELon" min="-180.0" max="180.0" value="0.0"  />
+                        </div>
+                    </div>
 				</div>
 				<hr />
                 <!--div>
@@ -62,6 +94,31 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                     </div>
                 </div>
                 <hr />
+
+                <div id="settings_mapPanel">
+                    <h3>Map</h3>
+
+                    <div id="settings_mapDefaultView">
+                        <h4>Default View Center</h4>
+
+                        <div data-role="fieldcontain">
+                            <label for="settings_mapDefaultViewLat">Latitude:</label>
+                            <input type="number" id="settings_mapDefaultViewLat" min="-90.0" max="90.0" value="65.0"  />
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="settings_mapDefaultViewLon">Longitude:</label>
+                            <input type="number"  id="settings_mapDefaultViewLon" min="-180.0" max="180.0" value="-109.0"  />
+                        </div>
+
+                        <div data-role="fieldcontain">
+                            <label for="settings_mapDefaultViewZoom">Zoom Level:</label>
+                            <input type="number" id="settings_mapDefaultViewZoom" min="0" max="30" value="3"  />
+                        </div>
+
+                    </div>
+                    <hr />
+                </div>
+
                 <div>
                     <h3>Reporting (Advance)</h3>
                     <h4>MASAS Reports</h4>
@@ -74,19 +131,9 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                         </select>
                     </div>
 
-                    <label for="settings_reportExpiration">Expiration:</label>
-
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                            <input type="number" name="settings_reportExpiration" id="settings_reportExpiration" min="1" max="365" value="1" />
-                        </div>
-                        <div class="ui-block-b">
-                            <select name="settings_reportExpirationContext" id="settings_reportExpirationContext">
-                                <option value="Minutes">Minutes</option>
-                                <option value="Hours">Hours</option>
-                                <option value="Days">Days</option>
-                            </select>
-                        </div>
+                    <div data-role="fieldcontain">
+                        <label for="settings_reportExpiration">Expiration (1-14400 minutes):</label>
+                        <input type="number" name="settings_reportExpiration" id="settings_reportExpiration" min="1" max="14400" value="60" />
                     </div>
 
                     <h4>Check In/Out Reports</h4>
