@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Nov 05, 2012
+ * Updated: Nov 13, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -33,16 +33,68 @@ $( document ).delegate( "#viewMASAS", "pagehide", function( event, ui )
     mapInitialized = false;
 });
 
+$( document ).delegate( "#viewMASAS", "updatelayout", function( event, ui )
+{
+    // Reset the Page Padding...
+    viewMASAS_resetPagePadding();
+});
+
+$( document ).delegate( "#viewMASAS_btnToggleMap", "click", function( event, ui )
+{
+    if( $("#viewMASAS_entryPanel").is( ":hidden" ) )
+    {
+        $("#viewMASAS_entryPanel").show();
+        $("#viewMASAS_mapContent").fadeOut( "slow" );
+
+        $("#viewMASAS_btnToggleMap" ).find( '.ui-btn-text' ).text( "Map" );
+        //$("#viewMASAS").trigger("create");
+    }
+    else
+    {
+        $("#viewMASAS_entryPanel").hide();
+        $("#viewMASAS_mapContent").fadeIn( "slow" );
+        $("#viewMASAS_btnToggleMap").find( '.ui-btn-text' ).text( "Details" );
+    }
+});
+
 $( document ).delegate( "#viewMASAS_btnRefreshList", "click", function( event, ui )
 {
     viewMASAS_refreshListOfEntries();
 });
 
+$( document ).delegate( "#viewMASAS_popupText", "popupbeforeposition", function()
+{
+    var maxHeight = $( window ).height() - 60 + "px";
+    var maxWidth = $( window ).width() - 60 + "px";
+
+    $( "#viewMASAS_popupText div" ).css( "max-height", maxHeight );
+    $( "#viewMASAS_popupText div" ).css( "max-width", maxWidth );
+});
+
+$( document ).delegate( "#viewMASAS_popupPhoto", "popupbeforeposition", function()
+{
+    var maxHeight = $( window ).height() - 60 + "px";
+    var maxWidth = $( window ).width() - 60 + "px";
+
+    $( "#viewMASAS_popupPhoto div" ).css( "max-height", maxHeight );
+    $( "#viewMASAS_popupPhoto div" ).css( "max-width", maxWidth );
+});
+
 $( document ).delegate( "#viewMASAS_popupPanel", "popupbeforeposition", function()
 {
     // Set the popup's height to that of the window...
-    var h = $( window ).height();
-    $( "#viewMASAS_popupPanel" ).height( h );
+    var maxHeight = $( window ).height();
+    $( "#viewMASAS_popupPanel" ).height( maxHeight );
+});
+
+$( document ).delegate( "#viewMASAS_popupPanel", "popupafteropen", function()
+{
+    viewMASAS_resetPagePadding();
+});
+
+$( document ).delegate( "#viewMASAS_popupPanel", "popupafterclose", function()
+{
+    viewMASAS_resetPagePadding();
 });
 
 $( document ).delegate( "li[data-masas-entry-index]", "vclick", function( event )
@@ -76,6 +128,9 @@ $( document ).delegate( "li[data-masas-entry-index]", "vclick", function( event 
         {
             map.fitBounds( marker.getBounds() );
         }
+
+        // Entry..
+        viewMASAS_updateEntryPanel( entryIndex );
     }
 });
 
@@ -105,6 +160,28 @@ $( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
 
     appSaveSettingsData();
 });
+
+$( document ).delegate( "#viewMASAS_entryNavDetails", "vclick", function( event )
+{
+    $( "#viewMASAS_entryContentPanelDetails" ).show();
+    $( "#viewMASAS_entryContentPanelAttachments" ).hide();
+    $( "#viewMASAS_entryContentPanelXML" ).hide();
+});
+
+$( document ).delegate( "#viewMASAS_entryNavAttachments", "vclick", function( event )
+{
+    $( "#viewMASAS_entryContentPanelDetails" ).hide();
+    $( "#viewMASAS_entryContentPanelAttachments" ).show();
+    $( "#viewMASAS_entryContentPanelXML" ).hide();
+});
+
+$( document ).delegate( "#viewMASAS_entryNavXML", "vclick", function( event )
+{
+    $( "#viewMASAS_entryContentPanelDetails" ).hide();
+    $( "#viewMASAS_entryContentPanelAttachments" ).hide();
+    $( "#viewMASAS_entryContentPanelXML" ).show();
+});
+
 
 function viewMASAS_showMenu()
 {
@@ -227,8 +304,11 @@ function viewMASAS_getEntriesSuccess( xmlFeed )
         for( var i = 0; i<$masasEntries.length; i++)
         {
             var entry = $masasEntries[i];
-            var $title = $(entry).find( "title" );
-            var $description = $(entry).find( "content" );
+
+            // NOTE: these can be multilingual, for now lang='en' will be taken.
+            var title = $(entry).find( "title div[xml\\:lang='en']" );
+            var description = $(entry).find( "content div[xml\\:lang='en']" );
+
             var $catIcon = $(entry).find( "category[scheme='masas:category:icon']" );
             var symbol = $catIcon.attr( "term" );
 
@@ -254,7 +334,7 @@ function viewMASAS_getEntriesSuccess( xmlFeed )
             }
 
             // At the entry to the list...
-            viewMASAS_addListItem( "viewMASAS_lstEntries", i, $title.text(), $description.text(), symbol );
+            viewMASAS_addListItem( "viewMASAS_lstEntries", i, $(title[0]).text(), $(description[0]).text(), symbol );
 
             if( app_IsMapSupported ) {
                 viewMASAS_addMapItem( i, symbol, $geometry );
@@ -279,24 +359,25 @@ function viewMASAS_clearListOfEntries()
 function viewMASAS_markerClicked( event, data )
 {
     var entry = $masasEntries[data.index];
-    var $title = $(entry).find( "title" );
-    var $description = $(entry).find( "content" );
+    // NOTE: these can be multilingual, for now lang='en' will be taken.
+    var title = $(entry).find( "title div[xml\\:lang='en']" );
+    var description = $(entry).find( "content div[xml\\:lang='en']" );
 
     viewMASAS_selectListItem( data.index );
 
-    infoWindow.setContent( $title.text() + " " + $description.text() );
+    infoWindow.setContent( $(title[0]).text() + " " + $(description[0]).text() );
     infoWindow.open( map, data.marker );
 }
 
 function viewMASAS_polygonClicked( event, data )
 {
     var entry = $masasEntries[data.index];
-    var $title = $(entry).find( "title" );
-    var $description = $(entry).find( "content" );
+    var title = $(entry).find( "title div[xml\\:lang='en']" );
+    var description = $(entry).find( "content div[xml\\:lang='en']" );
 
     viewMASAS_selectListItem( data.index );
 
-    infoWindow.setContent( $title.text() + " " + $description.text() )
+    infoWindow.setContent( $(title[0]).text() + " " + $(description[0]).text() );
     infoWindow.setPosition( event.latLng );
     infoWindow.open( map );
 }
@@ -304,12 +385,12 @@ function viewMASAS_polygonClicked( event, data )
 function viewMASAS_boxClicked( event, data )
 {
     var entry = $masasEntries[data.index];
-    var $title = $(entry).find( "title" );
-    var $description = $(entry).find( "content" );
+    var title = $(entry).find( "title div[xml\\:lang='en']" );
+    var description = $(entry).find( "content div[xml\\:lang='en']" );
 
     viewMASAS_selectListItem( data.index );
 
-    infoWindow.setContent( $title.text() + " " + $description.text() );
+    infoWindow.setContent( $(title[0]).text() + " " + $(description[0]).text() );
     infoWindow.setPosition( event.latLng );
     infoWindow.open( map );
 }
@@ -422,7 +503,148 @@ function viewMASAS_resizePage()
     var entryBottomNav_height  = $('#viewMASAS_entryBottomNavBar').height();
     var window_height  = $(window).height();
 
+    // Resize the Entry List
     var height = (window_height - footer_height - entryTopNav_height - entryBottomNav_height);
-
     $('#viewMASAS_lstEntries' ).height( height );
+    $('#viewMASAS_lstEntries' ).css( "max-height", height );
+
+    // Resize the Map Content
+    height = (window_height - footer_height);
+    $('#viewMASAS_mapContent' ).height( height );
+    $('#viewMASAS_mapContent' ).css( "max-height", height );
+
+    // Resize the Entry Content
+    height = (window_height - footer_height);
+    $('#viewMASAS_entryPanel' ).height( height );
+    $('#viewMASAS_entryPanel' ).css( "max-height", height );
+}
+
+function viewMASAS_resetPagePadding()
+{
+    // "Fix" the padding on the page...
+    var footer_height  = $.mobile.activePage.children('[data-role="footer"]').height();
+    $("#viewMASAS" ).css( "padding-bottom", footer_height );
+}
+
+function viewMASAS_updateEntryPanel( entryIndex )
+{
+    var entry = $masasEntries[entryIndex];
+    var oSerializer = new XMLSerializer();
+    var entryXmlString = oSerializer.serializeToString(entry);
+
+    // Let's populate the <span> with data...
+    $("#viewMASAS_entryId").text( $(entry).find( "id" ).text() );
+
+    $("#viewMASAS_entryAuthorName").text( $(entry).find( "author > name" ).text() );
+    $("#viewMASAS_entryAuthorURI").text( $(entry).find( "author > uri" ).text() );
+
+    // NOTE: these can be multilingual, for now lang='en' will be taken.
+    var titleTxt = $(entry).find( "title div[xml\\:lang='en']" );
+    $("#viewMASAS_entryTitle" ).text( $(titleTxt[0]).text() );
+
+    var contentTxt = $(entry).find( "content div[xml\\:lang='en']" );
+    $("#viewMASAS_entryContent").text( $(contentTxt[0]).text() );
+
+    // Single Categories...
+    $("#viewMASAS_entryStatus").text( $(entry).find( "category[scheme='masas:category:status']" ).attr( "term" ) );
+    $("#viewMASAS_entryIcon").text( $(entry).find( "category[scheme='masas:category:icon']" ).attr( "term" ) );
+
+    // Multiple Categories...
+    $("#viewMASAS_entryCertainty").text( $(entry).find( "category[scheme='masas:category:certainty']" ).attr( "term" ) );
+    $("#viewMASAS_entryCategory").text( $(entry).find( "category[scheme='masas:category:category']" ).attr( "term" ) );
+    $("#viewMASAS_entrySeverity").text( $(entry).find( "category[scheme='masas:category:severity']" ).attr( "term" ) );
+
+    $("#viewMASAS_entryPublished").text( $(entry).find( "published" ).text() );
+    $("#viewMASAS_entryUpdated").text( $(entry).find( "updated" ).text() );
+    $("#viewMASAS_entryExpires").text( $(entry).find( "expires" ).text() );
+    $("#viewMASAS_entryGeometry").text( $(entry).find( "point, polygon, box" ).text() );
+
+    // Populate the entry XML panel...
+    $("#viewMASAS_entryXML" ).text( entryXmlString );
+
+    // Populate the attachment panel...
+    viewMASAS_resetAttachmentList();
+    var attachments = $(entry).find( "link[rel='enclosure']" );
+
+    for( var i=0; i<attachments.length; i++ )
+    {
+        viewMASAS_addEntryAttachment( attachments[i] );
+    }
+    $('#viewMASAS_entryAttachmentsCount').text( attachments.length );
+    $('#viewMASAS_entryAttachments').listview('refresh');
+}
+
+function viewMASAS_resetAttachmentList()
+{
+    // Remove all the <li> with containing the 'data-masas-report-attachment' attribute from the list.
+    $('#viewMASAS_entryAttachments').children().remove( 'li[data-masas-entry-attachment]' );
+    $('#viewMASAS_entryAttachmentsCount').text( 0 );
+}
+
+function viewMASAS_addEntryAttachment( attachment )
+{
+    var listItem, dataList = document.getElementById( 'viewMASAS_entryAttachments' );
+
+    // Create our list item
+    listItem = document.createElement('li');
+    listItem.setAttribute( 'data-masas-entry-attachment', $( attachment ).attr( "href" ) );
+    listItem.setAttribute( 'data-masas-entry-attachment-type', $( attachment ).attr( "type" ) );
+
+    var itemHTML  = '<a>';
+    itemHTML += '<h3>' + $( attachment ).attr( "title" ) + '</h3>';
+    itemHTML += '<p>' + $( attachment ).attr( "type" ) + '</p>'
+    itemHTML += '</a>';
+
+    listItem.innerHTML = itemHTML;
+
+    // Append the item
+    dataList.appendChild( listItem );
+}
+
+$( document ).delegate( "li[data-masas-entry-attachment]", "vclick", function( event )
+{
+
+    var attachmentUrl = $(this).attr( 'data-masas-entry-attachment' );
+    var attachmentType = $(this).attr( 'data-masas-entry-attachment-type' );
+
+    if( attachmentType.indexOf( 'image' ) >= 0 )
+    {
+        // Handle Images...
+        $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
+
+        $( "#viewMASAS_previewImage" ).load( function() {
+            $.mobile.loading( "hide" );
+            $( "#viewMASAS_popupPhoto" ).popup( "open" );
+        });
+
+        $( "#viewMASAS_previewImage" ).error( function() {
+            $.mobile.loading( "hide" );
+            viewMASAS_getAttachmentFailed();
+        });
+
+        $( "#viewMASAS_previewImage" ).attr( "src", attachmentUrl + "?secret=" + app_Settings.token );
+
+    }
+    else if( attachmentType.indexOf( "xml" ) >= 0 || attachmentType.indexOf( "text") >= 0 )
+    {
+        // Handle Text and XML files
+        $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
+        MASAS_getAttachment( attachmentUrl, viewMASAS_getAttachmentSuccess, viewMASAS_getAttachmentFailed );
+    }
+});
+
+function viewMASAS_getAttachmentSuccess( response )
+{
+    var oSerializer = new XMLSerializer();
+    var xmlString = oSerializer.serializeToString(response);
+
+    $( "#viewMASAS_previewText" ).text( xmlString );
+    $.mobile.loading( "hide" );
+    $( "#viewMASAS_popupText" ).popup( "open" );
+}
+
+function viewMASAS_getAttachmentFailed()
+{
+    $.mobile.loading( "hide" );
+    alert( 'Failed to retrieve attachment!');
 }

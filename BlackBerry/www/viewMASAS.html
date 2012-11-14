@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 MASAS View Tool
-Updated: Nov 05, 2012
+Updated: Nov 13, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -42,18 +42,89 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
                     <div id="viewMASAS_entryBottomNavBar" data-role="navbar">
                         <ul>
-                            <li><a href="#viewMASAS_popupPanel" data-rel="popup" data-transition="slide" data-position-to="window" data-role="button">Menu</a></li>
-                            <li><a href="#" data-icon="grid">MAP</a></li>
-                            <li><a href="#" data-icon="info">Entries</a></li>
-                            <li><a href="#" data-icon="add">New</a></li>
+                            <li><a href="#viewMASAS_popupPanel" data-rel="popup" data-transition="slide" data-position-to="window" data-role="button" data-icon="grid">Menu</a></li>
+                            <li><a href="#" id="viewMASAS_btnToggleMap" data-icon="grid">Details</a></li>
                             <li><a href="#" id="viewMASAS_btnRefreshList" data-icon="refresh">Refresh</a></li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="ui-masas-right-panel">
-                    <div id="map_content">
+
+                    <div id="viewMASAS_mapContent">
                         <div id="map_canvas"></div>
+                    </div>
+
+                    <div id="viewMASAS_entryPanel">
+                        <div id="viewMASAS_entryContentPanel">
+                            <h3><span id="viewMASAS_entryTitle">Title</span></h3>
+
+                            <p><span id="viewMASAS_entryContent">Content</span></p>
+
+                            <div data-role="navbar">
+                                <ul>
+                                    <li><a href="#" id="viewMASAS_entryNavDetails" class="ui-btn-active ui-state-persist">Details</a></li>
+                                    <li><a href="#" id="viewMASAS_entryNavAttachments">Attachments</a></li>
+                                    <li><a href="#" id="viewMASAS_entryNavXML">XML</a></li>
+                                </ul>
+                            </div>
+
+                            <div id="viewMASAS_entryContentPanelDetails">
+                                <table>
+                                    <tbody>
+                                    <tr><th style="text-align:left">Icon:</th><td><span id="viewMASAS_entryIcon"></span></td></tr>
+                                    <tr><th style="text-align:left">Status:</th><td><span id="viewMASAS_entryStatus"></span></td></tr>
+                                    <tr><th style="text-align:left">Certainty:</th><td><span id="viewMASAS_entryCertainty"></span></td></tr>
+                                    <tr><th style="text-align:left">Category:</th><td><span id="viewMASAS_entryCategory"></span></td></tr>
+                                    <tr><th style="text-align:left">Severity:</th><td><span id="viewMASAS_entrySeverity"></span></td></tr>
+                                    <tr><th style="text-align:left">Published:</th><td><span id="viewMASAS_entryPublished"></span></td></tr>
+                                    <tr><th style="text-align:left">Updated:</th><td><span id="viewMASAS_entryUpdated"></span></td></tr>
+                                    <tr><th style="text-align:left">Expires:</th><td><span id="viewMASAS_entryExpires"></span></td></tr>
+                                    <tr><th style="text-align:left">Identifier:</th><td><span id="viewMASAS_entryId"></span></td></tr>
+                                    </tbody>
+                                </table>
+
+                                <h3>Author</h3>
+                                <p><span id="viewMASAS_entryAuthorName"></span> (<span id="viewMASAS_entryAuthorURI"></span>) </p>
+
+                                <h3>Geometry</h3>
+                                <p><span id="viewMASAS_entryGeometry"></span></p>
+                            </div>
+
+                            <div id="viewMASAS_entryContentPanelAttachments" style="display:none">
+
+                                <ul id="viewMASAS_entryAttachments" data-role="listview" data-inset="true" >
+                                    <li data-role="list-divider">Attachments<span class="ui-li-count" id="viewMASAS_entryAttachmentsCount">0</span></li>
+                                    <!-- NOTE: These Items are here as a template only, they are removed when the page is loaded! -->
+                                    <li data-masas-entry-attachment>
+                                        <a href="index.html">
+                                            <h3>Image1.jpg</h3>
+                                            <div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+                                        </a>
+                                    </li>
+                                    <li data-masas-entry-attachment>
+                                        <a href="index.html">
+                                            <h3>Voice1.wav</h3>
+                                            <div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                <div data-role="popup" id="viewMASAS_popupPhoto" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15" data-position-to="window">
+                                    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><img id="viewMASAS_previewImage" src="">
+                                </div>
+
+                                <div data-role="popup" id="viewMASAS_popupText" data-overlay-theme="a" data-corners="false" data-tolerance="30,15,30,15" data-position-to="window">
+                                    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                                    <div id="viewMASAS_previewText">
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="viewMASAS_entryContentPanelXML" style="display:none">
+                                <div id="viewMASAS_entryXML"></div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
 

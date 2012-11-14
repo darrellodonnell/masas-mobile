@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS helper functions
- * Updated: Nov 05, 2012
+ * Updated: Nov 13, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -12,6 +12,9 @@ var MASAS_callback_createNewEntry_failure = null;
 
 var MASAS_callback_getEntries_success = null;
 var MASAS_callback_getEntries_failure = null;
+
+var MASAS_callback_getAttachment_success = null;
+var MASAS_callback_getAttachment_failure = null;
 
 function MASAS_createNewEntry( entry, callback_success, callback_fail )
 {
@@ -177,6 +180,46 @@ function MASAS_getEntries( options, callback_success, callback_fail )
         if( MASAS_callback_getEntries_failure && typeof( MASAS_callback_getEntries_failure ) === "function" )
         {
             MASAS_callback_getEntries_failure();
+        }
+
+    });
+}
+
+function MASAS_getAttachment( url, callback_success, callback_fail )
+{
+    console.log( 'MASAS_getAttachment' );
+
+    MASAS_callback_getAttachment_success = callback_success;
+    MASAS_callback_getAttachment_failure = callback_fail;
+
+    var request = $.ajax({
+        type: 'GET',
+        url: url,
+        headers: {
+            'Authorization': 'MASAS-Secret ' + app_Settings.token
+        },
+        timeout: 120000
+    });
+
+    request.done( function( responseMsg ) {
+        console.log( 'MASAS Entry attachment successfully retrieved!' );
+
+        if( MASAS_callback_getAttachment_success && typeof( MASAS_callback_getAttachment_success ) === "function" )
+        {
+            MASAS_callback_getAttachment_success( responseMsg );
+        }
+    });
+
+    request.fail( function(jqXHR, textStatus) {
+        console.log( jqXHR );
+        console.log( 'Fail status: ' + textStatus );
+
+        var failureMsg = 'Failed to retrieve MASAS Entry attachment! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
+        console.log( failureMsg );
+
+        if( MASAS_callback_getAttachment_failure && typeof( MASAS_callback_getAttachment_failure ) === "function" )
+        {
+            MASAS_callback_getAttachment_failure();
         }
 
     });
