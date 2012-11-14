@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Nov 05, 2012
+ * Updated: Nov 13, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -145,6 +145,11 @@ function app_isDeviceBB10()
     return bb.device.isBB10;
 }
 
+function app_isDeviceBlackBerry()
+{
+    return ( app_isDeviceBB567() || app_isDevicePlayBook() || app_isDeviceBB10() );
+}
+
 function app_onBackKey() {
    history.back();
    return false;
@@ -186,13 +191,13 @@ function app_hasDataCoverage()
 {
     var hasDataCoverage = false;
 
-    if( blackberry && blackberry.system )
+    if( app_isDeviceBlackBerry() )
     {
         hasDataCoverage = blackberry.system.hasDataCoverage();
     }
     else
     {
-        var networkState = navigator.network.connection.type;
+        var networkState = navigator.connection.type;
         hasDataCoverage = !( networkState == Connection.NONE);
     }
 

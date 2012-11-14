@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Full Report Page
- * Updated: Oct 30, 2012
+ * Updated: Nov 13, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -168,6 +168,7 @@ function report_enableControls( enable )
 
     if( enable )
     {
+        $('#report_btnHome').removeClass('ui-disabled');
         $('#report_btnGPS').removeClass('ui-disabled');
         $('#report_btnLocation').removeClass('ui-disabled');
         $('#report_btnBack').removeClass('ui-disabled');
@@ -178,6 +179,7 @@ function report_enableControls( enable )
     }
     else
     {
+        $('#report_btnHome').addClass('ui-disabled');
         $('#report_btnGPS').addClass('ui-disabled');
         $('#report_btnLocation').addClass('ui-disabled');
         $('#report_btnBack').addClass('ui-disabled');
