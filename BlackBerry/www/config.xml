@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
 MASAS View Tool
-Updated: Oct 5, 2012
+Updated: Nov 14, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -65,6 +65,14 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
     <content src="index.html"/>
 
+    <rim:permissions>
+        <rim:permit>access_shared</rim:permit>
+        <rim:permit>record_audio</rim:permit>
+        <rim:permit>read_geolocation</rim:permit>
+        <rim:permit>use_camera</rim:permit>
+        <rim:permit>read_device_identifying_information</rim:permit>
+    </rim:permissions>
+
     <!-- Cordova API -->
     <feature id="org.apache.cordova" required="true" version="1.0.0" />
 
@@ -85,18 +93,11 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <feature id="blackberry.ui.menu" required="true" version="1.0.0.0"/>
 
     <access subdomains="true" uri="file:///store/home" />
+    <access subdomains="true" uri="file:///accounts" />
     <access subdomains="true" uri="file:///SDCard" />
     <access subdomains="true" uri="*" />
     <access subdomains="true" uri="http://www.openstreetmap.org" />
     <access subdomains="true" uri="http://nominatim.openstreetmap.org" />
-
-    <rim:permissions>
-        <rim:permit>use_camera</rim:permit>
-        <rim:permit>read_device_identifying_information</rim:permit>
-        <rim:permit>access_shared</rim:permit>
-        <rim:permit>read_geolocation</rim:permit>
-        <rim:permit>record_audio</rim:permit>
-    </rim:permissions>
 
     <rim:connection timeout="15000">
         <id>MDS</id>

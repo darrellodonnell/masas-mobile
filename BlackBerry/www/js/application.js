@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Nov 13, 2012
+ * Updated: Nov 14, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -469,7 +469,7 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
             console.log( 'Opening file: ' + report.Attachments[i].Path );
 
             // TODO: Change to PhoneGap logic...
-            if( blackberry && blackberry.io.file.exists( report.Attachments[i].Path ) )
+            if( app_isDeviceBlackBerry() && blackberry.io.file.exists( report.Attachments[i].Path ) )
             {
                 blackberry.io.file.readFile( report.Attachments[i].Path, app_handleOpenedFile );
             }
@@ -486,7 +486,7 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
     }
     else
     {
-        // No attachements, we are done...
+        // No attachments, we are done...
         if( app_callback_reportGenerated && typeof( app_callback_reportGenerated ) === "function" )
         {
             app_callback_reportGenerated( app_generatedMasasEntry );
@@ -501,7 +501,7 @@ function app_handleOpenedFile( fullPath, blobData )
      var attachment = null;
      for( var i=0; i<app_generatedMasasEntry.attachments.length; i++ )
      {
-        if( app_generatedMasasEntry.attachments[i].path == fullPath )
+        if( app_generatedMasasEntry.attachments[i].path.indexOf( fullPath ) >= 0 )
         {
             attachment = app_generatedMasasEntry.attachments[i];
             break;
@@ -513,7 +513,17 @@ function app_handleOpenedFile( fullPath, blobData )
         // TODO: Add PhoneGap support.
         if( blackberry && blackberry.utils )
         {
-            attachment.base64 = blackberry.utils.blobToString( blobData, 'BASE64' );
+            if( app_isDeviceBB567() ) {
+                attachment.base64 = blackberry.utils.blobToString( blobData, 'BASE64' );
+            }
+            else {
+                // IMPORTANT: If using WebWorks 2.2.0.5, you need to patch the sdk with this:
+                //            https://github.com/blackberry/WebWorks-TabletOS/pull/57
+                //            Otherwise this call will not work.  "Binary" is a new option in the patch.
+                // How to patch:
+                //            http://devblog.blackberry.com/2012/04/webworks-sdk-extensions-patching/
+                attachment.base64 = blackberry.utils.blobToString( blobData, 'binary' );
+            }
         }
         else
         {

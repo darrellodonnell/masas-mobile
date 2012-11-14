@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Full Report Page
- * Updated: Nov 13, 2012
+ * Updated: Nov 14, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -337,15 +337,23 @@ function report_takePicture()
 {
     try
     {
-        navigator.camera.getPicture(report_onGetPictureSuccess, report_onGetPictureFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI });
+        if( app_isDevicePlayBook() )
+        {
+            blackberry.media.camera.takePicture( report_onGetPictureSuccess, report_onCameraClosed, report_onGetPictureFail );
+        }
+        else
+        {
+            navigator.camera.getPicture( report_onGetPictureSuccess, report_onGetPictureFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI } );
+        }
     }
     catch(err)
     {
-        alert('Capture failed: ' + err);
+        alert( 'Capture failed: ' + err );
     }
 }
 
-function report_onGetPictureSuccess(imageURI) {
+function report_onGetPictureSuccess(imageURI)
+{
     var attachment = currentReport.AddAttachment( 'image/jpeg', imageURI );
     report_addListItem( attachment );
     $('#lstReportAttachments').listview('refresh');
@@ -354,8 +362,14 @@ function report_onGetPictureSuccess(imageURI) {
     report_saveReport();
 }
 
-function report_onGetPictureFail(message) {
+function report_onGetPictureFail(message)
+{
     alert('Failed because: ' + message);
+}
+
+function report_onCameraClosed( closedEvent )
+{
+    debug.log("report_onCameraClosed", "Start: " + closedEvent, debug.info);
 }
 
 function viewAttachment( attachment ) {
