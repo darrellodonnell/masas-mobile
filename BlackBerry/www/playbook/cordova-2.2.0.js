@@ -4566,7 +4566,7 @@ FileReader.prototype.readAsDataURL = function(file) {
         this.onloadstart(new ProgressEvent("loadstart", {target:this}));
     }
 
-    var enc = "BASE64";
+    var enc = "binary";
 
     var me = this;
 

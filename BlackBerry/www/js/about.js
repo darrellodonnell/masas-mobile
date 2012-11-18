@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - About Page
- * Updated: Oct 30, 2012
+ * Updated: Nov 18, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -9,20 +9,11 @@ var about_components = null;
 
 $( document ).delegate("#about", "pagebeforecreate", function()
 {
-    if( blackberry && blackberry.app )
-    {
-        // Load the data from the BlackBerry API (taken from config.xml).
-        $('#about_lblDescription').text( blackberry.app.description );
-        $('#about_lblCopyright').text( blackberry.app.copyright );
-        $('#about_lblVersion').text( "Version " + blackberry.app.version );
-        $('#about_lblURL').text( blackberry.app.authorURL );
-    }
-    else
-    {
-        // TODO: Add support to load this data from an external source.
-        //       Cordova currently does not do this.
-        $('#about_lblVersion' ).hide();
-    }
+    // Load the meta data...
+    $('#about_lblDescription').text( app.description );
+    $('#about_lblCopyright').text( app.copyright );
+    $('#about_lblVersion').text( "Version " + app.version );
+    $('#about_lblURL').text( app.authorURL );
 });
 
 $( document ).delegate("#about", "pagebeforeshow", function( event, ui )
@@ -58,9 +49,10 @@ function about_showTextLicense( licenseTitle, license )
 {
     try
     {
-        if( blackberry && blackberry.ui )
+        if( app_isDeviceBlackBerry() )
         {
             // Use BlackBerry specific dialog...
+            // NOTE: At time of implementation, the PhoneGap solution did not scroll big dialogs properly.
             var buttons = ["OK"];
             var ops = { title : licenseTitle, size : blackberry.ui.dialog.SIZE_TALL };
             blackberry.ui.dialog.customAskAsync( license, buttons, about_dialogCallBack, ops );

@@ -1,11 +1,9 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Nov 14, 2012
+ * Updated: Nov 18, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
-
-var app_GoogleAPIKey = "";
 
 var bb = {
     device: {
@@ -15,6 +13,17 @@ var bb = {
         isBB7: false,
         isBB10: false,
         isPlayBook: false
+    }
+}
+
+var app = {
+    authorEmail: "",
+    description: "",
+    copyright: "",
+    version: "",
+    authorURL: "",
+    map: {
+        token: ""
     }
 }
 
@@ -37,19 +46,20 @@ $(document).on("mobileinit", function(){
     $.mobile.defaultPageTransition = 'none';
     $.mobile.defaultDialogTransition = 'none';
     $.mobile.allowCrossDomainPages = true;
-
-    app_initApplication();
 });
 
 $(document).ready( function()
 {
-    // Handler for .ready() called.
-    document.addEventListener("deviceready", app_onDeviceReady, false);
+    // Init the application...
+    app_initApplication();
+
+    // Add a listener on the "deviceready" event to know when Cordova is loaded.
+    document.addEventListener( "deviceready", app_onDeviceReady, false );
 });
 
-$(window).bind( 'orientationchange', function(e)
+$(window).bind( "orientationchange", function( e )
 {
-    if( $.mobile.activePage.attr('id') == "viewMASAS" )
+    if( $.mobile.activePage.attr( "id" ) == "viewMASAS" )
     {
         viewMASAS_resizePage();
     }
@@ -58,8 +68,44 @@ $(window).bind( 'orientationchange', function(e)
 function app_onDeviceReady()
 {
     // Cordova is loaded...
-    document.addEventListener("online", app_onDeviceOnline, false);
-    document.addEventListener("offline", app_onDeviceOffline, false);
+    console.log( "Cordova - Device Ready!");
+
+    // Attach to the data coverage events...
+    if( app_isDeviceBB567() )
+    {
+        blackberry.system.event.onCoverageChange( app_onCoverageChange );
+    }
+    else
+    {
+        document.addEventListener("online", app_onDeviceOnline, false);
+        document.addEventListener("offline", app_onDeviceOffline, false);
+    }
+
+    // Attach to the "Back" button event...
+    if( app_isDeviceBB567() )
+    {
+        blackberry.system.event.onHardwareKey( blackberry.system.event.KEY_BACK, app_onBackKey );
+    }
+    else
+    {
+        document.addEventListener( "backbutton", app_onBackKey, false );
+    }
+
+    // Attach to the "Resume" event...
+    if( app_isDeviceBB567() || app_isDevicePlayBook() )
+    {
+        blackberry.app.event.onForeground( app_onResume );
+    }
+    else
+    {
+        document.addEventListener( "resume", app_onResume, false );
+    }
+
+    // Attach to the BlackBerry "SwipeDown" event (not supported in Cordova)...
+    if( app_isDevicePlayBook() )
+    {
+        blackberry.app.event.onSwipeDown( app_onSwipeDown );
+    }
 }
 
 function app_initApplication()
@@ -69,50 +115,21 @@ function app_initApplication()
         // Initialize the app...
         app_getDeviceInfo();
 
-        // Enable Maps Support if needed...
+        // Load the menu...
+        menu_initMenu();
+
+        // Load the application meta data
+        app_loadMetaData();
+
+        // Load the application data...
+        app_loadData();
+
+        // Enable Maps Support if needed.
+        // NOTE: The application Metadata contains the keys/token needed for mapping support!
         if( bb.device.isPlayBook || bb.device.isBB10 )
         {
             app_IsMapSupported = true;
             app_loadMapScript();
-        }
-
-        // Load the menu...
-        menu_initMenu();
-
-        // Load the application data...
-        appLoadData();
-
-        // Attach to some BlackBerry specific events...
-        if( app_isDeviceBB567() )
-        {
-            if( blackberry.system.event.onHardwareKey )
-            {
-                blackberry.system.event.onHardwareKey( blackberry.system.event.KEY_BACK, app_onBackKey );
-            }
-
-            if( blackberry.system.event.onCoverageChange )
-            {
-                blackberry.system.event.onCoverageChange( app_onCoverageChange );
-            }
-        }
-
-        // TODO: Verify if we need this of BB10
-        if( ( app_isDeviceBB567() || app_isDevicePlayBook() ) )
-        {
-            if( blackberry.app.event.onForeground )
-            {
-                blackberry.app.event.onForeground( app_onForeground );
-            }
-
-
-        }
-
-        if( app_isDevicePlayBook() )
-        {
-            if( blackberry.app.event.onSwipeDown )
-            {
-                blackberry.app.event.onSwipeDown( app_onSwipeDown );
-            }
         }
     }
 }
@@ -150,23 +167,48 @@ function app_isDeviceBlackBerry()
     return ( app_isDeviceBB567() || app_isDevicePlayBook() || app_isDeviceBB10() );
 }
 
-function app_onBackKey() {
-   history.back();
-   return false;
+function app_onBackKey()
+{
+    console.log( "Event: Back Button");
+
+    if( $.mobile.activePage.attr( "id" ) == "Main" )
+    {
+        navigator.app.exitApp();
+    }
+    else
+    {
+        if( app_isDeviceBB567() )
+        {
+            // NOTE: history.back() doesn't work with the Cordova event, but is fine with the BlackBerry native event.
+            //       Also, the navigator.app.backHistory() doesn't work with jQuery on the BlackBerry.
+            history.back();
+            return false;
+        }
+        else
+        {
+            navigator.app.backHistory();
+        }
+    }
 }
 
 function app_onDeviceOnline()
 {
+    console.log( "Event: Online");
+
     app_onCoverageChange();
 }
 
 function app_onDeviceOffline()
 {
+    console.log( "Event: Offline");
+
     app_onCoverageChange();
 }
 
 function app_onCoverageChange()
 {
+    console.log( "Event: Coverage Change");
+
     var status = $('#app_dataStatus');
 
     if( app_hasDataCoverage() )
@@ -198,20 +240,24 @@ function app_hasDataCoverage()
     else
     {
         var networkState = navigator.connection.type;
-        hasDataCoverage = !( networkState == Connection.NONE);
+        hasDataCoverage = !( networkState == connection.NONE);
     }
 
     return hasDataCoverage;
 }
 
-function app_onForeground()
+function app_onResume()
 {
+    console.log( "Event: Resume");
+
     // update the coverage icon if needed...
     app_onCoverageChange();
 }
 
 function app_onSwipeDown()
 {
+    console.log( "Event: Swipe Down");
+
     if( $.mobile.activePage.attr('id') == "viewMASAS" )
     {
         viewMASAS_showMenu();
@@ -251,7 +297,38 @@ function appResetSettingsToDefault()
     };
 }
 
-function appLoadData()
+function app_loadMetaData()
+{
+    // Load the meta data from the MASAS-Mobile.json file...
+    jQuery.ajax( {
+            url: "MASAS-Mobile.json",
+            async: false // Wait for this call to be done before moving on!
+        }
+    ).done( function( msg ) {
+            console.log( msg );
+            app = msg.MASAS_Mobile;
+        });
+
+    // Overwrite some info we are on the BlackBerry platform...
+    if( app_isDeviceBlackBerry() )
+    {
+        // Load the meta data directly from the BlackBerry API.
+        // The data is provided in the config.xml
+        app.authorEmail = blackberry.app.authorEmail;
+        app.description = blackberry.app.description;
+        app.copyright   = blackberry.app.copyright;
+        app.version     = blackberry.app.version;
+        app.authorURL   = blackberry.app.authorURL;
+    }
+
+    console.log( app );
+
+    if( app.showAlert ) {
+        alert( "IMPORTANT: Please modify the METADATA found in MASAS-Mobile.json!");
+    }
+}
+
+function app_loadData()
 {
     var storage = window.localStorage;
 
@@ -370,6 +447,7 @@ function appShortReportToMASAS( report )
 var app_callback_reportSent = null;
 var app_callback_reportSendFail = null;
 var app_callback_reportGenerated = null;
+var app_callback_reportGeneratedFailed = null;
 var app_generatedMasasEntry = null;
 
 function appSendReportToMASAS( report, callback_reportSent, callback_reportSendFailed )
@@ -378,7 +456,7 @@ function appSendReportToMASAS( report, callback_reportSent, callback_reportSendF
     app_callback_reportSendFail = callback_reportSendFailed;
 
     // Create MASAS Report...
-    appGenerateMASASEntry( report, appMASASReportGenerated );
+    appGenerateMASASEntry( report, appMASASReportGenerated, appMASASReportGeneratedFailed );
 }
 
 function appMASASReportGenerated( masasEntry )
@@ -387,7 +465,14 @@ function appMASASReportGenerated( masasEntry )
     console.log( masasEntry );
 
     MASAS_createNewEntry( masasEntry, app_MASAS_createNewEntry_success, app_MASAS_createNewEntry_fail );
+}
 
+function appMASASReportGeneratedFailed( errorMsg )
+{
+    console.log( 'MASAS Report could not be generated!' );
+    console.log( errorMsg );
+
+    app_MASAS_createNewEntry_fail( errorMsg );
 }
 
 function app_MASAS_createNewEntry_success()
@@ -399,18 +484,19 @@ function app_MASAS_createNewEntry_success()
     }
 }
 
-function app_MASAS_createNewEntry_fail()
+function app_MASAS_createNewEntry_fail( errorMsg )
 {
     console.log( 'MASAS Entry creation failed!' );
     if( app_callback_reportSendFail && typeof( app_callback_reportSendFail ) === "function" )
     {
-        app_callback_reportSendFail();
+        app_callback_reportSendFail( errorMsg );
     }
 }
 
-function appGenerateMASASEntry( report, callback_reportGenerated )
+function appGenerateMASASEntry( report, callback_reportGenerated, callback_reportGeneratedFailed )
 {
     app_callback_reportGenerated = callback_reportGenerated;
+    app_callback_reportGeneratedFailed = callback_reportGeneratedFailed;
 
     var augmentedTitle = report.Title + ' [' + app_Settings.vehicleId + ']';
 
@@ -449,14 +535,18 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
     }
 
     app_generatedMasasEntry.attachments = [];
+
     // setup the data up front so we don't have any data access problems...
-    for( var i=0; i<report.Attachments.length; i++ )
+    for( var i = 0; i < report.Attachments.length; i++ )
     {
         var attachment = {
             path:           report.Attachments[i].Path,
-            fileName:       report.Attachments[i].Path.replace(/^.*[\\\/]/, ''),
+            fileName:       report.Attachments[i].Path.replace( /^.*[\\\/]/, '' ),
             contentType:    report.Attachments[i].Type,
-            description:    ''
+            description:    '',
+            base64:         undefined,
+            statusCode:     0,
+            statusMsg:      ''
         }
         app_generatedMasasEntry.attachments.push( attachment );
     }
@@ -464,24 +554,10 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
     // Convert each attachment to BASE64
     if( app_generatedMasasEntry.attachments.length > 0 )
     {
-        for( var i=0; i< app_generatedMasasEntry.attachments.length; i++ )
+        for( var i = 0; i < app_generatedMasasEntry.attachments.length; i++ )
         {
-            console.log( 'Opening file: ' + report.Attachments[i].Path );
-
-            // TODO: Change to PhoneGap logic...
-            if( app_isDeviceBlackBerry() && blackberry.io.file.exists( report.Attachments[i].Path ) )
-            {
-                blackberry.io.file.readFile( report.Attachments[i].Path, app_handleOpenedFile );
-            }
-            else
-            {
-                // Failure!
-                // TODO: THIS ISN'T THE RIGHT LOGIC!
-                if( app_callback_reportGenerated && typeof( app_callback_reportGenerated ) === "function" )
-                {
-                    app_callback_reportGenerated( app_generatedMasasEntry );
-                }
-            }
+            // Load the Attachment as base64
+            app_loadAttachmentAsBase64( app_generatedMasasEntry.attachments[i] );
         }
     }
     else
@@ -494,56 +570,89 @@ function appGenerateMASASEntry( report, callback_reportGenerated )
     }
 }
 
-function app_handleOpenedFile( fullPath, blobData )
+function app_loadAttachmentAsBase64( attachment )
 {
-     console.log( 'File opened: ' + fullPath );
+    console.log( 'Opening file: ' + attachment.path );
 
-     var attachment = null;
-     for( var i=0; i<app_generatedMasasEntry.attachments.length; i++ )
-     {
-        if( app_generatedMasasEntry.attachments[i].path.indexOf( fullPath ) >= 0 )
+    // First, resolve the path to get use the FileEntry for the file we need...
+    window.resolveLocalFileSystemURI( attachment.path,
+        function( fileEntry ) // START resolveLocalFileSystemURI() Success callback
         {
-            attachment = app_generatedMasasEntry.attachments[i];
-            break;
-        }
-     }
+            // We have a FileEntry, now we need the File!
+            console.log( fileEntry.name + ' resolved.' );
 
-     if( attachment != null )
-     {
-        // TODO: Add PhoneGap support.
-        if( blackberry && blackberry.utils )
+            fileEntry.file(
+                function( file ) // START file() Success callback
+                {
+                    // Create a FileReader...
+                    var reader = new FileReader();
+
+                    reader.onloadend =
+                        function( evt ) // START reader.onloadend event callback
+                        {
+                            console.log( "readAsDataURL() success!" );
+
+                            // We only need the actual base64 data, so remove the added text before the data...
+                            attachment.base64 = (evt.target.result).substr( ("data:text/plain;base64,").length );
+                            attachment.statusCode = 1;
+                            attachment.statusMsg = "File loaded as BASE64.";
+
+                            app_checkIfAllAttachmentsLoaded();
+                        }; // END reader.onloadend event callback
+
+                    // ******************************************************************************************
+                    // IMPORTANT PATCH FOR BLACKBERRY WEBWORKS TABLET 2.2.0.5
+                    //  The "reader.readAsDataURL()" call will not work without the patch!
+                    //  There is a new "binary" option in the patch that needs to be used when converting from
+                    //  a binary file to a base64 string.
+                    //
+                    //  See README - PlayBook.txt and follow the steps to patch your SDKs.
+                    // ******************************************************************************************
+
+                    // Read the file as BASE64...
+                    reader.readAsDataURL( file );
+
+                }, // END File Success callback
+                function( evt ) // START File Failure callback
+                {
+                    // Failed!
+                    console.log( evt.target.error.code );
+                    attachment.statusCode = -1;
+                    attachment.statusMsg = "Failed: Could not resolve the File.";
+
+                    app_checkIfAllAttachmentsLoaded();
+                } // END file() Failure callback
+            );
+        }, // END resolveLocalFileSystemURI() Success callback
+        function( evt )  // START resolveLocalFileSystemURI() Failed callback
         {
-            if( app_isDeviceBB567() ) {
-                attachment.base64 = blackberry.utils.blobToString( blobData, 'BASE64' );
-            }
-            else {
-                // IMPORTANT: If using WebWorks 2.2.0.5, you need to patch the sdk with this:
-                //            https://github.com/blackberry/WebWorks-TabletOS/pull/57
-                //            Otherwise this call will not work.  "Binary" is a new option in the patch.
-                // How to patch:
-                //            http://devblog.blackberry.com/2012/04/webworks-sdk-extensions-patching/
-                attachment.base64 = blackberry.utils.blobToString( blobData, 'binary' );
-            }
-        }
-        else
-        {
-            console.log( 'Error: Platform not supported!' );
-        }
+            // Failed!
+            console.log( evt.target.error.code );
 
-     }
-     else {
-        console.log( 'Error: Could not match the attachment!' );
-     }
+            attachment.statusCode = -1;
+            attachment.statusMsg = "Failed: Could not resolve the Local File System URI.";
 
-     app_checkIfAllAttachmentsLoaded();
+            app_checkIfAllAttachmentsLoaded();
+        } // END resolveLocalFileSystemURI() Failed callback
+    );
 }
 
 function app_checkIfAllAttachmentsLoaded()
 {
     var count = 0;
-    for( var i=0; i<app_generatedMasasEntry.attachments.length; i++ )
+    var failed = false;
+    var errorMsg = '';
+
+    for( var i=0; i < app_generatedMasasEntry.attachments.length; i++ )
     {
-        if( app_generatedMasasEntry.attachments[i].base64 != undefined )
+        if( app_generatedMasasEntry.attachments[i].statusCode == -1 )
+        {
+            count++;
+            failed = true;
+            // TODO: this needs work!
+            errorMsg += app_generatedMasasEntry.attachments[i].statusMsg + ' ';
+        }
+        else if( app_generatedMasasEntry.attachments[i].statusCode == 1 )
         {
             count++;
         }
@@ -552,9 +661,19 @@ function app_checkIfAllAttachmentsLoaded()
     if( count == app_generatedMasasEntry.attachments.length )
     {
         // We are done...
-        if( app_callback_reportGenerated && typeof( app_callback_reportGenerated ) === "function" )
+        if( failed )
         {
-            app_callback_reportGenerated( app_generatedMasasEntry );
+            if( app_callback_reportGeneratedFailed && typeof( app_callback_reportGeneratedFailed ) === "function" )
+            {
+                app_callback_reportGeneratedFailed( app_generatedMasasEntry );
+            }
+        }
+        else
+        {
+            if( app_callback_reportGenerated && typeof( app_callback_reportGenerated ) === "function" )
+            {
+                app_callback_reportGenerated( app_generatedMasasEntry );
+            }
         }
     }
     else {
@@ -676,7 +795,7 @@ function app_loadMapScript()
         app_MapScriptState = "LOADING";
 
         // NOTE: The callback is needed, otherwise loading the script will not initialize the internal objects...
-        var googleScriptURL = "http://maps.googleapis.com/maps/api/js?key=" + app_GoogleAPIKey + "&sensor=false&callback=app_mapScriptLoaded";
+        var googleScriptURL = "http://maps.googleapis.com/maps/api/js?key=" + app.map.token + "&sensor=false&callback=app_mapScriptLoaded";
 
         $.getScript( googleScriptURL, function( data, textStatus, jqxhr ) {
             console.log('Google Maps script has been loaded.');

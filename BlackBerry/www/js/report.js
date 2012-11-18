@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Full Report Page
- * Updated: Nov 14, 2012
+ * Updated: Nov 18, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -202,11 +202,19 @@ function report_reportSendSuccess()
     $.mobile.changePage( "viewReports.html", {} );
 }
 
-function report_reportSendFail()
+function report_reportSendFail( errorMsg )
 {
     console.log( 'Report could not be sent!' );
+    console.log( errorMsg );
+
+    // Enable the controls...
     report_enableControls( true );
+
+    // Hide the loading msg...
     $.mobile.hidePageLoadingMsg();
+
+    // Alert the user about the error...
+    alert( errorMsg );
 }
 
 function report_resetList()
@@ -339,6 +347,7 @@ function report_takePicture()
     {
         if( app_isDevicePlayBook() )
         {
+            // NOTE: This can be removed once the issue with the camera application not always invoking is resolved.
             blackberry.media.camera.takePicture( report_onGetPictureSuccess, report_onCameraClosed, report_onGetPictureFail );
         }
         else

@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS helper functions
- * Updated: Nov 13, 2012
+ * Updated: Nov 18, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -92,11 +92,10 @@ function MASAS_postNewEntry( entryData, contentType )
 
         var failureMsg = 'Posting failed! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
         console.log( failureMsg );
-        alert( failureMsg );
 
         if( MASAS_callback_createNewEntry_failure && typeof( MASAS_callback_createNewEntry_failure ) === "function" )
         {
-            MASAS_callback_createNewEntry_failure();
+            MASAS_callback_createNewEntry_failure( failureMsg );
         }
 
     });

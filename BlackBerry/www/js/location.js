@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Location Page
- * Updated: Oct 30, 2012
+ * Updated: Nov 18, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -65,16 +65,6 @@ $( document ).delegate( "li[data-masas-location-result-id]", "vclick", function(
 
 });
 
-$( document).delegate( "#location_osmCopyrightLink", "vclick", function()
-{
-    // TODO: Add PhoneGap support.
-    if( blackberry && blackberry.invoke )
-    {
-        var args = new blackberry.invoke.BrowserArguments('http://www.openstreetmap.org/copyright');
-        blackberry.invoke.invoke(blackberry.invoke.APP_BROWSER, args);
-    }
-});
-
 $( document ).delegate( "#location_btnBack", "vclick", function()
 {
     // Go back to the previous page...
@@ -103,14 +93,10 @@ function location_search( searchQuery )
         params += '&addressdetails=1';
         params += '&limit=3';
 
-        // TODO: Add PhoneGap support.
         // Get the email address for the query...
         // NOTE: This is required by Nominatim as per their usage policy:
         //       http://wiki.openstreetmap.org/wiki/Nominatim_usage_policy
-        if( blackberry && blackberry.app && blackberry.app.authorEmail )
-        {
-            params += '&email=' + blackberry.app.authorEmail;
-        }
+        params += '&email=' + app.authorEmail;
 
         console.log( params );
 

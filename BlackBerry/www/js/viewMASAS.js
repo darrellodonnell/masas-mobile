@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Nov 13, 2012
+ * Updated: Nov 18, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -397,11 +397,12 @@ function viewMASAS_boxClicked( event, data )
 
 function viewMASAS_addMapItem( index, symbol, $geometry )
 {
-    if( $geometry[0].nodeName == "georss:point" )
+    if( $geometry.length == 0 )
     {
-        var point = $geometry.text();
-        var splitPoint = point.split( " " );
-        var latlng = new google.maps.LatLng( splitPoint[0], splitPoint[1] );
+        // No geometry is available... show a marker at (0,0) for now.
+        // NOTE: This will be removed at a later time when the architecture can
+        //       handle this situation.,,
+        var latlng = new google.maps.LatLng( 0.0, 0.0 );
 
         var marker = new google.maps.Marker({
             position: latlng,
@@ -415,73 +416,94 @@ function viewMASAS_addMapItem( index, symbol, $geometry )
 
         markers.push( marker );
     }
-    else if( $geometry[0].nodeName == "georss:polygon" )
+    else
     {
-        var points = $geometry.text();
-        var splitPoints = points.split( " " );
-
-        var pointArray = new google.maps.MVCArray();
-
-        for( var i = 0; i < splitPoints.length; i += 2 )
+        if( $geometry[0].nodeName == "georss:point" )
         {
-            var latlng = new google.maps.LatLng( splitPoints[i], splitPoints[i+1] );
-            pointArray.push( latlng );
+            var point = $geometry.text();
+            var splitPoint = point.split( " " );
+            var latlng = new google.maps.LatLng( splitPoint[0], splitPoint[1] );
+
+            var marker = new google.maps.Marker({
+                position: latlng,
+                icon: new google.maps.MarkerImage( appGetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
+                map: map
+            });
+
+            google.maps.event.addListener( marker, 'click', function( event ) {
+                viewMASAS_markerClicked( event, { marker: marker, index: index } );
+            });
+
+            markers.push( marker );
         }
-
-        var polygon = new google.maps.Polygon({
-            paths: pointArray,
-            clickable: true,
-            map: map,
-            fillColor: "green",
-            fillOpacity: 0.1,
-            strokeColor: "green",
-            strokeOpacity: 0.5,
-            strokeWeight: 2,
-            visible: false
-        });
-
-        google.maps.event.addListener( polygon, 'click', function( event ) {
-            viewMASAS_polygonClicked( event, { polygon: polygon, index: index } );
-        });
-
-        markers.push( polygon );
-    }
-    else if( $geometry[0].nodeName == "georss:box" )
-    {
-        var points = $geometry.text();
-        var splitPoints = points.split( " " );
-
-        // SW, NE..
-        var llBounds;
-
-        if( splitPoints[1] < splitPoints[3] )
+        else if( $geometry[0].nodeName == "georss:polygon" )
         {
-            llBounds = new google.maps.LatLngBounds( new google.maps.LatLng( splitPoints[0], splitPoints[3] ),
-                new google.maps.LatLng( splitPoints[2], splitPoints[1] ) );
+            var points = $geometry.text();
+            var splitPoints = points.split( " " );
+
+            var pointArray = new google.maps.MVCArray();
+
+            for( var i = 0; i < splitPoints.length; i += 2 )
+            {
+                var latlng = new google.maps.LatLng( splitPoints[i], splitPoints[i+1] );
+                pointArray.push( latlng );
+            }
+
+            var polygon = new google.maps.Polygon({
+                paths: pointArray,
+                clickable: true,
+                map: map,
+                fillColor: "green",
+                fillOpacity: 0.1,
+                strokeColor: "green",
+                strokeOpacity: 0.5,
+                strokeWeight: 2,
+                visible: false
+            });
+
+            google.maps.event.addListener( polygon, 'click', function( event ) {
+                viewMASAS_polygonClicked( event, { polygon: polygon, index: index } );
+            });
+
+            markers.push( polygon );
         }
-        else
+        else if( $geometry[0].nodeName == "georss:box" )
         {
-            llBounds = new google.maps.LatLngBounds( new google.maps.LatLng( splitPoints[0], splitPoints[1] ),
-                new google.maps.LatLng( splitPoints[2], splitPoints[3] ) );
+            var points = $geometry.text();
+            var splitPoints = points.split( " " );
+
+            // SW, NE..
+            var llBounds;
+
+            if( splitPoints[1] < splitPoints[3] )
+            {
+                llBounds = new google.maps.LatLngBounds( new google.maps.LatLng( splitPoints[0], splitPoints[3] ),
+                    new google.maps.LatLng( splitPoints[2], splitPoints[1] ) );
+            }
+            else
+            {
+                llBounds = new google.maps.LatLngBounds( new google.maps.LatLng( splitPoints[0], splitPoints[1] ),
+                    new google.maps.LatLng( splitPoints[2], splitPoints[3] ) );
+            }
+
+            var box = new google.maps.Rectangle({
+                bounds: llBounds,
+                clickable: true,
+                map: map,
+                fillColor: "green",
+                fillOpacity: 0.1,
+                strokeColor: "green",
+                strokeOpacity: 0.5,
+                strokeWeight: 2,
+                visible: false
+            });
+
+            google.maps.event.addListener( box, 'click', function( event ) {
+                viewMASAS_boxClicked( event, { box: box, index: index } );
+            });
+
+            markers.push( box );
         }
-
-        var box = new google.maps.Rectangle({
-            bounds: llBounds,
-            clickable: true,
-            map: map,
-            fillColor: "green",
-            fillOpacity: 0.1,
-            strokeColor: "green",
-            strokeOpacity: 0.5,
-            strokeWeight: 2,
-            visible: false
-        });
-
-        google.maps.event.addListener( box, 'click', function( event ) {
-            viewMASAS_boxClicked( event, { box: box, index: index } );
-        });
-
-        markers.push( box );
     }
 }
 
