@@ -13,8 +13,8 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <name>MASAS Mobile</name>
     <description>MASAS Mobile Application for BlackBerry.</description>
     <author email=""
-            href="http://www.masas.ca/"
-            rim:copyright="Independent Joint Copyright (c) 2012 MASAS Contributors."></author>
+            href="http://www.masas-x.ca/"
+            rim:copyright="Independent Joint Copyright (c) 2012 MASAS Contributors.">FourBit Software Inc.</author>
     <license>
         Modified BSD License
 
