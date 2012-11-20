@@ -126,7 +126,7 @@ function app_initApplication()
 
         // Enable Maps Support if needed.
         // NOTE: The application Metadata contains the keys/token needed for mapping support!
-        if( bb.device.isPlayBook || bb.device.isBB10 )
+        if( !app_isDeviceBB567() )
         {
             app_IsMapSupported = true;
             app_loadMapScript();
@@ -239,8 +239,9 @@ function app_hasDataCoverage()
     }
     else
     {
-        var networkState = navigator.connection.type;
-        hasDataCoverage = !( networkState == connection.NONE);
+        // TODO: Fix this!
+//        var networkState = navigator.connection.type;
+//        hasDataCoverage = !( networkState == connection.NONE);
     }
 
     return hasDataCoverage;
