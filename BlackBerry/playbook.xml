@@ -25,7 +25,8 @@
     <property name="code.sign"    value="false" />
     <property name="generate.ext"   value="cod" />
     <property name="build.num.file" value="buildId.txt" />
-    
+    <property name="parent.dir" location=".."/>
+
     <!-- BlackBerry WebWorks Packager for Tablets directory is required. -->
     <fail unless="properties.playbook.bbwp.dir" message="Please specify BlackBerry WebWorks Packager directory using 'playbook.bbwp.dir' in your 'project.properties' file." />
 
@@ -108,6 +109,13 @@
                 <exclude name="ext-air/**"/>
                 <exclude name="playbook/**"/>
                 <exclude name="res/resourceBundles/**"/>
+            </fileset>
+        </copy>
+
+        <!-- Copy the common www folder to the widget folder -->
+        <copy todir="${widget.dir}" overwrite="true">
+            <fileset dir="${parent.dir}/www" >
+                <include name="**" />
             </fileset>
         </copy>
         
