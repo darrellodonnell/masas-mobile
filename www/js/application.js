@@ -16,7 +16,16 @@ var bb = {
     }
 }
 
+var iOS = {
+    device: {
+        RetinaDisplay: false,
+        iPad: false,
+        iPhone: false
+    }
+}
+
 var app = {
+    showAlert: false,
     authorEmail: "",
     description: "",
     copyright: "",
@@ -27,6 +36,7 @@ var app = {
     }
 }
 
+var app_CordovaLoaded = false;
 var localReports = [];
 
 var app_Settings = null;
@@ -69,6 +79,7 @@ function app_onDeviceReady()
 {
     // Cordova is loaded...
     console.log( "Cordova - Device Ready!");
+    app_CordovaLoaded = true;
 
     // Attach to the data coverage events...
     if( app_isDeviceBB567() )
@@ -106,6 +117,9 @@ function app_onDeviceReady()
     {
         blackberry.app.event.onSwipeDown( app_onSwipeDown );
     }
+
+    // Verify the data coverage...
+    app_onCoverageChange();
 }
 
 function app_initApplication()
@@ -145,6 +159,9 @@ function app_getDeviceInfo()
 
     // Determine if we have a high resolution screen...
     bb.device.isHighRes = screen.width > 480 || screen.height > 480;
+
+    // iOS checks...
+    iOS.device.iPad = ( navigator.userAgent.indexOf( 'iPad' ) >= 0 );
 }
 
 function app_isDeviceBB567()
@@ -207,7 +224,10 @@ function app_onDeviceOffline()
 
 function app_onCoverageChange()
 {
-    console.log( "Event: Coverage Change");
+    if( app_CordovaLoaded )
+    {
+        console.log( "Event: Coverage Change");
+    }
 
     var status = $('#app_dataStatus');
 
@@ -239,9 +259,11 @@ function app_hasDataCoverage()
     }
     else
     {
-        // TODO: Fix this!
-//        var networkState = navigator.connection.type;
-//        hasDataCoverage = !( networkState == connection.NONE);
+        if( app_CordovaLoaded )
+        {
+            var networkState = navigator.connection.type;
+            hasDataCoverage = !( networkState == 'none' );
+        }
     }
 
     return hasDataCoverage;
@@ -306,8 +328,11 @@ function app_loadMetaData()
             async: false // Wait for this call to be done before moving on!
         }
     ).done( function( msg ) {
-            console.log( msg );
-            app = msg.MASAS_Mobile;
+            // TODO: Investigate why iOS "isn't returning anything for msg".
+            if( msg.MASAS_Mobile ) //DEO - added test for defined variable here - iOS isn't returning anything for msg.
+            {
+                app = msg.MASAS_Mobile;
+            }
         });
 
     // Overwrite some info we are on the BlackBerry platform...
@@ -321,8 +346,6 @@ function app_loadMetaData()
         app.version     = blackberry.app.version;
         app.authorURL   = blackberry.app.authorURL;
     }
-
-    console.log( app );
 
     if( app.showAlert ) {
         alert( "IMPORTANT: Please modify the METADATA found in MASAS-Mobile.json!");
@@ -725,8 +748,6 @@ function appGetReportIcon( symbol )
     {
         returnVal = symbol.replace(/\./g, "/" );
     }
-
-    console.log( "Symbol: " + returnVal );
 
     return returnVal;
 }

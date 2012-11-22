@@ -312,15 +312,12 @@ function viewMASAS_getEntriesSuccess( xmlFeed )
             var $catIcon = $(entry).find( "category[scheme='masas:category:icon']" );
             var symbol = $catIcon.attr( "term" );
 
-            console.log( 'Symbol from RSS: ' + symbol );
-
             if( symbol == undefined || symbol == "other" )
             {
                 symbol = "ems.other.other";
             }
 
             symbol = symbol.replace(/\//g, "." );
-            console.log( 'Converted Symbol: ' + symbol );
 
             var $geometry;
             $geometry = $(entry).find( "point" );
