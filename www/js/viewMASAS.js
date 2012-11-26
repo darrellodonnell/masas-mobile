@@ -520,8 +520,15 @@ function viewMASAS_resizePage()
     var footer_height  = $.mobile.activePage.children('[data-role="footer"]').height();
     var entryTopNav_height  = $('#viewMASAS_entryTopNavBar').height();
     var entryBottomNav_height  = $('#viewMASAS_entryBottomNavBar').height();
+        
     var window_height  = $(window).height();
 
+// iPad is reporting 1024 for both height and width so need to force the height
+// (20 is height of standard iOS information bar (signal, time, battery, etc.)
+    if (iOS.device.iPad) {
+      window_height = 768 - 20;
+    }
+                                    
     // Resize the Entry List
     var height = (window_height - footer_height - entryTopNav_height - entryBottomNav_height);
     $('#viewMASAS_lstEntries' ).height( height );
