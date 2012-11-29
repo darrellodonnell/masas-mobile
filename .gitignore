@@ -15,3 +15,6 @@ xcuserdata
 profile
 *.moved-aside
 DerivedData
+# Build related copies of www folder
+iOS/www/
+Android/assets/www/
