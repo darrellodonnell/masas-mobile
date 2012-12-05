@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Report Overview Page
- * Updated: Oct 30, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -66,7 +66,7 @@ function reports_addListItem( listId, reportIdentifier, report )
 
     var itemHTML  = '<a>';
     itemHTML += '<div class="report_icon_wrapper">';
-    itemHTML += '<img src="' + appGetSymbolPath( report.Symbol ) + '" style="max-width:48px;max-height:48px;" />';
+    itemHTML += '<img src="' + app_GetSymbolPath( report.Symbol ) + '" style="max-width:48px;max-height:48px;" />';
     itemHTML += '</div>';
     itemHTML += '<h3>' + report.Title + '</h3>' + '<p><strong>' + report.Description + '</strong></p><div class="ui-li-aside"><p><strong>' + report.Updated.toDateString() + '</strong></p><p><strong>' + report.Updated.toLocaleTimeString() + '</strong></p></div></a>';
 

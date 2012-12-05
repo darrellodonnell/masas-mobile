@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Settings Page
- * Updated: Oct 30, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -120,19 +120,25 @@ function settings_loadSettings()
     $('#settings_hubURL').val( app_Settings.url );
     $('#settings_hubKey').val( app_Settings.token );
 
-    var filter = app_Settings.hub.filters[0];
-    $('#settings_hubFilterEnabled').val( filter.enable? "yes" : "no" );
-    $('#settings_hubFilterSWLat').val( filter.data.swLat );
-    $('#settings_hubFilterSWLon').val( filter.data.swLon );
-    $('#settings_hubFilterNELat').val( filter.data.neLat );
-    $('#settings_hubFilterNELon').val( filter.data.neLon );
+    if( app_Settings.hub != undefined )
+    {
+        var filter = app_Settings.hub.filters[0];
+        $('#settings_hubFilterEnabled').val( filter.enable? "yes" : "no" );
+        $('#settings_hubFilterSWLat').val( filter.data.swLat );
+        $('#settings_hubFilterSWLon').val( filter.data.swLon );
+        $('#settings_hubFilterNELat').val( filter.data.neLat );
+        $('#settings_hubFilterNELon').val( filter.data.neLon );
+    }
 
     $('#settings_vehicleID').val( app_Settings.vehicleId );
     $('#settings_vehicleType').val( app_Settings.vehicleType );
 
-    $('#settings_mapDefaultViewLat').val( app_Settings.map.defaultCenter.lat );
-    $('#settings_mapDefaultViewLon').val( app_Settings.map.defaultCenter.lon );
-    $('#settings_mapDefaultViewZoom').val( app_Settings.map.defaultZoom );
+    if( app_Settings.map != undefined )
+    {
+        $('#settings_mapDefaultViewLat').val( app_Settings.map.defaultCenter.lat );
+        $('#settings_mapDefaultViewLon').val( app_Settings.map.defaultCenter.lon );
+        $('#settings_mapDefaultViewZoom').val( app_Settings.map.defaultZoom );
+    }
 
     $('#settings_reportStatus').val( app_Settings.reportStatus );
     $('#settings_reportExpiration').val( app_Settings.reportExpiresOffset );

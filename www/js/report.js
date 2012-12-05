@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Full Report Page
- * Updated: Nov 18, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -122,7 +122,8 @@ $( document ).delegate("#report_btnSend", "vclick", function(event, ui)
         report_saveReport();
 
         $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
-        appSendReportToMASAS( currentReport, report_reportSendSuccess, report_reportSendFail );
+
+        mmApp.masasPublisher.PublishReport( currentReport, report_reportSendSuccess, report_reportSendFail );
     }
     else
     {
@@ -163,30 +164,13 @@ $( document ).delegate( "li[data-masas-report-attachment]", "vclick", function( 
 
 function report_enableControls( enable )
 {
-    $( '#report_txtTitle' ).attr( "readonly", !enable );
-    $( '#report_txtDescription' ).attr( "readonly", !enable );
-
     if( enable )
     {
-        $('#report_btnHome').removeClass('ui-disabled');
-        $('#report_btnGPS').removeClass('ui-disabled');
-        $('#report_btnLocation').removeClass('ui-disabled');
-        $('#report_btnBack').removeClass('ui-disabled');
-        $('#report_btnPicture').removeClass('ui-disabled');
-        $('#report_btnAudio').removeClass('ui-disabled');
-        $('#report_btnSend').removeClass('ui-disabled');
-        $('#report_btnDelete').removeClass('ui-disabled');
+        $('#Report').removeClass( 'ui-disabled' );
     }
     else
     {
-        $('#report_btnHome').addClass('ui-disabled');
-        $('#report_btnGPS').addClass('ui-disabled');
-        $('#report_btnLocation').addClass('ui-disabled');
-        $('#report_btnBack').addClass('ui-disabled');
-        $('#report_btnPicture').addClass('ui-disabled');
-        $('#report_btnAudio').addClass('ui-disabled');
-        $('#report_btnSend').addClass('ui-disabled');
-        $('#report_btnDelete').addClass('ui-disabled');
+        $('#Report').addClass( 'ui-disabled' );
     }
 }
 
@@ -283,7 +267,7 @@ function report_updateLookupLocation()
 
 function report_updateSymbol( symbol )
 {
-    $("#report_symbol").attr("src", appGetSymbolPath( symbol ) );
+    $("#report_symbol").attr("src", app_GetSymbolPath( symbol ) );
 }
 
 function report_saveReport()
@@ -298,7 +282,7 @@ function report_saveReport()
 
         currentReport.UseLocation = $('input:radio[name=report_locationChoice]:checked').val();
 
-        appSaveData();
+        app_SaveData();
     }
 }
 
@@ -376,13 +360,12 @@ function report_onGetPictureFail(message)
     alert('Failed because: ' + message);
 }
 
-function report_onCameraClosed( closedEvent )
+function report_onCameraClosed()
 {
-    debug.log("report_onCameraClosed", "Start: " + closedEvent, debug.info);
 }
 
 function viewAttachment( attachment ) {
-    currentAttachment = attachment;
+    viewAttachment_currentAttachment = attachment;
     $.mobile.changePage( "viewAttachment.html" );
 }
 

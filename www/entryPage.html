@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<!--
+MASAS Entry Form
+Updated: Dec 04, 2012
+Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+under the Modified BSD license.  See license.txt for the full text of the license.
+-->
+<html> 
+    <head>
+    </head>
+
+    <body>
+
+        <div data-role="page" id="EntryPage">
+
+            <div data-role="header" data-position="fixed" data-tap-toggle="false">
+                <h1>Entry: <span  id="entryPage_headerTitle">(Not Published)</span></h1>
+                <a href="#" id="app_dataStatus" data-icon="check" class="ui-btn-right" data-mini="true" data-inline="true" data-iconpos="notext" ></a>
+            </div>
+
+            <div data-role="content">
+                <label for="entryPage_txtTitle"><strong>Title:</strong></label>
+                <input type="text" name="title" id="entryPage_txtTitle" value="" />
+
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="#" id="entryPage_navContent" class="ui-btn-active ui-state-persist">Content</a></li>
+                        <li><a href="#" id="entryPage_navDetails">Details</a></li>
+                        <li><a href="#" id="entryPage_navAttachments">Attachments</a></li>
+                        <li><a href="#" id="entryPage_navLocation">Location</a></li>
+                    </ul>
+                </div>
+
+                <div id="entryPage_contentPanelContent" class="masas-tab-panel" >
+                    <label for="entryPage_txtContent"><strong>Content:</strong></label>
+                    <textarea name="description" id="entryPage_txtContent"></textarea>
+
+                    <label for="entryPage_txtSummary"><strong>Summary:</strong></label>
+                    <textarea name="description" id="entryPage_txtSummary"></textarea>
+                </div>
+
+                <div id="entryPage_contentPanelDetails" class="masas-tab-panel" style="display:none" >
+
+                    <div data-role="fieldcontain">
+                        <label for="entryPage_dtExpiresDate"><strong>Expires:</strong></label>
+                        <input type="date" name="entryPage_dtExpiresDate" id="entryPage_dtExpiresDate" value="" style="width:38%;" />
+                        <input type="time" name="entryPage_dtExpiresTime" id="entryPage_dtExpiresTime" value="" style="width:38%; margin-left: 2%;" />
+                    </div>
+
+                    <div data-role="fieldcontain">
+                        <label for="entryPage_cbStatus" class="select"><strong>Status:</strong></label>
+                        <select name="entryPage_cbStatus" id="entryPage_cbStatus">
+                            <option value="Actual">Actual</option>
+                            <option value="Exercise">Exercise</option>
+                            <option value="System">System</option>
+                            <option value="Test">Test</option>
+                            <option value="Draft">Draft</option>
+                        </select>
+                    </div>
+
+                    <div data-role="fieldcontain">
+                        <label for="entryPage_cbSeverity" class="select"><strong>Severity:</strong></label>
+                        <select name="entryPage_cbSeverity" id="entryPage_cbSeverity">
+                            <option value="Unknown">Unknown</option>
+                            <option value="Extreme">Extreme</option>
+                            <option value="Severe">Severe</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Minor">Minor</option>
+                            <option value="undefined">Not Available</option>
+                        </select>
+                    </div>
+
+                    <div data-role="fieldcontain">
+                        <label for="entryPage_cbCertainty" class="select"><strong>Certainty:</strong></label>
+                        <select name="entryPage_cbCertainty" id="entryPage_cbCertainty">
+                            <option value="Unknown">Unknown</option>
+                            <option value="Observed">Observed</option>
+                            <option value="Likely">Likely</option>
+                            <option value="Possible">Possible</option>
+                            <option value="Unlikely">Unlikely</option>
+                            <option value="undefined">Not Available</option>
+                        </select>
+                    </div>
+
+                    <div id="entryPage_checkCategories" data-role="fieldcontain">
+                        <fieldset data-role="controlgroup">
+                            <legend><strong>Category:</strong></legend>
+                            <input type="checkbox" name="entryPage_checkCategoriesGeo" id="entryPage_checkCategoriesGeo" class="custom" value="Geo" />
+                            <label for="entryPage_checkCategoriesGeo">Geo</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesMet" id="entryPage_checkCategoriesMet" class="custom" value="Met" />
+                            <label for="entryPage_checkCategoriesMet">Met</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesSafety" id="entryPage_checkCategoriesSafety" class="custom" value="Safety" />
+                            <label for="entryPage_checkCategoriesSafety">Safety</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesSecurity" id="entryPage_checkCategoriesSecurity" class="custom" value="Security" />
+                            <label for="entryPage_checkCategoriesSecurity">Security</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesRescue" id="entryPage_checkCategoriesRescue" class="custom" value="Rescue" />
+                            <label for="entryPage_checkCategoriesRescue">Rescue</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesFire" id="entryPage_checkCategoriesFire" class="custom" value="Fire" />
+                            <label for="entryPage_checkCategoriesFire">Fire</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesHealth" id="entryPage_checkCategoriesHealth" class="custom" value="Health" />
+                            <label for="entryPage_checkCategoriesHealth">Health</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesEnv" id="entryPage_checkCategoriesEnv" class="custom" value="Env" />
+                            <label for="entryPage_checkCategoriesEnv">Env</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesTransport" id="entryPage_checkCategoriesTransport" class="custom" value="Transport" />
+                            <label for="entryPage_checkCategoriesTransport">Transport</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesInfra" id="entryPage_checkCategoriesInfra" class="custom" value="Infra" />
+                            <label for="entryPage_checkCategoriesInfra">Infra</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesCBRNE" id="entryPage_checkCategoriesCBRNE" class="custom" value="CBRNE" />
+                            <label for="entryPage_checkCategoriesCBRNE">CBRNE</label>
+
+                            <input type="checkbox" name="entryPage_checkCategoriesOther" id="entryPage_checkCategoriesOther" class="custom" value="Other" />
+                            <label for="entryPage_checkCategoriesOther">Other</label>
+                        </fieldset>
+                    </div>
+
+
+
+                    <div id="entryPage_symbolPane">
+                        <div role="heading" class="ui-controlgroup-label" id="entryPage_lblSymbol"><strong>Icon:</strong></div>
+                        <div id="entryPage_symbolPanel">
+                            <select name="entryPage_choiceSymbol" id="entryPage_choiceSymbol">
+                                <optgroup label="Operations">
+                                    <option value="ems.operations.emergency">Emergency</option>
+                                    <option value="ems.operations.emergencyFire">Fire</option>
+                                    <option value="ems.operations.emergencyMedical">Medical</option>
+                                    <option value="ems.operations.lawEnforcement">Police</option>
+                                </optgroup>
+                                <optgroup label="Incident">
+                                    <option value="ems.incident.civil">Civil</option>
+                                    <option value="ems.incident.crime">Crime</option>
+                                    <option value="ems.incident.fire">Fire</option>
+                                    <option value="ems.incident.hazardousMaterial">Hazardous material</option>
+                                    <option value="ems.incident.marine">Marine</option>
+                                    <option value="ems.incident.railway">Railway</option>
+                                    <option value="ems.incident.roadway">Roadway</option>
+                                    <option value="ems.other.other">Other</option>
+                                </optgroup>
+                                <optgroup label="Infrastructure">
+                                    <option value="ems.infrastructure.communicationsAndIT">Communications</option>
+                                    <option value="ems.infrastructure.education">Education</option>
+                                    <option value="ems.infrastructure.energy">Energy</option>
+                                    <option value="ems.infrastructure.transportation">Transportation</option>
+                                    <option value="ems.infrastructure.water">Water</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <img id="entryPage_symbol" src="" >
+                    </div>
+
+                </div>
+
+                <div id="entryPage_contentPanelAttachments" class="masas-tab-panel" style="display:none">
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><a href="#" id="entryPage_btnPicture" data-role="button" data-icon="plus">Picture</a></div>
+                        <div class="ui-block-b"><a href="#" id="entryPage_btnAudio" data-role="button" data-icon="plus">Audio</a></div>
+                    </div>
+
+                    <ul id="entryPage_attachments" data-role="listview" data-inset="true" >
+                        <li data-role="list-divider">Attachments<span class="ui-li-count" id="entryPage_attachmentCount">0</span></li>
+                        <!-- NOTE: These Items are here as a template only, they are removed when the page is loaded! -->
+                        <li data-masas-entry-attachment>
+                            <a href="#">
+                                <h3>Image1.jpg</h3>
+                                <div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+                            </a>
+                        </li>
+                        <li data-masas-entry-attachment>
+                            <a href="#">
+                                <h3>Voice1.wav</h3>
+                                <div class="ui-li-aside"><p><strong>DD/MM/YYYY</strong></p><p><strong>HH:MM</strong></p></div>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div data-role="popup" id="entryPage_popupPhoto" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15" data-position-to="window">
+                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><img id="entryPage_previewImage" src="">
+                    </div>
+
+                    <div data-role="popup" id="entryPage_popupText" data-overlay-theme="a" data-corners="false" data-tolerance="30,15,30,15" data-position-to="window">
+                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                        <div id="entryPage_previewText">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="entryPage_contentPanelLocation" class="masas-tab-panel" style="display:none">
+
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><a href="#" id="entryPage_btnGPS" data-role="button" data-icon="refresh" >Update My location</a></div>
+                        <div class="ui-block-b"><a href="location.html" id="entryPage_btnLocation" data-role="button" data-icon="search" >Find a location...</a></div>
+                    </div>
+
+                    <div id="entryPage_location">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <th style="text-align:right">
+                                </th>
+                                <th>
+                                    <fieldset data-role="controlgroup" data-type="horizontal" >
+                                        <input type="radio" name="entryPage_locationChoice" id="entryPage_choiceGPS" value="GPS" checked="checked" />
+                                        <label for="entryPage_choiceGPS">My location</label>
+
+                                        <input type="radio" name="entryPage_locationChoice" id="entryPage_choiceLookup" value="Lookup"  />
+                                        <label for="entryPage_choiceLookup">Searched location</label>
+                                    </fieldset>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:right"><strong>My location: </strong></th>
+                                <th style="text-align:right"><label id="entryPage_lblPosition">N/A</label></th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:right"><strong>Searched location: </strong></th>
+                                <th style="text-align:right"><label id="entryPage_lblLookupPosition">N/A</label></th>
+                            </tr>
+                            <tr>
+                                <th style="text-align:right"></th>
+                                <th style="text-align:right"><label id="entryPage_lblLookupPositionDesc">N/A</label></th>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <h3>Geometry</h3>
+                        <p><span id="entryPage_geometry"></span></p>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a"><p><label><strong>Published: </strong></label><label id="entryPage_lblPublished">dd/mm/yyyy HH:MM</label></p></div>
+                        <div class="ui-block-b"><p><label><strong>Updated: </strong></label><label id="entryPage_lblUpdated">dd/mm/yyyy HH:MM</label></p></div>
+                    </div>
+
+                    <p><label><strong>Identifier: </strong></label><label id="entryPage_lblIdentifier">masas:entry:00000000-0000-0000-0000-000000000000</label></p>
+                </div>
+
+                <!-- Popup dialogs -->
+                <div data-role="popup" id="viewMASAS_popupDeleteEntry" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Delete this Entry?</h1>
+                    </div>
+                    <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                        <h3 class="ui-title">Are you sure you want to delete this Entry?</h3>
+                        <p>This action cannot be undone.</p>
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                        <a href="#" id="entryPage_btnDeleteEntry" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Delete</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+                <div data-role="navbar" data-iconpos="bottom">
+                    <ul>
+                        <!--li><a href="#" id="entryPage_btnHome" data-icon="home">Home</a></li-->
+                        <li><a href="#" id="entryPage_btnBack" data-icon="back">Back</a></li>
+                        <li><a href="#" id="entryPage_btnSend" data-icon="arrow-u">Send</a></li>
+                        <li><a href="#viewMASAS_popupDeleteEntry" data-icon="delete" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop">Delete</a></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+</html>

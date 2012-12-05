@@ -1,11 +1,12 @@
 /**
  * MASAS Mobile - View Attachment Page
- * Updated: Oct 5, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
 
 var viewAttachment_isReadOnly = true;
+var viewAttachment_currentAttachment = null;
 
 $( document ).delegate("#viewAttachment", "pagebeforecreate", function()
 {
@@ -14,20 +15,20 @@ $( document ).delegate("#viewAttachment", "pagebeforecreate", function()
     {
         viewAttachment_isReadOnly = false;
     }
-    $("#viewAttachment_Header").text( currentAttachment.Path.replace(/^.*[\\\/]/, '') );
+    $("#viewAttachment_Header").text( viewAttachment_currentAttachment.Path.replace(/^.*[\\\/]/, '') );
 
     $("#viewAttachment_previewImage").hide();
     $("#viewAttachment_previewAudio").hide();
     $("#viewAttachment_unknown").hide();
 
-    if( currentAttachment.Type.indexOf( 'image' ) != -1 )
+    if( viewAttachment_currentAttachment.Type.indexOf( 'image' ) != -1 )
     {
-        $("#viewAttachment_previewImage").attr("src", currentAttachment.Path);
+        $("#viewAttachment_previewImage").attr("src", viewAttachment_currentAttachment.Path);
         $("#viewAttachment_previewImage").show();
     }
-    else if( currentAttachment.Type.indexOf( 'audio' ) != -1 )
+    else if( viewAttachment_currentAttachment.Type.indexOf( 'audio' ) != -1 )
     {
-        $("#viewAttachment_previewAudio").attr("src", currentAttachment.Path);
+        $("#viewAttachment_previewAudio").attr("src", viewAttachment_currentAttachment.Path);
         $("#viewAttachment_previewAudio").show();
     }
     else

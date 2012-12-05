@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Nov 18, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -9,8 +9,6 @@ var mapInitialized = false;
 var map = null;
 var markers = [];
 var infoWindow;
-
-var $masasEntries;
 
 $( document ).delegate( "#viewMASAS", "pagebeforecreate", function( event, ui )
 {
@@ -43,17 +41,11 @@ $( document ).delegate( "#viewMASAS_btnToggleMap", "click", function( event, ui 
 {
     if( $("#viewMASAS_entryPanel").is( ":hidden" ) )
     {
-        $("#viewMASAS_entryPanel").show();
-        $("#viewMASAS_mapContent").fadeOut( "slow" );
-
-        $("#viewMASAS_btnToggleMap" ).find( '.ui-btn-text' ).text( "Map" );
-        //$("#viewMASAS").trigger("create");
+        viewMASAS_showEntryPanel();
     }
     else
     {
-        $("#viewMASAS_entryPanel").hide();
-        $("#viewMASAS_mapContent").fadeIn( "slow" );
-        $("#viewMASAS_btnToggleMap").find( '.ui-btn-text' ).text( "Details" );
+        viewMASAS_hideEntryPanel();
     }
 });
 
@@ -97,16 +89,16 @@ $( document ).delegate( "#viewMASAS_popupPanel", "popupafterclose", function()
     viewMASAS_resetPagePadding();
 });
 
-$( document ).delegate( "li[data-masas-entry-index]", "vclick", function( event )
+$( document ).delegate( "#viewMASAS_lstEntries li[data-masas-entry-identifier]", "vclick", function( event )
 {
     // Select the item...
-    var entryIndex = $(this).attr( "data-masas-entry-index" );
+    var entryId = $(this).attr( "data-masas-entry-identifier" );
 
-    if( entryIndex !== undefined )
+    if( entryId !== undefined )
     {
-        var marker = markers[entryIndex];
+        var marker = viewMASAS_getViewObjFromIdentifier( entryId );
 
-        viewMASAS_selectListItem( entryIndex );
+        viewMASAS_selectListItem( entryId );
 
         if( marker instanceof google.maps.Marker )
         {
@@ -130,7 +122,7 @@ $( document ).delegate( "li[data-masas-entry-index]", "vclick", function( event 
         }
 
         // Entry..
-        viewMASAS_updateEntryPanel( entryIndex );
+        viewMASAS_updateEntryPanel( entryId );
     }
 });
 
@@ -143,6 +135,7 @@ $( document ).delegate( "#viewMASAS_btnDefaultView", "vclick", function( event )
     app_Settings.map.defaultCenter.lon = mapCenter.lng();
 
     appSaveSettingsData();
+    viewMASAS_hideMenu();
 });
 
 $( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
@@ -159,6 +152,15 @@ $( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
                                          "neLon": llNE.lng() };
 
     appSaveSettingsData();
+    viewMASAS_hideMenu();
+});
+
+$( document ).delegate( "#viewMASAS_btnAddEntry", "vclick", function( event )
+{
+    //viewMASAS_hideMenu();
+
+    // Open the "new" entry page...
+    $.mobile.changePage( "entryPage.html", {} );
 });
 
 $( document ).delegate( "#viewMASAS_entryNavDetails", "vclick", function( event )
@@ -183,25 +185,94 @@ $( document ).delegate( "#viewMASAS_entryNavXML", "vclick", function( event )
 });
 
 
+$( document ).delegate( "#viewMASAS_btnEditEntry", "vclick", function( event )
+{
+    // Get the current selection...
+    var selectedEntryId = viewMASAS_getSelectListItemId();
+    var selectedEntry = undefined;
+
+    if( selectedEntryId != -1 ) {
+        selectedEntry = mmApp.entryManager.GetEntryByIdentifier( selectedEntryId );
+    }
+
+    // Open the entryPage if a proper entry is selected...
+    if( selectedEntry != undefined && !selectedEntry.IsReadOnly() )
+    {
+        entryPage_currentEntryModel = selectedEntry;
+        $.mobile.changePage( "entryPage.html", {} );
+    }
+
+});
+
+$( document ).delegate( "#viewMASAS_btnCancelEntry", "vclick", function( event )
+{
+    // Get the current selection...
+    var selectedEntryId = viewMASAS_getSelectListItemId();
+    var selectedEntry = undefined;
+
+    if( selectedEntryId != -1 ) {
+        selectedEntry = mmApp.entryManager.GetEntryByIdentifier( selectedEntryId );
+    }
+
+    // Open the entryPage if a proper entry is selected...
+    if( selectedEntry != undefined && !selectedEntry.IsReadOnly() )
+    {
+        viewMASAS_enableControls( false );
+        $.mobile.showPageLoadingMsg( "a", "Cancelling MASAS Entry..." );
+        mmApp.masasPublisher.CancelEntry( selectedEntry, viewMASAS_cancelEntrySuccess, viewMASAS_cancelEntryFailed );
+    }
+
+});
+
+function viewMASAS_cancelEntrySuccess()
+{
+    viewMASAS_hideEntryPanel();
+    viewMASAS_refreshListOfEntries();
+    viewMASAS_enableControls( true );
+    $.mobile.hidePageLoadingMsg();
+}
+
+function viewMASAS_cancelEntryFailed( msg )
+{
+    viewMASAS_enableControls( true );
+    $.mobile.hidePageLoadingMsg();
+    alert( "Entry could not be cancelled!  Error: " + msg );
+}
+
 function viewMASAS_showMenu()
 {
     $( "#viewMASAS_popupPanel" ).popup( "open", { transition : 'slide'} );
 }
 
-function viewMASAS_addListItem( listId, index, title, description, symbol )
+function viewMASAS_hideMenu()
 {
+    $( "#viewMASAS_popupPanel" ).popup( "close", { transition : 'slide'} );
+}
+
+function viewMASAS_addListItem( listId, entryModel )
+{
+    var symbol = "ems.other.other";
     var listItem;
     var dataList = document.getElementById( listId );
 
+    if( entryModel.masasEntry.icon != undefined ) {
+        symbol = entryModel.masasEntry.icon.replace(/\//g, "." );
+    }
+
     // Create our list item
-    listItem = document.createElement('li');
-    listItem.setAttribute( 'data-masas-entry-index', index );
+    listItem = document.createElement( "li" );
+    listItem.setAttribute( "data-masas-entry-identifier", entryModel.identifier );
+
+    if( entryModel.state == MASASMobile.EntryStateEnum.unpublished )
+    {
+        listItem.setAttribute( "data-theme", "e" );
+    }
 
     var itemHTML  = '<a>';
     itemHTML += '<div class="report_icon_wrapper">';
-    itemHTML += '<img src="' + appGetSymbolPath( symbol ) + '" style="max-width:48px;max-height:48px;" />';
+    itemHTML += '<img src="' + app_GetSymbolPath( symbol ) + '" style="max-width:48px;max-height:48px;" />';
     itemHTML += '</div>';
-    itemHTML += '<h3>' + title + '</h3>' + '<p>' + description + '</p></a>';
+    itemHTML += '<h3>' + entryModel.masasEntry.GetTitle() + '</h3>' + '<p>' + entryModel.masasEntry.GetContent() + '</p></a>';
     //itemHTML += '<a href="#" data-icon="grid" data-theme="c"></a>';
 
     listItem.innerHTML = itemHTML;
@@ -212,35 +283,50 @@ function viewMASAS_addListItem( listId, index, title, description, symbol )
 
 function viewMASAS_refreshList()
 {
-    $("#viewMASAS_lstEntries").listview("refresh");
+    $("#viewMASAS_lstEntries").listview( "refresh" );
+}
+
+function viewMASAS_getSelectListItemId()
+{
+    var curSelectId = -1;
+    var liCurSelect = $( "li[class*='ui-masas-list-item-selected']" );
+
+    if( liCurSelect.length > 0 ) {
+        curSelectId = $(liCurSelect).attr( "data-masas-entry-identifier" );
+    }
+
+    return curSelectId;
 }
 
 function viewMASAS_selectListItem( selectionId )
 {
     var liCurSelect = $( "li[class*='ui-masas-list-item-selected']" );
     var curSelectIndex = -1;
+    var markerToSelect = viewMASAS_getViewObjFromIdentifier( selectionId );
 
     // De-select the previous item...
     if( liCurSelect.length > 0 )
     {
-        curSelectIndex = $(liCurSelect).attr( "data-masas-entry-index" );
+        curSelectId = $(liCurSelect).attr( "data-masas-entry-identifier" );
         liCurSelect.removeClass( "ui-masas-list-item-selected" );
 
-        if( markers[curSelectIndex] instanceof google.maps.Polygon || markers[curSelectIndex] instanceof google.maps.Rectangle )
+        var curSelMarker = viewMASAS_getViewObjFromIdentifier( curSelectId );
+
+        if( curSelMarker instanceof google.maps.Polygon || curSelMarker instanceof google.maps.Rectangle )
         {
-            markers[curSelectIndex].setVisible( false );
+            curSelMarker.setVisible( false );
         }
 
         // Close the InfoWindow
         infoWindow.close();
     }
 
-    var liToSelect = $("li[data-masas-entry-index='" + selectionId + "']");
+    var liToSelect = $("li[data-masas-entry-identifier='" + selectionId + "']");
     liToSelect.addClass( "ui-masas-list-item-selected" );
 
-    if( markers[selectionId] instanceof google.maps.Polygon || markers[selectionId] instanceof google.maps.Rectangle )
+    if( markerToSelect instanceof google.maps.Polygon || markerToSelect instanceof google.maps.Rectangle )
     {
-        markers[selectionId].setVisible( true );
+        markerToSelect.setVisible( true );
     }
 
     viewMASAS_refreshList();
@@ -285,10 +371,14 @@ function viewMASAS_refreshListOfEntries()
         options = { 'geoFilter': filter.type + '=' + filter.data.swLon + ',' + filter.data.swLat + ',' + filter.data.neLon + ',' + filter.data.neLat };
     }
 
-    MASAS_getEntries( options, viewMASAS_getEntriesSuccess, viewMASAS_getEntriesFailure );
+    if( mmApp.masasHub.userData == undefined ) {
+        mmApp.masasHub.RefreshUserData();
+    }
+
+    mmApp.masasHub.GetEntries( options, viewMASAS_getEntriesSuccess, viewMASAS_getEntriesFailure );
 }
 
-function viewMASAS_getEntriesSuccess( xmlFeed )
+function viewMASAS_getEntriesSuccess( xmlFeed, entries )
 {
     // Clear the existing list...
     viewMASAS_clearListOfEntries();
@@ -297,49 +387,34 @@ function viewMASAS_getEntriesSuccess( xmlFeed )
         viewMASAS_clearListOfEntriesFromMap();
     }
 
-    $masasEntries = $(xmlFeed).find( "entry" );
-
-    if( $masasEntries.length > 0 )
+    mmApp.entryManager.RemovePublishedEntries();
+    for( var i = 0; i<entries.length; i++)
     {
-        for( var i = 0; i<$masasEntries.length; i++)
-        {
-            var entry = $masasEntries[i];
+        var entry = mmApp.entryManager.CreateModel();
+        entry.state = MASASMobile.EntryStateEnum.published;
+        entry.masasEntry = entries[i];
 
-            // NOTE: these can be multilingual, for now lang='en' will be taken.
-            var title = $(entry).find( "title div[xml\\:lang='en']" );
-            var description = $(entry).find( "content div[xml\\:lang='en']" );
+        mmApp.entryManager.AddEntry( entry );
 
-            var $catIcon = $(entry).find( "category[scheme='masas:category:icon']" );
-            var symbol = $catIcon.attr( "term" );
 
-            if( symbol == undefined || symbol == "other" )
-            {
-                symbol = "ems.other.other";
-            }
+    }
 
-            symbol = symbol.replace(/\//g, "." );
-
-            var $geometry;
-            $geometry = $(entry).find( "point" );
-            if( $geometry.length == 0 )
-            {
-                $geometry = $(entry).find( "polygon" );
-                if( $geometry.length == 0 )
-                {
-                    $geometry = $(entry).find( "box" );
-                }
-            }
-
-            // At the entry to the list...
-            viewMASAS_addListItem( "viewMASAS_lstEntries", i, $(title[0]).text(), $(description[0]).text(), symbol );
-
-            if( app_IsMapSupported ) {
-                viewMASAS_addMapItem( i, symbol, $geometry );
-            }
-        }
+    // TODO: Implement proper Observer Pattern...
+    for( var i = 0; i < mmApp.entryManager.Count(); i++ )
+    {
+        viewMASAS_entryManager_EntryAdded( mmApp.entryManager.GetEntry( i ) );
     }
 
     viewMASAS_refreshList();
+}
+
+function viewMASAS_entryManager_EntryAdded( entry )
+{
+    viewMASAS_addListItem( "viewMASAS_lstEntries", entry );
+
+    if( app_IsMapSupported ) {
+        viewMASAS_addMapItem( entry );
+    }
 }
 
 function viewMASAS_getEntriesFailure()
@@ -355,46 +430,58 @@ function viewMASAS_clearListOfEntries()
 
 function viewMASAS_markerClicked( event, data )
 {
-    var entry = $masasEntries[data.index];
-    // NOTE: these can be multilingual, for now lang='en' will be taken.
-    var title = $(entry).find( "title div[xml\\:lang='en']" );
-    var description = $(entry).find( "content div[xml\\:lang='en']" );
+    var entryModel = mmApp.entryManager.GetEntryByIdentifier( data.identifier );
 
-    viewMASAS_selectListItem( data.index );
+    // NOTE: these can be multilingual; 'en' is taken by default.
+    var title = entryModel.masasEntry.GetTitle();
+    var description = entryModel.masasEntry.GetContent();
 
-    infoWindow.setContent( $(title[0]).text() + " " + $(description[0]).text() );
+    viewMASAS_selectListItem( data.identifier );
+
+    infoWindow.setContent( title + " " + description );
     infoWindow.open( map, data.marker );
 }
 
 function viewMASAS_polygonClicked( event, data )
 {
-    var entry = $masasEntries[data.index];
-    var title = $(entry).find( "title div[xml\\:lang='en']" );
-    var description = $(entry).find( "content div[xml\\:lang='en']" );
+    var entryModel = mmApp.entryManager.GetEntryByIdentifier( data.identifier );
 
-    viewMASAS_selectListItem( data.index );
+    // NOTE: these can be multilingual; 'en' is taken by default.
+    var title = entryModel.masasEntry.GetTitle();
+    var description = entryModel.masasEntry.GetContent();
 
-    infoWindow.setContent( $(title[0]).text() + " " + $(description[0]).text() );
+    viewMASAS_selectListItem( data.identifier );
+
+    infoWindow.setContent( title + " " + description );
     infoWindow.setPosition( event.latLng );
     infoWindow.open( map );
 }
 
 function viewMASAS_boxClicked( event, data )
 {
-    var entry = $masasEntries[data.index];
-    var title = $(entry).find( "title div[xml\\:lang='en']" );
-    var description = $(entry).find( "content div[xml\\:lang='en']" );
+    var entryModel = mmApp.entryManager.GetEntryByIdentifier( data.identifier );
 
-    viewMASAS_selectListItem( data.index );
+    // NOTE: these can be multilingual; 'en' is taken by default.
+    var title = entryModel.masasEntry.GetTitle();
+    var description = entryModel.masasEntry.GetContent();
 
-    infoWindow.setContent( $(title[0]).text() + " " + $(description[0]).text() );
+    viewMASAS_selectListItem( data.identifier );
+
+    infoWindow.setContent( title + " " + description );
     infoWindow.setPosition( event.latLng );
     infoWindow.open( map );
 }
 
-function viewMASAS_addMapItem( index, symbol, $geometry )
+function viewMASAS_addMapItem( entryModel )
 {
-    if( $geometry.length == 0 )
+    var symbol = "ems.other.other";
+    var geometry = entryModel.masasEntry.geometry;
+
+    if( entryModel.masasEntry.icon != undefined ) {
+        symbol = entryModel.masasEntry.icon.replace(/\//g, "." );
+    }
+
+    if( geometry.length == 0 )
     {
         // No geometry is available... show a marker at (0,0) for now.
         // NOTE: This will be removed at a later time when the architecture can
@@ -403,39 +490,39 @@ function viewMASAS_addMapItem( index, symbol, $geometry )
 
         var marker = new google.maps.Marker({
             position: latlng,
-            icon: new google.maps.MarkerImage( appGetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
+            icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
             map: map
         });
 
         google.maps.event.addListener( marker, 'click', function( event ) {
-            viewMASAS_markerClicked( event, { marker: marker, index: index } );
+            viewMASAS_markerClicked( event, { marker: marker, identifier: entryModel.identifier } );
         });
 
-        markers.push( marker );
+        markers.push( { identifier: entryModel.identifier, viewObj: marker } );
     }
     else
     {
-        if( $geometry[0].nodeName == "georss:point" )
+        if( geometry[0].type == "point" )
         {
-            var point = $geometry.text();
+            var point = geometry[0].data;
             var splitPoint = point.split( " " );
             var latlng = new google.maps.LatLng( splitPoint[0], splitPoint[1] );
 
             var marker = new google.maps.Marker({
                 position: latlng,
-                icon: new google.maps.MarkerImage( appGetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
+                icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
                 map: map
             });
 
             google.maps.event.addListener( marker, 'click', function( event ) {
-                viewMASAS_markerClicked( event, { marker: marker, index: index } );
+                viewMASAS_markerClicked( event, { marker: marker, identifier: entryModel.identifier } );
             });
 
-            markers.push( marker );
+            markers.push( { identifier: entryModel.identifier, viewObj: marker } );
         }
-        else if( $geometry[0].nodeName == "georss:polygon" )
+        else if( geometry[0].type == "polygon" )
         {
-            var points = $geometry.text();
+            var points = geometry[0].data;
             var splitPoints = points.split( " " );
 
             var pointArray = new google.maps.MVCArray();
@@ -459,14 +546,14 @@ function viewMASAS_addMapItem( index, symbol, $geometry )
             });
 
             google.maps.event.addListener( polygon, 'click', function( event ) {
-                viewMASAS_polygonClicked( event, { polygon: polygon, index: index } );
+                viewMASAS_polygonClicked( event, { polygon: polygon, identifier: entryModel.identifier } );
             });
 
-            markers.push( polygon );
+            markers.push( { identifier: entryModel.identifier, viewObj: polygon } );
         }
-        else if( $geometry[0].nodeName == "georss:box" )
+        else if( geometry[0].type == "box" )
         {
-            var points = $geometry.text();
+            var points = geometry[0].data;
             var splitPoints = points.split( " " );
 
             // SW, NE..
@@ -496,20 +583,34 @@ function viewMASAS_addMapItem( index, symbol, $geometry )
             });
 
             google.maps.event.addListener( box, 'click', function( event ) {
-                viewMASAS_boxClicked( event, { box: box, index: index } );
+                viewMASAS_boxClicked( event, { box: box, identifier: entryModel.identifier } );
             });
 
-            markers.push( box );
+            markers.push( { identifier: entryModel.identifier, viewObj: box } );
         }
     }
+}
+
+function viewMASAS_getViewObjFromIdentifier( identifier )
+{
+    var viewObj = undefined;
+    for( var i = 0; i < markers.length; i++ )
+    {
+        if( markers[i].identifier == identifier ) {
+            viewObj = markers[i].viewObj;
+            break;
+        }
+    }
+
+    return viewObj;
 }
 
 function viewMASAS_clearListOfEntriesFromMap()
 {
     for( var i = 0; i < markers.length; i++ )
     {
-        markers[i].setMap( null );
-        google.maps.event.clearInstanceListeners( markers[i] );
+        markers[i].viewObj.setMap( null );
+        google.maps.event.clearInstanceListeners( markers[i].viewObj );
     }
 
     markers = [];
@@ -520,11 +621,10 @@ function viewMASAS_resizePage()
     var footer_height  = $.mobile.activePage.children('[data-role="footer"]').height();
     var entryTopNav_height  = $('#viewMASAS_entryTopNavBar').height();
     var entryBottomNav_height  = $('#viewMASAS_entryBottomNavBar').height();
-        
     var window_height  = $(window).height();
 
-// iPad is reporting 1024 for both height and width so need to force the height
-// (20 is height of standard iOS information bar (signal, time, battery, etc.)
+    // iPad is reporting 1024 for both height and width so need to force the height
+    // (20 is height of standard iOS information bar (signal, time, battery, etc.)
     if (iOS.device.iPad) {
       window_height = 768 - 20;
     }
@@ -552,51 +652,79 @@ function viewMASAS_resetPagePadding()
     $("#viewMASAS" ).css( "padding-bottom", footer_height );
 }
 
-function viewMASAS_updateEntryPanel( entryIndex )
+function viewMASAS_updateEntryPanel( entryIdentifier )
 {
-    var entry = $masasEntries[entryIndex];
-    var oSerializer = new XMLSerializer();
-    var entryXmlString = oSerializer.serializeToString(entry);
+    var entryModel = mmApp.entryManager.GetEntryByIdentifier( entryIdentifier );
+    var masasEntry = entryModel.masasEntry;
+    var entryXmlString = masasEntry.ToXML();
+
+    if( !entryModel.IsReadOnly() )
+    {
+        $("#viewMASAS_grpEntryActions" ).show();
+
+        if( entryModel.state == MASASMobile.EntryStateEnum.unpublished ) {
+            $("#viewMASAS_btnCancelEntry" ).button( "disable" );
+        }
+        else {
+            $("#viewMASAS_btnCancelEntry" ).button( "enable" );
+        }
+    }
+    else
+    {
+        $("#viewMASAS_grpEntryActions" ).hide();
+    }
 
     // Let's populate the <span> with data...
-    $("#viewMASAS_entryId").text( $(entry).find( "id" ).text() );
+    $("#viewMASAS_entryId").text( masasEntry.identifier );
 
-    $("#viewMASAS_entryAuthorName").text( $(entry).find( "author > name" ).text() );
-    $("#viewMASAS_entryAuthorURI").text( $(entry).find( "author > uri" ).text() );
+    $("#viewMASAS_entryAuthorName").text( masasEntry.author.name );
+    $("#viewMASAS_entryAuthorURI").text( masasEntry.author.uri );
 
     // NOTE: these can be multilingual, for now lang='en' will be taken.
-    var titleTxt = $(entry).find( "title div[xml\\:lang='en']" );
-    $("#viewMASAS_entryTitle" ).text( $(titleTxt[0]).text() );
-
-    var contentTxt = $(entry).find( "content div[xml\\:lang='en']" );
-    $("#viewMASAS_entryContent").text( $(contentTxt[0]).text() );
+    $("#viewMASAS_entryTitle" ).text( masasEntry.GetTitle() );
+    $("#viewMASAS_entryContent").text( masasEntry.GetContent() );
 
     // Single Categories...
-    $("#viewMASAS_entryStatus").text( $(entry).find( "category[scheme='masas:category:status']" ).attr( "term" ) );
-    $("#viewMASAS_entryIcon").text( $(entry).find( "category[scheme='masas:category:icon']" ).attr( "term" ) );
+    $("#viewMASAS_entryStatus").text( masasEntry.status );
+    $("#viewMASAS_entryIcon").text( masasEntry.icon );
+    $("#viewMASAS_entryCertainty").text( masasEntry.certainty );
+    $("#viewMASAS_entrySeverity").text( masasEntry.severity );
 
     // Multiple Categories...
-    $("#viewMASAS_entryCertainty").text( $(entry).find( "category[scheme='masas:category:certainty']" ).attr( "term" ) );
-    $("#viewMASAS_entryCategory").text( $(entry).find( "category[scheme='masas:category:category']" ).attr( "term" ) );
-    $("#viewMASAS_entrySeverity").text( $(entry).find( "category[scheme='masas:category:severity']" ).attr( "term" ) );
+    var categories = "";
+    for( var i = 0; i < masasEntry.categories.length ;i++ ) {
+        categories += masasEntry.categories[i] + " ";
+    }
+    $("#viewMASAS_entryCategory").text( categories );
 
-    $("#viewMASAS_entryPublished").text( $(entry).find( "published" ).text() );
-    $("#viewMASAS_entryUpdated").text( $(entry).find( "updated" ).text() );
-    $("#viewMASAS_entryExpires").text( $(entry).find( "expires" ).text() );
-    $("#viewMASAS_entryGeometry").text( $(entry).find( "point, polygon, box" ).text() );
+    if( masasEntry.published != undefined ) {
+        $("#viewMASAS_entryPublished").text( masasEntry.published.toDateString() + ' ' + masasEntry.published.toLocaleTimeString() );
+    }
+    else {
+        $("#viewMASAS_entryPublished").text( "N/A" );
+    }
+
+    if( masasEntry.updated != undefined ) {
+        $("#viewMASAS_entryUpdated").text(  masasEntry.updated.toDateString() + ' ' + masasEntry.updated.toLocaleTimeString() );
+    }
+    else {
+        $("#viewMASAS_entryUpdated").text(  "N/A" );
+    }
+
+    $("#viewMASAS_entryExpires").text( masasEntry.expires.toDateString() + ' ' + masasEntry.expires.toLocaleTimeString() );
+
+    $("#viewMASAS_entryGeometry").text( masasEntry.geometry[0].type + ": " + masasEntry.geometry[0].data );
 
     // Populate the entry XML panel...
     $("#viewMASAS_entryXML" ).text( entryXmlString );
 
     // Populate the attachment panel...
     viewMASAS_resetAttachmentList();
-    var attachments = $(entry).find( "link[rel='enclosure']" );
 
-    for( var i=0; i<attachments.length; i++ )
-    {
-        viewMASAS_addEntryAttachment( attachments[i] );
+    for( var i = 0; i < masasEntry.attachments.length; i++ ) {
+        viewMASAS_addEntryAttachment( masasEntry.attachments[i] );
     }
-    $('#viewMASAS_entryAttachmentsCount').text( attachments.length );
+    $('#viewMASAS_entryAttachmentsCount').text( masasEntry.attachments.length );
     $('#viewMASAS_entryAttachments').listview('refresh');
 }
 
@@ -613,12 +741,12 @@ function viewMASAS_addEntryAttachment( attachment )
 
     // Create our list item
     listItem = document.createElement('li');
-    listItem.setAttribute( 'data-masas-entry-attachment', $( attachment ).attr( "href" ) );
-    listItem.setAttribute( 'data-masas-entry-attachment-type', $( attachment ).attr( "type" ) );
+    listItem.setAttribute( 'data-masas-entry-attachment', attachment.uri );
+    listItem.setAttribute( 'data-masas-entry-attachment-type', attachment.contentType );
 
     var itemHTML  = '<a>';
-    itemHTML += '<h3>' + $( attachment ).attr( "title" ) + '</h3>';
-    itemHTML += '<p>' + $( attachment ).attr( "type" ) + '</p>'
+    itemHTML += '<h3>' + attachment.title + '</h3>';
+    itemHTML += '<p>' + attachment.contentType + '</p>'
     itemHTML += '</a>';
 
     listItem.innerHTML = itemHTML;
@@ -627,7 +755,7 @@ function viewMASAS_addEntryAttachment( attachment )
     dataList.appendChild( listItem );
 }
 
-$( document ).delegate( "li[data-masas-entry-attachment]", "vclick", function( event )
+$( document ).delegate( "#viewMASAS_entryAttachments li[data-masas-entry-attachment]", "vclick", function( event )
 {
 
     var attachmentUrl = $(this).attr( 'data-masas-entry-attachment' );
@@ -655,7 +783,7 @@ $( document ).delegate( "li[data-masas-entry-attachment]", "vclick", function( e
     {
         // Handle Text and XML files
         $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
-        MASAS_getAttachment( attachmentUrl, viewMASAS_getAttachmentSuccess, viewMASAS_getAttachmentFailed );
+        mmApp.masasHub.GetAttachment( attachmentUrl, viewMASAS_getAttachmentSuccess, viewMASAS_getAttachmentFailed );
     }
 });
 
@@ -673,4 +801,30 @@ function viewMASAS_getAttachmentFailed()
 {
     $.mobile.loading( "hide" );
     alert( 'Failed to retrieve attachment!');
+}
+
+function viewMASAS_hideEntryPanel()
+{
+    $("#viewMASAS_entryPanel").hide();
+    $("#viewMASAS_mapContent").fadeIn( "slow" );
+    $("#viewMASAS_btnToggleMap").find( '.ui-btn-text' ).text( "Details" );
+}
+
+function viewMASAS_showEntryPanel()
+{
+    $("#viewMASAS_entryPanel").show();
+    $("#viewMASAS_mapContent").fadeOut( "slow" );
+    $("#viewMASAS_btnToggleMap" ).find( '.ui-btn-text' ).text( "Map" );
+}
+
+function viewMASAS_enableControls( enable )
+{
+    if( enable )
+    {
+        $('#viewMASAS').removeClass('ui-disabled');
+    }
+    else
+    {
+        $('#viewMASAS').addClass('ui-disabled');
+    }
 }

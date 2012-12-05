@@ -64,6 +64,7 @@
     margin: 15px;
 }
 
+.masas-tab-panel,
 #viewMASAS_entryContentPanelDetails,
 #viewMASAS_entryContentPanelAttachments,
 #viewMASAS_entryContentPanelXML {
@@ -237,5 +238,22 @@
         height:100%;
     }
 
-}
+    #entryPage_lblSymbol {
+        vertical-align: top;
+        display: inline-block;
+        width: 20%;
+        margin: 0 2% 0 0;
+    }
+    #entryPage_symbolPanel {
+        vertical-align: top;
+        width: 68%;
+        display: inline-block;
+    }
 
+    #entryPage_symbol {
+        padding-left: 1%;
+        width: 6%;
+        display: inline-block;
+    }
+
+}

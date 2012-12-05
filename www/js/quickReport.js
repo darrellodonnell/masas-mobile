@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Quick Report Page
- * Updated: Oct 30, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -57,10 +57,7 @@ function quickReport_sendQuickReport( reportTitle )
             };
         }
 
-        var entry = appShortReportToMASAS( report );
-        delete report;
-
-        MASAS_createNewEntry( entry, quickReport_reportSendSuccess, quickReport_reportSendFail );
+        mmApp.masasPublisher.PublishShortReport( report, quickReport_reportSendSuccess, quickReport_reportSendFail )
     }
     else
     {
@@ -76,9 +73,12 @@ function quickReport_reportSendSuccess()
     $.mobile.hidePageLoadingMsg();
 }
 
-function quickReport_reportSendFail()
+function quickReport_reportSendFail( msg )
 {
-    console.log( 'Report could not be sent!' );
+    var errorMsg = "Report could not be sent! Error: " + msg;
+    console.log( errorMsg );
+
+    alert( errorMsg );
 
     quickReport_enableControls( true );
     $.mobile.hidePageLoadingMsg();

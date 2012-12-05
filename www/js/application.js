@@ -1,9 +1,17 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Nov 18, 2012
+ * Updated: Dec 04, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
+
+var MASASMobile = MASASMobile || {};
+
+var mmApp = function() {
+    this.masasHub = undefined;
+    this.entryManager = undefined;
+    this.masasPublisher = undefined;
+};
 
 var bb = {
     device: {
@@ -14,7 +22,7 @@ var bb = {
         isBB10: false,
         isPlayBook: false
     }
-}
+};
 
 var iOS = {
     device: {
@@ -22,7 +30,7 @@ var iOS = {
         iPad: false,
         iPhone: false
     }
-}
+};
 
 var app = {
     showAlert: false,
@@ -34,7 +42,7 @@ var app = {
     map: {
         token: ""
     }
-}
+};
 
 var app_CordovaLoaded = false;
 var localReports = [];
@@ -42,7 +50,6 @@ var localReports = [];
 var app_Settings = null;
 
 var currentReport = null;
-var currentAttachment = null;
 var app_DefaultLocation = { latitude: 42.999444, longitude: -82.308889 };
 
 var app_IsAppInitialized = false;
@@ -127,6 +134,11 @@ function app_initApplication()
     if( !app_IsAppInitialized )
     {
         // Initialize the app...
+        mmApp.masasHub = new MASAS.Hub();
+        mmApp.entryManager = new MASASMobile.EntryManager();
+        mmApp.masasPublisher = new MASASMobile.MASASPublisher();
+
+        // Get the device information...
         app_getDeviceInfo();
 
         // Load the menu...
@@ -145,6 +157,8 @@ function app_initApplication()
             app_IsMapSupported = true;
             app_loadMapScript();
         }
+
+        app_IsAppInitialized = true;
     }
 }
 
@@ -403,7 +417,7 @@ function app_loadData()
     }
 }
 
-function appSaveData()
+function app_SaveData()
 {
     var storage = window.localStorage;
 
@@ -441,271 +455,7 @@ function appLocalReports_removeReport( report )
     }
 }
 
-function appShortReportToMASAS( report )
-{
-    var augmentedTitle = report.Title + ' [' + app_Settings.vehicleId + ']';
-
-    var masasEntry =
-        {
-            "title":    augmentedTitle,
-            "content":  report.Description,
-            "status":   app_Settings.reportStatus,
-            "icon":     appGetSimpleReportIcon(),
-            "expires":  appGetReportExpiration()
-        };
-
-    if( report.Location != undefined && report.Location != null )
-    {
-        masasEntry.point = {
-                "latitude":     report.Location.latitude,
-                "longitude":    report.Location.longitude
-            }
-    }
-    else {
-        masasEntry.point = app_DefaultLocation;
-    }
-
-    return masasEntry;
-}
-
-var app_callback_reportSent = null;
-var app_callback_reportSendFail = null;
-var app_callback_reportGenerated = null;
-var app_callback_reportGeneratedFailed = null;
-var app_generatedMasasEntry = null;
-
-function appSendReportToMASAS( report, callback_reportSent, callback_reportSendFailed )
-{
-    app_callback_reportSent = callback_reportSent;
-    app_callback_reportSendFail = callback_reportSendFailed;
-
-    // Create MASAS Report...
-    appGenerateMASASEntry( report, appMASASReportGenerated, appMASASReportGeneratedFailed );
-}
-
-function appMASASReportGenerated( masasEntry )
-{
-    console.log( 'MASAS Report has been generated! Attempting to send.' );
-    console.log( masasEntry );
-
-    MASAS_createNewEntry( masasEntry, app_MASAS_createNewEntry_success, app_MASAS_createNewEntry_fail );
-}
-
-function appMASASReportGeneratedFailed( errorMsg )
-{
-    console.log( 'MASAS Report could not be generated!' );
-    console.log( errorMsg );
-
-    app_MASAS_createNewEntry_fail( errorMsg );
-}
-
-function app_MASAS_createNewEntry_success()
-{
-    console.log( 'MASAS Entry created!' );
-    if( app_callback_reportSent && typeof( app_callback_reportSent ) === "function" )
-    {
-        app_callback_reportSent();
-    }
-}
-
-function app_MASAS_createNewEntry_fail( errorMsg )
-{
-    console.log( 'MASAS Entry creation failed!' );
-    if( app_callback_reportSendFail && typeof( app_callback_reportSendFail ) === "function" )
-    {
-        app_callback_reportSendFail( errorMsg );
-    }
-}
-
-function appGenerateMASASEntry( report, callback_reportGenerated, callback_reportGeneratedFailed )
-{
-    app_callback_reportGenerated = callback_reportGenerated;
-    app_callback_reportGeneratedFailed = callback_reportGeneratedFailed;
-
-    var augmentedTitle = report.Title + ' [' + app_Settings.vehicleId + ']';
-
-    app_generatedMasasEntry =
-        {
-            "title":        augmentedTitle,
-            "content":      report.Description,
-            "status":       app_Settings.reportStatus,
-            "icon":         appGetReportIcon( report.Symbol ),
-            "expires":      appGetReportExpiration(),
-            "attachments":  []
-        };
-
-    // Default location...
-    app_generatedMasasEntry.point = app_DefaultLocation;
-
-    // Figure out the real location, if it exists...
-    if( report.UseLocation == "GPS" )
-    {
-        if( report.Location != undefined && report.Location != null )
-        {
-            app_generatedMasasEntry.point = {
-                    "latitude":     report.Location.latitude,
-                    "longitude":    report.Location.longitude
-                }
-        }
-    }
-    else {
-        if( report.LookupLocation.Location != undefined && report.LookupLocation.Location != null )
-        {
-            app_generatedMasasEntry.point = {
-                "latitude":     report.LookupLocation.Location.latitude,
-                "longitude":    report.LookupLocation.Location.longitude
-            }
-        }
-    }
-
-    app_generatedMasasEntry.attachments = [];
-
-    // setup the data up front so we don't have any data access problems...
-    for( var i = 0; i < report.Attachments.length; i++ )
-    {
-        var attachment = {
-            path:           report.Attachments[i].Path,
-            fileName:       report.Attachments[i].Path.replace( /^.*[\\\/]/, '' ),
-            contentType:    report.Attachments[i].Type,
-            description:    '',
-            base64:         undefined,
-            statusCode:     0,
-            statusMsg:      ''
-        }
-        app_generatedMasasEntry.attachments.push( attachment );
-    }
-
-    // Convert each attachment to BASE64
-    if( app_generatedMasasEntry.attachments.length > 0 )
-    {
-        for( var i = 0; i < app_generatedMasasEntry.attachments.length; i++ )
-        {
-            // Load the Attachment as base64
-            app_loadAttachmentAsBase64( app_generatedMasasEntry.attachments[i] );
-        }
-    }
-    else
-    {
-        // No attachments, we are done...
-        if( app_callback_reportGenerated && typeof( app_callback_reportGenerated ) === "function" )
-        {
-            app_callback_reportGenerated( app_generatedMasasEntry );
-        }
-    }
-}
-
-function app_loadAttachmentAsBase64( attachment )
-{
-    console.log( 'Opening file: ' + attachment.path );
-
-    // First, resolve the path to get use the FileEntry for the file we need...
-    window.resolveLocalFileSystemURI( attachment.path,
-        function( fileEntry ) // START resolveLocalFileSystemURI() Success callback
-        {
-            // We have a FileEntry, now we need the File!
-            console.log( fileEntry.name + ' resolved.' );
-
-            fileEntry.file(
-                function( file ) // START file() Success callback
-                {
-                    // Create a FileReader...
-                    var reader = new FileReader();
-
-                    reader.onloadend =
-                        function( evt ) // START reader.onloadend event callback
-                        {
-                            console.log( "readAsDataURL() success!" );
-
-                            // We only need the actual base64 data, so remove the added text before the data...
-                            attachment.base64 = (evt.target.result).substr( ("data:text/plain;base64,").length );
-                            attachment.statusCode = 1;
-                            attachment.statusMsg = "File loaded as BASE64.";
-
-                            app_checkIfAllAttachmentsLoaded();
-                        }; // END reader.onloadend event callback
-
-                    // ******************************************************************************************
-                    // IMPORTANT PATCH FOR BLACKBERRY WEBWORKS TABLET 2.2.0.5
-                    //  The "reader.readAsDataURL()" call will not work without the patch!
-                    //  There is a new "binary" option in the patch that needs to be used when converting from
-                    //  a binary file to a base64 string.
-                    //
-                    //  See README - PlayBook.txt and follow the steps to patch your SDKs.
-                    // ******************************************************************************************
-
-                    // Read the file as BASE64...
-                    reader.readAsDataURL( file );
-
-                }, // END File Success callback
-                function( evt ) // START File Failure callback
-                {
-                    // Failed!
-                    console.log( evt.target.error.code );
-                    attachment.statusCode = -1;
-                    attachment.statusMsg = "Failed: Could not resolve the File.";
-
-                    app_checkIfAllAttachmentsLoaded();
-                } // END file() Failure callback
-            );
-        }, // END resolveLocalFileSystemURI() Success callback
-        function( evt )  // START resolveLocalFileSystemURI() Failed callback
-        {
-            // Failed!
-            console.log( evt.target.error.code );
-
-            attachment.statusCode = -1;
-            attachment.statusMsg = "Failed: Could not resolve the Local File System URI.";
-
-            app_checkIfAllAttachmentsLoaded();
-        } // END resolveLocalFileSystemURI() Failed callback
-    );
-}
-
-function app_checkIfAllAttachmentsLoaded()
-{
-    var count = 0;
-    var failed = false;
-    var errorMsg = '';
-
-    for( var i=0; i < app_generatedMasasEntry.attachments.length; i++ )
-    {
-        if( app_generatedMasasEntry.attachments[i].statusCode == -1 )
-        {
-            count++;
-            failed = true;
-            // TODO: this needs work!
-            errorMsg += app_generatedMasasEntry.attachments[i].statusMsg + ' ';
-        }
-        else if( app_generatedMasasEntry.attachments[i].statusCode == 1 )
-        {
-            count++;
-        }
-    }
-
-    if( count == app_generatedMasasEntry.attachments.length )
-    {
-        // We are done...
-        if( failed )
-        {
-            if( app_callback_reportGeneratedFailed && typeof( app_callback_reportGeneratedFailed ) === "function" )
-            {
-                app_callback_reportGeneratedFailed( app_generatedMasasEntry );
-            }
-        }
-        else
-        {
-            if( app_callback_reportGenerated && typeof( app_callback_reportGenerated ) === "function" )
-            {
-                app_callback_reportGenerated( app_generatedMasasEntry );
-            }
-        }
-    }
-    else {
-        console.log( 'Only ' + count + ' attachments have been converted.' );
-    }
-}
-
-function appGetSimpleReportIcon()
+function app_GetSimpleReportIcon()
 {
     var returnVal = 'other';
 
@@ -752,7 +502,7 @@ function appGetReportIcon( symbol )
     return returnVal;
 }
 
-function appGetReportExpiration()
+function app_GetReportExpiration()
 {
     // Get the current date/time...
     var reportExpires = new Date();
@@ -794,10 +544,16 @@ function appGetReportExpiration()
     return reportExpires;
 }
 
-function appGetSymbolPath( symbol )
+function app_GetSymbolPath( symbol )
 {
     var path;
-    var symbolSplit = symbol.split( '.' );
+    var symbolSplit = [];
+
+    if( symbol == undefined || symbol == "other" ) {
+        symbol = "ems.other.other";
+    }
+
+    symbolSplit = symbol.split( '.' );
 
     if( symbolSplit.length > 3 )
     {

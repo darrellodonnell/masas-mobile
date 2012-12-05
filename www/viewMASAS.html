@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 MASAS View Tool
-Updated: Nov 13, 2012
+Updated: Dec 04, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -22,6 +22,7 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                 <div data-role="popup" id="viewMASAS_popupPanel" data-corners="false" data-theme="none" data-shadow="false" data-tolerance="0,0">
                     <a href="" id="viewMASAS_btnDefaultView" data-role="button" data-theme="a" data-icon="home">Default View</a>
                     <a href="" id="viewMASAS_btnAddFilter" data-role="button" data-theme="a" data-icon="star">Set View as filter</a>
+                    <a href="" id="viewMASAS_btnAddEntry" data-role="button" data-theme="a" data-icon="star">New Entry</a>
                 </div>
 
                 <div class="ui-masas-left-panel" >
@@ -57,6 +58,12 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
                     <div id="viewMASAS_entryPanel">
                         <div id="viewMASAS_entryContentPanel">
+
+                            <div class="ui-grid-a" id="viewMASAS_grpEntryActions" style="display:none">
+                                <div class="ui-block-a"><button id="viewMASAS_btnEditEntry" data-role="button" data-icon="plus">Edit...</button></div>
+                                <div class="ui-block-b"><button id="viewMASAS_btnCancelEntry" data-role="button" data-icon="plus">Cancel Entry</button></div>
+                            </div>
+
                             <h3><span id="viewMASAS_entryTitle">Title</span></h3>
 
                             <p><span id="viewMASAS_entryContent">Content</span></p>
