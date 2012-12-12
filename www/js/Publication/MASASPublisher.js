@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS Publisher
- * Updated: Dec 04, 2012
+ * Updated: Dec 12, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -126,7 +126,9 @@ MASASMobile.MASASPublisher = function()
                                 console.log( "readAsDataURL() success!" );
 
                                 // We only need the actual base64 data, so remove the added text before the data...
-                                attachment.base64 = (evt.target.result).substr( ("data:text/plain;base64,").length );
+                                var startPos = (evt.target.result).indexOf( ',' );
+
+                                attachment.base64 = (evt.target.result).substr( startPos + 1 );
                                 attStatus.statusCode = 1;
                                 attStatus.statusMsg = "File loaded as BASE64.";
 

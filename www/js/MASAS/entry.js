@@ -1,6 +1,6 @@
 /**
  * MASAS - Entry Model object definition
- * Updated: Dec 04, 2012
+ * Updated: Dec 12, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -153,6 +153,23 @@ MASAS.Entry = function()
         this.attachments.push( attachment );
     };
 
+    this.RemoveAttachment = function( attachment )
+    {
+        var retValue = false;
+
+        for( var i=0; i<this.attachments.length; i++ )
+        {
+            if( this.attachments[i].uri == attachment.uri )
+            {
+                this.attachments.splice( i, 1 );
+                retValue = true;
+                break;
+            }
+        }
+
+        return retValue;
+    }
+
     this.FromNode = function( entryNode )
     {
         // reset the languages...
@@ -236,10 +253,10 @@ MASAS.Entry = function()
         {
             var attachment = new MASAS.Attachment();
 
-            attachment.uri            = $(attachments).attr( "href" );
-            attachment.title          = $(attachments).attr( "title" );
-            attachment.contentType    = $(attachments).attr( "type" );
-            attachment.length         = $(attachments).attr( "length" );
+            attachment.uri            = $(attachments[attachCtr]).attr( "href" );
+            attachment.title          = $(attachments[attachCtr]).attr( "title" );
+            attachment.contentType    = $(attachments[attachCtr]).attr( "type" );
+            attachment.length         = $(attachments[attachCtr]).attr( "length" );
 
             this.attachments.push( attachment );
         }

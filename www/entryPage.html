@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 MASAS Entry Form
-Updated: Dec 04, 2012
+Updated: Dec 12, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -161,9 +161,10 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
                 <div id="entryPage_contentPanelAttachments" class="masas-tab-panel" style="display:none">
 
-                    <div class="ui-grid-a">
+                    <div class="ui-grid-b">
                         <div class="ui-block-a"><a href="#" id="entryPage_btnPicture" data-role="button" data-icon="plus">Picture</a></div>
                         <div class="ui-block-b"><a href="#" id="entryPage_btnAudio" data-role="button" data-icon="plus">Audio</a></div>
+                        <div class="ui-block-c"><a href="#" id="entryPage_btnEditAttachment" data-role="button" data-icon="gear">Edit</a></div>
                     </div>
 
                     <ul id="entryPage_attachments" data-role="listview" data-inset="true" >
@@ -184,14 +185,27 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                     </ul>
 
                     <div data-role="popup" id="entryPage_popupPhoto" class="photopopup" data-overlay-theme="a" data-corners="false" data-tolerance="30,15" data-position-to="window">
-                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><img id="entryPage_previewImage" src="">
+                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                        <img id="entryPage_previewImage" src="">
                     </div>
 
-                    <div data-role="popup" id="entryPage_popupText" data-overlay-theme="a" data-corners="false" data-tolerance="30,15,30,15" data-position-to="window">
+                    <div data-role="popup" id="entryPage_popupAudio" data-overlay-theme="a" data-corners="false" data-tolerance="30,15,30,15" data-position-to="window">
                         <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-                        <div id="entryPage_previewText">
+                        <audio id="entryPage_previewAudio" src="" controls="true" />
+                    </div>
+
+                    <div data-role="popup" id="entryPage_deleteAttachment" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
+                        <div data-role="header" data-theme="a" class="ui-corner-top">
+                            <h1>Delete this Attachment?</h1>
+                        </div>
+                        <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                            <h3 class="ui-title">Are you sure you want to delete this Attachment?</h3>
+                            <p>This action cannot be undone.</p>
+                            <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>
+                            <a href="#" id="entryPage_btnDeleteAttachment" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Delete</a>
                         </div>
                     </div>
+
                 </div>
 
                 <div id="entryPage_contentPanelLocation" class="masas-tab-panel" style="display:none">

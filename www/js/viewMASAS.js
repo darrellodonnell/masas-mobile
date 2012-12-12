@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Dec 04, 2012
+ * Updated: Dec 12, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -764,26 +764,53 @@ $( document ).delegate( "#viewMASAS_entryAttachments li[data-masas-entry-attachm
     if( attachmentType.indexOf( 'image' ) >= 0 )
     {
         // Handle Images...
-        $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
+        if( attachmentUrl.indexOf( 'file:///' ) == 0 )
+        {
+            $("#viewMASAS_previewImage").attr( "src", attachmentUrl );
+            $("#viewMASAS_popupPhoto").popup( "open" );
+        }
+        else
+        {
+            $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
 
-        $( "#viewMASAS_previewImage" ).load( function() {
-            $.mobile.loading( "hide" );
-            $( "#viewMASAS_popupPhoto" ).popup( "open" );
-        });
+            $( "#viewMASAS_previewImage" ).load( function() {
+                $.mobile.loading( "hide" );
+                $( "#viewMASAS_popupPhoto" ).popup( "open" );
+            });
 
-        $( "#viewMASAS_previewImage" ).error( function() {
-            $.mobile.loading( "hide" );
-            viewMASAS_getAttachmentFailed();
-        });
+            $( "#viewMASAS_previewImage" ).error( function() {
+                $.mobile.loading( "hide" );
+                viewMASAS_getAttachmentFailed();
+            });
 
-        $( "#viewMASAS_previewImage" ).attr( "src", attachmentUrl + "?secret=" + app_Settings.token );
+            $( "#viewMASAS_previewImage" ).attr( "src", attachmentUrl + "?secret=" + app_Settings.token );
+        }
 
+    }
+    else if( attachmentType.indexOf( 'audio' ) >= 0 )
+    {
+        // Handle Images...
+        if( attachmentUrl.indexOf( 'http' ) == 0 )
+        {
+            attachmentUrl += "?secret=" + app_Settings.token
+        }
+
+        $("#viewMASAS_previewAudio").attr( "src", attachmentUrl );
+        $("#viewMASAS_popupAudio").popup( "open" );
     }
     else if( attachmentType.indexOf( "xml" ) >= 0 || attachmentType.indexOf( "text") >= 0 )
     {
         // Handle Text and XML files
-        $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
-        mmApp.masasHub.GetAttachment( attachmentUrl, viewMASAS_getAttachmentSuccess, viewMASAS_getAttachmentFailed );
+        if( attachmentUrl.indexOf( 'file:///' ) == 0 )
+        {
+            // TODO: Load from local storage!
+            alert( "Loading a local xml or text file is currently not supported!" );
+        }
+        else
+        {
+            $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
+            mmApp.masasHub.GetAttachment( attachmentUrl, viewMASAS_getAttachmentSuccess, viewMASAS_getAttachmentFailed );
+        }
     }
 });
 

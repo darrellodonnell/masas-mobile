@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Entry Page
- * Updated: Dec 04, 2012
+ * Updated: Dec 12, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -89,6 +89,30 @@ $( document ).delegate("#entryPage_btnAudio", "vclick", function(event, ui)
     entryPage_recordAudio();
 });
 
+$( document ).delegate("#entryPage_btnEditAttachment", "vclick", function(event, ui)
+{
+    var editBtn = $("#entryPage_btnEditAttachment .ui-btn-text");
+    var items = $("#entryPage_attachments li[data-masas-entry-attachment] p[class*=ui-masas-entry-delete-button]" );
+
+    if( items.length > 0 )
+    {
+        if( $(items[0]).is(":hidden") )
+        {
+            $(items).show();
+            $(editBtn).text( "Cancel Edit" );
+        }
+        else {
+            $(items).hide();
+            $(editBtn).text( "Edit" );
+        }
+    }
+    else
+    {
+        $(items).hide();
+        $(editBtn).text( "Edit" );
+    }
+});
+
 $( document ).delegate("#entryPage_btnGPS", "vclick", function(event, ui)
 {
      entryPage_getCurrentPosition();
@@ -110,7 +134,6 @@ $( document ).delegate("#entryPage_btnSend", "vclick", function(event, ui)
         entryPage_saveEntry();
 
         $.mobile.showPageLoadingMsg( "a", "Sending Entry to MASAS..." );
-        //app_SendEntryToMASAS( entryPage_currentEntryModel.masasEntry, entryPage_entrySendSuccess, entryPage_entrySendFail );
         mmApp.masasPublisher.PublishEntry( entryPage_currentEntryModel, entryPage_entrySendSuccess, entryPage_entrySendFail );
     }
     else
@@ -139,6 +162,43 @@ $( document ).delegate( "#entryPage_attachments li[data-masas-entry-attachment]"
         if( attachment != null )
         {
             entryPage_viewAttachment( attachment );
+        }
+    }
+});
+
+$( document ).delegate( "#entryPage_attachments li[data-masas-entry-attachment] p[class*=ui-masas-entry-delete-button] button", "vclick", function( event )
+{
+    // Stop the propagation otherwise the 'LI' clicked event will get triggered...
+    event.stopImmediatePropagation();
+
+    var containerLi = $(this).closest( "#entryPage_attachments li[data-masas-entry-attachment]" );
+    var jsonStr = $(containerLi).attr( 'data-masas-entry-attachment' );
+
+    if( jsonStr != undefined )
+    {
+        var attachment = JSON.parse( jsonStr.replace(/'/g, '"') );
+
+        if( attachment != null )
+        {
+            $("#entryPage_btnDeleteAttachment" ).bind( "vclick", function()
+            {
+                if( entryPage_currentEntryModel.masasEntry.RemoveAttachment( attachment ) )
+                {
+                    $(containerLi).remove();
+
+                    // Refresh the count...
+                    $('#entryPage_attachmentCount').text( entryPage_currentEntryModel.masasEntry.attachments.length );
+
+                    // If none are left, get out of "edit" mode...
+                    if( entryPage_currentEntryModel.masasEntry.attachments.length == 0 ) {
+                        $("#entryPage_btnEditAttachment .ui-btn-text" ).text( "Edit" );
+                    }
+
+                    $("#entryPage_attachments").listview( "refresh" );
+                }
+            });
+
+            $( "#entryPage_deleteAttachment" ).popup( "open" );
         }
     }
 });
@@ -413,13 +473,15 @@ function entryPage_addListItem( attachment )
     }
 
     itemHTML += '<h3>' + splitPath[splitPath.length-1] + '</h3>';
-    itemHTML += '<p>' + attachment.uri + '</p>'
+    itemHTML += '<p>' + attachment.uri + '</p>';
+    itemHTML += '<p class="ui-li-aside ui-masas-entry-delete-button"><button data-icon="delete" data-inline="true">Delete</button></p>';
     itemHTML += '</a>';
-
     listItem.innerHTML = itemHTML;
 
     // Append the item
     dataList.appendChild( listItem );
+
+    $(dataList ).trigger( "create" );
 }
 
 // TODO: Consolidate the "takePicture" methods to one central call...
@@ -471,9 +533,50 @@ function entryPage_onCameraClosed()
 
 function entryPage_viewAttachment( attachment )
 {
-    // TODO: Implement entryPage_viewAttachment()...
-//    viewAttachment_currentAttachment = attachment;
-//    $.mobile.changePage( "viewAttachment.html" );
+    if( attachment.contentType.indexOf( 'image' ) >= 0 )
+    {
+        // Handle Images...
+        if( attachment.uri.indexOf( 'file:///' ) == 0 )
+        {
+            $("#entryPage_previewImage").attr( "src", attachment.uri );
+            $("#entryPage_popupPhoto").popup( "open" );
+        }
+        else
+        {
+            $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
+
+            $("#entryPage_previewImage").load( function() {
+                $.mobile.loading( "hide" );
+                $( "#entryPage_popupPhoto" ).popup( "open" );
+            });
+
+            $("#entryPage_previewImage").error( function() {
+                $.mobile.loading( "hide" );
+                entryPage_getAttachmentFailed();
+            });
+
+            $("#entryPage_previewImage").attr( "src", attachment.uri + "?secret=" + app_Settings.token );
+        }
+    }
+    else if( attachment.contentType.indexOf( "audio" ) >= 0 )
+    {
+        var uri = attachment.uri;
+
+        // Handle Audio files
+        if( attachment.uri.indexOf( 'http' ) == 0 )
+        {
+            uri += "?secret=" + app_Settings.token;
+        }
+
+        $("#entryPage_previewAudio").attr( "src", uri );
+        $("#entryPage_popupAudio").popup( "open" );
+    }
+}
+
+function entryPage_getAttachmentFailed()
+{
+    $.mobile.loading( "hide" );
+    alert( 'Failed to retrieve attachment!');
 }
 
 function entryPage_getCurrentPosition()
