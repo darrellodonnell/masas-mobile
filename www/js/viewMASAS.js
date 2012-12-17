@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Dec 12, 2012
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -59,8 +59,8 @@ $( document ).delegate( "#viewMASAS_popupText", "popupbeforeposition", function(
     var maxHeight = $( window ).height() - 60 + "px";
     var maxWidth = $( window ).width() - 60 + "px";
 
-    $( "#viewMASAS_popupText div" ).css( "max-height", maxHeight );
-    $( "#viewMASAS_popupText div" ).css( "max-width", maxWidth );
+    $( "#viewMASAS_popupText #viewMASAS_previewText" ).css( "max-height", maxHeight );
+    $( "#viewMASAS_popupText #viewMASAS_previewText" ).css( "max-width", maxWidth );
 });
 
 $( document ).delegate( "#viewMASAS_popupPhoto", "popupbeforeposition", function()
@@ -798,6 +798,19 @@ $( document ).delegate( "#viewMASAS_entryAttachments li[data-masas-entry-attachm
         $("#viewMASAS_previewAudio").attr( "src", attachmentUrl );
         $("#viewMASAS_popupAudio").popup( "open" );
     }
+    else if( attachmentType.indexOf( "application/common-alerting-protocol+xml" ) == 0 )
+    {
+        if( attachmentUrl.indexOf( 'file:///' ) == 0 )
+        {
+            // TODO: Load from local storage!
+            alert( "Loading a local CAP file is currently not supported!" );
+        }
+        else
+        {
+            $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
+            mmApp.masasHub.GetAttachment( attachmentUrl, viewMASAS_getCAPAttachmentSuccess, viewMASAS_getAttachmentFailed );
+        }
+    }
     else if( attachmentType.indexOf( "xml" ) >= 0 || attachmentType.indexOf( "text") >= 0 )
     {
         // Handle Text and XML files
@@ -809,12 +822,64 @@ $( document ).delegate( "#viewMASAS_entryAttachments li[data-masas-entry-attachm
         else
         {
             $.mobile.loading( "show", { text: "Retrieving attachment.  Please Wait..."} );
-            mmApp.masasHub.GetAttachment( attachmentUrl, viewMASAS_getAttachmentSuccess, viewMASAS_getAttachmentFailed );
+            mmApp.masasHub.GetAttachment( attachmentUrl, viewMASAS_getTextAttachmentSuccess, viewMASAS_getAttachmentFailed );
         }
     }
 });
 
-function viewMASAS_getAttachmentSuccess( response )
+function viewMASAS_getCAPAttachmentSuccess( response )
+{
+    var xsl = undefined;
+    var xml = response;
+
+    // Figure out what CAP version we are dealing with...
+    var alertElement = xml.getElementsByTagName( "alert" );
+    if( alertElement.length > 0 && alertElement[0].namespaceURI.indexOf( "urn:oasis:names:tc:emergency:cap:1.2" ) >= 0 ) {
+        xsl = viewMASAS_loadXMLDoc( "./xsl/CAP_v1.2.xslt" );
+    }
+    else {
+        xsl = viewMASAS_loadXMLDoc( "./xsl/CAP_v1.1.xslt" );
+    }
+
+    if( xsl )
+    {
+        xsltProcessor = new XSLTProcessor();
+        xsltProcessor.importStylesheet( xsl );
+        resultDocument = xsltProcessor.transformToFragment( xml, document );
+
+        $( "#viewMASAS_previewText" ).empty();
+        $( "#viewMASAS_previewText").append( resultDocument );
+    }
+    else
+    {
+        var oSerializer = new XMLSerializer();
+        var xmlString = oSerializer.serializeToString( response );
+        $( "#viewMASAS_previewText" ).text( xmlString );
+    }
+    $.mobile.loading( "hide" );
+
+    $( "#viewMASAS_popupText" ).popup( "open" );
+}
+
+function viewMASAS_loadXMLDoc(dname)
+{
+    var response = undefined;
+
+    var request = $.ajax({
+        type: 'GET',
+        async: false,
+        url: dname,
+        timeout: 120000
+    });
+
+    request.done( function( msg ) {
+        response = msg;
+    });
+
+    return response;
+}
+
+function viewMASAS_getTextAttachmentSuccess( response )
 {
     var oSerializer = new XMLSerializer();
     var xmlString = oSerializer.serializeToString(response);
