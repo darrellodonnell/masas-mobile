@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Report Object Definition
- * Updated: Oct 5, 2012
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -49,11 +49,4 @@ function reportObj( obj )
         this[prop] = obj[prop];
     };
 
-}
-
-function shortReportObj( obj )
-{
-    this.Title = '';
-    this.Description = '';
-    this.Location = undefined;
 }

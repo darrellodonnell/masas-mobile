@@ -1,6 +1,6 @@
 /**
- * MASAS Mobile - MASAS helper functions
- * Updated: Dec 04, 2012
+ * MASAS Mobile - MASAS Entry Model
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */

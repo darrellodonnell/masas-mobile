@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
-MASAS View Tool
-Updated: Oct 5, 2012
+MASAS Mobile: Quick/Short Report Page
+Updated: Dec 17, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -13,7 +13,7 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
         <div data-role="page" id="quickReport">
 
-            <div data-role="header" data-position="fixed">
+            <div data-role="header" data-position="fixed" data-tap-toggle="false">
                 <h1>MASAS Mobile - Check In/Out</h1>
                 <a href="#" id="app_dataStatus" data-icon="check" class="ui-btn-right" data-mini="true" data-inline="true" data-iconpos="notext" ></a>
                 <div data-role="navbar" data-iconpos="bottom">
@@ -60,14 +60,14 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                 </table>
                 <hr>
 
-                <div class="ui-grid-a">
-                    <div class="ui-block-a"><div id="quickReport_btnArrived" class="ui-masas-bb7-btn" data-role="button">Arriving at Scene</div></div>
-                    <div class="ui-block-b"><div id="quickReport_btnDeparted" class="ui-masas-bb7-btn" data-role="button">Departing Scene</div></div>
-                </div>
+                <div id="quickReport_btnUpdate" class="ui-masas-bb7-btn" data-role="button">Update</div>
+                <div id="quickReport_btnConfirm" class="ui-masas-bb7-btn" data-role="button">Confirm</div>
+                <div id="quickReport_btnArrived" class="ui-masas-bb7-btn" data-role="button">On Scene</div>
+                <div id="quickReport_btnDeparted" class="ui-masas-bb7-btn" data-role="button">Leaving Scene</div>
 
             </div>
 
-            <div data-role="footer" data-position="fixed">
+            <div data-role="footer" data-position="fixed" data-tap-toggle="false">
                 <div data-role="navbar" data-iconpos="bottom">
                     <ul>
                         <li><a href="index.html" id="quickReport_btnBack" data-icon="home">Home</a></li>

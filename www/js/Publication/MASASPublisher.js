@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS Publisher
- * Updated: Dec 12, 2012
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -36,8 +36,11 @@ MASASMobile.MASASPublisher = function()
 
     this.PublishShortReport = function( shortReport, callback_success, callback_failure )
     {
+        var publisher = this;
+
         var entryModel = ConvertShortReportToEntryModel( shortReport );
-        mmApp.masasHub.CreateEntry( entryModel.masasEntry, callback_success, callback_failure );
+
+        publisher.PublishEntry( entryModel, callback_success, callback_failure );
     };
 
     this.CancelEntry = function( entryModel, callback_success, callback_failure ) {
@@ -218,12 +221,11 @@ MASASMobile.MASASPublisher = function()
 
     var ConvertShortReportToEntryModel = function( shortReport )
     {
-        var augmentedTitle = shortReport.Title + ' [' + app_Settings.vehicleId + ']';
+        var augmentedTitle = shortReport.masasEntry.GetTitle() + ' [' + app_Settings.vehicleId + ']';
 
-        var entryModel = mmApp.entryManager.CreateModel();
+        var entryModel = shortReport;
 
         entryModel.masasEntry.SetTitle( augmentedTitle );
-        entryModel.masasEntry.SetContent( shortReport.Description );
 
         entryModel.masasEntry.status    = app_Settings.reportStatus;
         entryModel.masasEntry.icon      = app_GetSimpleReportIcon();
@@ -234,6 +236,7 @@ MASASMobile.MASASPublisher = function()
             location = shortReport.Location;
         }
 
+        entryModel.masasEntry.geometry = [];
         entryModel.masasEntry.geometry.push( { type: "point",
                                                data: location.latitude + " " + location.longitude
                                              } );

@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Dec 04, 2012
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -11,6 +11,8 @@ var mmApp = function() {
     this.masasHub = undefined;
     this.entryManager = undefined;
     this.masasPublisher = undefined;
+
+    this.activeShortReport = undefined;
 };
 
 var bb = {
@@ -315,8 +317,8 @@ function appResetSettingsToDefault()
         reportStatus: 'Test', // Test, Actual
         reportExpiresOffset: 60,
         reportExpiresContext: "Minutes", // Minutes, Hours, Days
-        reportCheckIn: "Arriving at Scene",
-        reportCheckOut: "Departing Scene",
+        reportCheckIn: "On Scene",
+        reportCheckOut: "Leaving Scene",
         map: {
             defaultCenter: {
                 lat: 65.0,

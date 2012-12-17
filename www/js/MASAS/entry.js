@@ -1,6 +1,6 @@
 /**
  * MASAS - Entry Model object definition
- * Updated: Dec 12, 2012
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -332,7 +332,9 @@ MASAS.Entry = function()
             xmlEntry += '</summary>';
         }
 
-        xmlEntry += '<expires xmlns="http://purl.org/atompub/age/1.0">' + entry.expires.toISOString() + '</expires>';
+        if( entry.expires != undefined ) {
+            xmlEntry += '<expires xmlns="http://purl.org/atompub/age/1.0">' + entry.expires.toISOString() + '</expires>';
+        }
 
         for( var iGeo = 0; iGeo < entry.geometry.length; iGeo++ ) {
             xmlEntry += '<' + entry.geometry[iGeo].type + ' xmlns="http://www.georss.org/georss">' + entry.geometry[iGeo].data + '</' + entry.geometry[iGeo].type + '>';

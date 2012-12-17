@@ -1,6 +1,6 @@
 /**
  * MASAS library
- * Updated: Dec 04, 2012
+ * Updated: Dec 17, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -197,6 +197,21 @@ MASAS.Hub = function()
         return entries;
     };
 
+    var GetEntryFromResponse = function( xmlResponse )
+    {
+        var entry = undefined;
+
+        $feedEntry = $(xmlResponse).find( "entry" );
+
+        if( $feedEntry.length > 0 )
+        {
+            entry = new MASAS.Entry();
+            entry.FromNode( $feedEntry[0] );
+        }
+
+        return entry;
+    };
+
     var PostNewEntry = function( entryData, contentType, callback_success, callback_fail )
     {
         console.log( 'PostNewEntry' );
@@ -255,7 +270,8 @@ MASAS.Hub = function()
 
             if( callback_success && typeof( callback_success ) === "function" )
             {
-                callback_success( msg );
+                var entry = GetEntryFromResponse( msg );
+                callback_success( msg, entry );
             }
         });
 
