@@ -401,6 +401,10 @@ MASAS.Entry = function()
         {
             returnVal = "ems.other.other";
         }
+        else if( icon == "ems/incident/meteorological/snowfall" )
+        {
+            returnVal = "ems.incident.meteorological.snowFall";
+        }
         else
         {
             returnVal = icon.replace(/\//g, "." );
