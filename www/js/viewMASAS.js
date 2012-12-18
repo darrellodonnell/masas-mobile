@@ -352,12 +352,77 @@ function viewMASAS_initializeMap()
 
         map = new google.maps.Map( document.getElementById( "map_canvas" ), myOptions );
 
+        google.maps.event.addListener( map, 'bounds_changed', viewMASAS_onMapBoundsChanged );
+
         infoWindow = new google.maps.InfoWindow( { content: "" });
 
         mapInitialized = true;
     }
     else {
         google.maps.event.trigger( map, 'resize' );
+    }
+}
+
+function viewMASAS_onMapBoundsChanged()
+{
+    console.log( "Event: viewMASAS_onMapBoundsChanged" );
+
+    var viewBounds = map.getBounds();
+
+    // Let's re-evaluate all the polygon markers...
+    for( var iMarker = 0; iMarker < markers.length; iMarker++ )
+    {
+
+        var curMarker = markers[iMarker];
+
+        if( curMarker.viewObj instanceof google.maps.Polygon )
+        {
+            var gMarker = curMarker.marker;
+            var gPolygon = curMarker.viewObj;
+
+            var bounds = new google.maps.LatLngBounds();
+            var path = gPolygon.getPath();
+
+            for( var iPath = 0; iPath < path.length; iPath++ ) {
+                bounds.extend( path.getAt( iPath ) );
+            }
+
+            viewMASAS_applyMarkerPosition( gMarker, viewBounds, bounds );
+        }
+        else if( curMarker instanceof google.maps.Rectangle )
+        {
+            var gMarker = curMarker.marker;
+            var gRectangle = curMarker.viewObj;
+
+            var bounds = gRectangle.getBounds();
+
+            viewMASAS_applyMarkerPosition( gMarker, viewBounds, bounds );
+        }
+
+    }
+
+}
+
+function viewMASAS_applyMarkerPosition( marker, viewBounds, polygonBounds )
+{
+    if( polygonBounds.intersects( viewBounds ) )
+    {
+        // Polygon bounds intersects the view...
+        // Is the bounds completely in the view?
+        if( polygonBounds.contains( viewBounds.getSouthWest() ) && polygonBounds.contains( viewBounds.getNorthEast() ) )
+        {
+            // The view is inside the polygon...
+            marker.setPosition( viewBounds.getCenter() );
+        }
+        else {
+            // The polygon overlaps the view...
+            marker.setPosition( polygonBounds.getCenter() );
+        }
+    }
+    else
+    {
+        // Polygon bounds is outside the view...
+        marker.setPosition( polygonBounds.getCenter() );
     }
 }
 
@@ -561,8 +626,7 @@ function viewMASAS_addMapItem( entryModel )
                 viewMASAS_polygonClicked( event, { polygon: polygon, identifier: entryModel.identifier } );
             });
 
-            markers.push( { identifier: entryModel.identifier, viewObj: polygon } );
-            markers.push( { identifier: entryModel.identifier, viewObj: marker } );
+            markers.push( { identifier: entryModel.identifier, viewObj: polygon, marker: marker } );
         }
         else if( geometry[0].type == "box" )
         {
@@ -611,8 +675,7 @@ function viewMASAS_addMapItem( entryModel )
                 viewMASAS_boxClicked( event, { box: box, identifier: entryModel.identifier } );
             });
 
-            markers.push( { identifier: entryModel.identifier, viewObj: box } );
-            markers.push( { identifier: entryModel.identifier, viewObj: marker } );
+            markers.push( { identifier: entryModel.identifier, viewObj: box, marker: marker } );
         }
     }
 }
