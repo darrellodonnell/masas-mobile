@@ -1,14 +1,15 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Dec 17, 2012
+ * Updated: Dec 18, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
 
-var mapInitialized = false;
-var map = null;
-var markers = [];
-var infoWindow;
+var viewMASAS_mapInitialized = false;
+var viewMASAS_map = null;
+var viewMASAS_markers = [];
+var viewMASAS_infoWindow;
+var viewMASAS_tempMapBound = undefined;
 
 $( document ).delegate( "#viewMASAS", "pagebeforecreate", function( event, ui )
 {
@@ -23,12 +24,15 @@ $( document ).delegate( "#viewMASAS", "pageshow", function( event, ui )
     }
 
     viewMASAS_refreshListOfEntries();
+
+    // Disable the "Details" button
+    $('#viewMASAS_btnToggleMap').addClass('ui-disabled');
 });
 
 $( document ).delegate( "#viewMASAS", "pagehide", function( event, ui )
 {
-    map = null;
-    mapInitialized = false;
+    viewMASAS_map = null;
+    viewMASAS_mapInitialized = false;
 });
 
 $( document ).delegate( "#viewMASAS", "updatelayout", function( event, ui )
@@ -102,7 +106,7 @@ $( document ).delegate( "#viewMASAS_lstEntries li[data-masas-entry-identifier]",
 
         if( marker instanceof google.maps.Marker )
         {
-            map.panTo( marker.getPosition() );
+            viewMASAS_map.panTo( marker.getPosition() );
         }
         else if( marker instanceof google.maps.Polygon )
         {
@@ -114,23 +118,20 @@ $( document ).delegate( "#viewMASAS_lstEntries li[data-masas-entry-identifier]",
                 bounds.extend( path.getAt( i ) );
             }
 
-            map.fitBounds( bounds );
+            viewMASAS_map.fitBounds( bounds );
         }
         else if( marker instanceof google.maps.Rectangle )
         {
-            map.fitBounds( marker.getBounds() );
+            viewMASAS_map.fitBounds( marker.getBounds() );
         }
-
-        // Entry..
-        viewMASAS_updateEntryPanel( entryId );
     }
 });
 
 $( document ).delegate( "#viewMASAS_btnDefaultView", "vclick", function( event )
 {
-    var mapCenter = map.getCenter();
+    var mapCenter = viewMASAS_map.getCenter();
 
-    app_Settings.map.defaultZoom = map.getZoom();
+    app_Settings.map.defaultZoom = viewMASAS_map.getZoom();
     app_Settings.map.defaultCenter.lat = mapCenter.lat();
     app_Settings.map.defaultCenter.lon = mapCenter.lng();
 
@@ -140,7 +141,7 @@ $( document ).delegate( "#viewMASAS_btnDefaultView", "vclick", function( event )
 
 $( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
 {
-    var mapBounds = map.getBounds();
+    var mapBounds = viewMASAS_map.getBounds();
     var llSW = mapBounds.getSouthWest();
     var llNE = mapBounds.getNorthEast();
 
@@ -157,8 +158,6 @@ $( document ).delegate( "#viewMASAS_btnAddFilter", "vclick", function( event )
 
 $( document ).delegate( "#viewMASAS_btnAddEntry", "vclick", function( event )
 {
-    //viewMASAS_hideMenu();
-
     // Open the "new" entry page...
     $.mobile.changePage( "entryPage.html", {} );
 });
@@ -214,15 +213,19 @@ $( document ).delegate( "#viewMASAS_btnCancelEntry", "vclick", function( event )
         selectedEntry = mmApp.entryManager.GetEntryByIdentifier( selectedEntryId );
     }
 
+    viewMASAS_cancelEntry( selectedEntry );
+});
+
+function viewMASAS_cancelEntry( entryModel )
+{
     // Open the entryPage if a proper entry is selected...
-    if( selectedEntry != undefined && !selectedEntry.IsReadOnly() )
+    if( entryModel != undefined && !entryModel.IsReadOnly() )
     {
         viewMASAS_enableControls( false );
         $.mobile.showPageLoadingMsg( "a", "Cancelling MASAS Entry..." );
-        mmApp.masasPublisher.CancelEntry( selectedEntry, viewMASAS_cancelEntrySuccess, viewMASAS_cancelEntryFailed );
+        mmApp.masasPublisher.CancelEntry( entryModel, viewMASAS_cancelEntrySuccess, viewMASAS_cancelEntryFailed );
     }
-
-});
+}
 
 function viewMASAS_cancelEntrySuccess()
 {
@@ -318,7 +321,7 @@ function viewMASAS_selectListItem( selectionId )
         }
 
         // Close the InfoWindow
-        infoWindow.close();
+        viewMASAS_infoWindow.close();
     }
 
     var liToSelect = $("li[data-masas-entry-identifier='" + selectionId + "']");
@@ -330,11 +333,14 @@ function viewMASAS_selectListItem( selectionId )
     }
 
     viewMASAS_refreshList();
+
+    // Enable the "Details" button
+    $('#viewMASAS_btnToggleMap').removeClass('ui-disabled');
 }
 
 function viewMASAS_initializeMap()
 {
-    if (!mapInitialized)
+    if (!viewMASAS_mapInitialized)
     {
         var defaultCenter = new google.maps.LatLng( app_Settings.map.defaultCenter.lat, app_Settings.map.defaultCenter.lon );
 
@@ -350,16 +356,16 @@ function viewMASAS_initializeMap()
             mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        map = new google.maps.Map( document.getElementById( "map_canvas" ), myOptions );
+        viewMASAS_map = new google.maps.Map( document.getElementById( "viewMASAS_mapCanvas" ), myOptions );
 
-        google.maps.event.addListener( map, 'bounds_changed', viewMASAS_onMapBoundsChanged );
+        google.maps.event.addListener( viewMASAS_map, 'bounds_changed', viewMASAS_onMapBoundsChanged );
 
-        infoWindow = new google.maps.InfoWindow( { content: "" });
+        viewMASAS_infoWindow = new google.maps.InfoWindow( $("#viewMASAS_mapPopup")[0] );
 
-        mapInitialized = true;
+        viewMASAS_mapInitialized = true;
     }
     else {
-        google.maps.event.trigger( map, 'resize' );
+        google.maps.event.trigger( viewMASAS_map, 'resize' );
     }
 }
 
@@ -367,13 +373,13 @@ function viewMASAS_onMapBoundsChanged()
 {
     console.log( "Event: viewMASAS_onMapBoundsChanged" );
 
-    var viewBounds = map.getBounds();
+    var viewBounds = viewMASAS_map.getBounds();
 
     // Let's re-evaluate all the polygon markers...
-    for( var iMarker = 0; iMarker < markers.length; iMarker++ )
+    for( var iMarker = 0; iMarker < viewMASAS_markers.length; iMarker++ )
     {
 
-        var curMarker = markers[iMarker];
+        var curMarker = viewMASAS_markers[iMarker];
 
         if( curMarker.viewObj instanceof google.maps.Polygon )
         {
@@ -491,48 +497,84 @@ function viewMASAS_clearListOfEntries()
     $('#viewMASAS_lstEntries').children().remove( 'li' );
 }
 
+function viewMASAS_setInfoContent( entryModel )
+{
+    var node = ( $("#viewMASAS_mapPopup").clone() );
+    var cancelBtn = $(node).find( "#viewMASAS_btnMapCancelEntry");
+
+    $(node).show();
+    $(node).find( "#viewMASAS_mapPopupTitle" ).text( entryModel.masasEntry.GetTitle() );
+    $(node).find( "#viewMASAS_mapPopupContent" ).text( entryModel.masasEntry.GetContent() );
+
+    if( !entryModel.IsReadOnly() )
+    {
+        $(cancelBtn).bind( "click", function( event, ui )
+        {
+            // Cancel the Entry...
+            viewMASAS_cancelEntry( entryModel );
+            viewMASAS_infoWindow.close();
+        });
+    }
+    else {
+        $(cancelBtn).closest('.ui-btn').hide();
+    }
+
+    $(node).find( "#viewMASAS_btnMapViewEntry").bind( "click", function( event, ui )
+    {
+        // Display the Entry details...
+        viewMASAS_updateEntryPanel( entryModel );
+        viewMASAS_showEntryPanel();
+        viewMASAS_infoWindow.close();
+    });
+
+    viewMASAS_infoWindow.setContent( node[0] );
+}
+
 function viewMASAS_markerClicked( event, data )
 {
+    // Get the entry model...
     var entryModel = mmApp.entryManager.GetEntryByIdentifier( data.identifier );
 
-    // NOTE: these can be multilingual; 'en' is taken by default.
-    var title = entryModel.masasEntry.GetTitle();
-    var description = entryModel.masasEntry.GetContent();
-
+    // Select the entry in the list...
     viewMASAS_selectListItem( data.identifier );
 
-    infoWindow.setContent( title + " " + description );
-    infoWindow.open( map, data.marker );
+    // Set the Info Window's content...
+    viewMASAS_setInfoContent( entryModel );
+
+    // Show the Info Window...
+    viewMASAS_infoWindow.open( viewMASAS_map, data.marker );
 }
 
 function viewMASAS_polygonClicked( event, data )
 {
+    // Get the entry model...
     var entryModel = mmApp.entryManager.GetEntryByIdentifier( data.identifier );
 
-    // NOTE: these can be multilingual; 'en' is taken by default.
-    var title = entryModel.masasEntry.GetTitle();
-    var description = entryModel.masasEntry.GetContent();
-
+    // Select the entry in the list...
     viewMASAS_selectListItem( data.identifier );
 
-    infoWindow.setContent( title + " " + description );
-    infoWindow.setPosition( event.latLng );
-    infoWindow.open( map );
+    // Set the Info Window's content...
+    viewMASAS_setInfoContent( entryModel );
+
+    // Show the Info Window...
+    viewMASAS_infoWindow.setPosition( event.latLng );
+    viewMASAS_infoWindow.open( viewMASAS_map );
 }
 
 function viewMASAS_boxClicked( event, data )
 {
+    // Get the entry model...
     var entryModel = mmApp.entryManager.GetEntryByIdentifier( data.identifier );
 
-    // NOTE: these can be multilingual; 'en' is taken by default.
-    var title = entryModel.masasEntry.GetTitle();
-    var description = entryModel.masasEntry.GetContent();
-
+    // Select the entry in the list...
     viewMASAS_selectListItem( data.identifier );
 
-    infoWindow.setContent( title + " " + description );
-    infoWindow.setPosition( event.latLng );
-    infoWindow.open( map );
+    // Set the Info Window's content...
+    viewMASAS_setInfoContent( entryModel );
+
+    // Show the Info Window...
+    viewMASAS_infoWindow.setPosition( event.latLng );
+    viewMASAS_infoWindow.open( viewMASAS_map );
 }
 
 function viewMASAS_addMapItem( entryModel )
@@ -554,14 +596,14 @@ function viewMASAS_addMapItem( entryModel )
         var marker = new google.maps.Marker({
             position: latlng,
             icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
-            map: map
+            map: viewMASAS_map
         });
 
         google.maps.event.addListener( marker, 'click', function( event ) {
             viewMASAS_markerClicked( event, { marker: marker, identifier: entryModel.identifier } );
         });
 
-        markers.push( { identifier: entryModel.identifier, viewObj: marker } );
+        viewMASAS_markers.push( { identifier: entryModel.identifier, viewObj: marker } );
     }
     else
     {
@@ -574,14 +616,14 @@ function viewMASAS_addMapItem( entryModel )
             var marker = new google.maps.Marker({
                 position: latlng,
                 icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
-                map: map
+                map: viewMASAS_map
             });
 
             google.maps.event.addListener( marker, 'click', function( event ) {
                 viewMASAS_markerClicked( event, { marker: marker, identifier: entryModel.identifier } );
             });
 
-            markers.push( { identifier: entryModel.identifier, viewObj: marker } );
+            viewMASAS_markers.push( { identifier: entryModel.identifier, viewObj: marker } );
         }
         else if( geometry[0].type == "polygon" )
         {
@@ -602,7 +644,7 @@ function viewMASAS_addMapItem( entryModel )
             var polygon = new google.maps.Polygon({
                 paths: pointArray,
                 clickable: true,
-                map: map,
+                map: viewMASAS_map,
                 fillColor: "green",
                 fillOpacity: 0.1,
                 strokeColor: "green",
@@ -615,7 +657,7 @@ function viewMASAS_addMapItem( entryModel )
             var marker = new google.maps.Marker({
                 position: llBounds.getCenter(),
                 icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
-                map: map
+                map: viewMASAS_map
             });
 
             google.maps.event.addListener( polygon, 'click', function( event ) {
@@ -626,7 +668,7 @@ function viewMASAS_addMapItem( entryModel )
                 viewMASAS_polygonClicked( event, { polygon: polygon, identifier: entryModel.identifier } );
             });
 
-            markers.push( { identifier: entryModel.identifier, viewObj: polygon, marker: marker } );
+            viewMASAS_markers.push( { identifier: entryModel.identifier, viewObj: polygon, marker: marker } );
         }
         else if( geometry[0].type == "box" )
         {
@@ -651,7 +693,7 @@ function viewMASAS_addMapItem( entryModel )
             var box = new google.maps.Rectangle({
                 bounds: llBounds,
                 clickable: true,
-                map: map,
+                map: viewMASAS_map,
                 fillColor: "green",
                 fillOpacity: 0.1,
                 strokeColor: "green",
@@ -664,7 +706,7 @@ function viewMASAS_addMapItem( entryModel )
             var marker = new google.maps.Marker({
                 position: llBounds.getCenter(),
                 icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
-                map: map
+                map: viewMASAS_map
             });
 
             google.maps.event.addListener( box, 'click', function( event ) {
@@ -675,7 +717,7 @@ function viewMASAS_addMapItem( entryModel )
                 viewMASAS_boxClicked( event, { box: box, identifier: entryModel.identifier } );
             });
 
-            markers.push( { identifier: entryModel.identifier, viewObj: box, marker: marker } );
+            viewMASAS_markers.push( { identifier: entryModel.identifier, viewObj: box, marker: marker } );
         }
     }
 }
@@ -683,10 +725,10 @@ function viewMASAS_addMapItem( entryModel )
 function viewMASAS_getViewObjFromIdentifier( identifier )
 {
     var viewObj = undefined;
-    for( var i = 0; i < markers.length; i++ )
+    for( var i = 0; i < viewMASAS_markers.length; i++ )
     {
-        if( markers[i].identifier == identifier ) {
-            viewObj = markers[i].viewObj;
+        if( viewMASAS_markers[i].identifier == identifier ) {
+            viewObj = viewMASAS_markers[i].viewObj;
             break;
         }
     }
@@ -696,13 +738,13 @@ function viewMASAS_getViewObjFromIdentifier( identifier )
 
 function viewMASAS_clearListOfEntriesFromMap()
 {
-    for( var i = 0; i < markers.length; i++ )
+    for( var i = 0; i < viewMASAS_markers.length; i++ )
     {
-        markers[i].viewObj.setMap( null );
-        google.maps.event.clearInstanceListeners( markers[i].viewObj );
+        viewMASAS_markers[i].viewObj.setMap( null );
+        google.maps.event.clearInstanceListeners( viewMASAS_markers[i].viewObj );
     }
 
-    markers = [];
+    viewMASAS_markers = [];
 }
 
 function viewMASAS_resizePage()
@@ -711,6 +753,11 @@ function viewMASAS_resizePage()
     var entryTopNav_height  = $('#viewMASAS_entryTopNavBar').height();
     var entryBottomNav_height  = $('#viewMASAS_entryBottomNavBar').height();
     var window_height  = $(window).height();
+
+    // If the top nav bar is hidden...
+    if( $("#viewMASAS_entryTopNavBar").is( ":hidden" ) ) {
+        entryTopNav_height = 0;
+    }
 
     // iPad is reporting 1024 for both height and width so need to force the height
     // (20 is height of standard iOS information bar (signal, time, battery, etc.)
@@ -741,9 +788,14 @@ function viewMASAS_resetPagePadding()
     $("#viewMASAS" ).css( "padding-bottom", footer_height );
 }
 
-function viewMASAS_updateEntryPanel( entryIdentifier )
+function viewMASAS_updateEntryPanelById( entryIdentifier )
 {
     var entryModel = mmApp.entryManager.GetEntryByIdentifier( entryIdentifier );
+    viewMASAS_updateEntryPanel( entryModel );
+}
+
+function viewMASAS_updateEntryPanel( entryModel )
+{
     var masasEntry = entryModel.masasEntry;
     var entryXmlString = masasEntry.ToXML();
 
@@ -989,10 +1041,19 @@ function viewMASAS_hideEntryPanel()
     $("#viewMASAS_entryPanel").hide();
     $("#viewMASAS_mapContent").fadeIn( "slow" );
     $("#viewMASAS_btnToggleMap").find( '.ui-btn-text' ).text( "Details" );
+
+    viewMASAS_map.setCenter( viewMASAS_tempMapBound.center );
+    viewMASAS_map.setZoom( viewMASAS_tempMapBound.zoom );
 }
 
 function viewMASAS_showEntryPanel()
 {
+    viewMASAS_tempMapBound = { center: viewMASAS_map.getCenter(),
+                               zoom: viewMASAS_map.getZoom() };
+
+    // Get the select the item...
+    viewMASAS_updateEntryPanelById( viewMASAS_getSelectListItemId() );
+
     $("#viewMASAS_entryPanel").show();
     $("#viewMASAS_mapContent").fadeOut( "slow" );
     $("#viewMASAS_btnToggleMap" ).find( '.ui-btn-text' ).text( "Map" );

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 MASAS View Tool
-Updated: Dec 12, 2012
+Updated: Dec 18, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -26,7 +26,7 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                 </div>
 
                 <div class="ui-masas-left-panel" >
-                    <div id="viewMASAS_entryTopNavBar" data-role="navbar" data-iconpos="bottom">
+                    <div id="viewMASAS_entryTopNavBar" data-role="navbar" data-iconpos="bottom" style="display:none">
                         <ul>
                             <li>
                                 <select name="select-choice-0" id="select-choice-0" data-corners=false>
@@ -53,7 +53,19 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                 <div class="ui-masas-right-panel">
 
                     <div id="viewMASAS_mapContent">
-                        <div id="map_canvas"></div>
+
+                        <!-- NOTE: The viewMASAS_mapPopup is a placeholder for the content of the map "Info Window".-->
+                        <div id="viewMASAS_mapPopup" style="display: none">
+                            <h3><span id="viewMASAS_mapPopupTitle">Entry Title</span></h3>
+                            <p><span id="viewMASAS_mapPopupContent">Entry Content</span></p>
+
+                            <div style="float:right">
+                                <button id="viewMASAS_btnMapViewEntry" data-role="button" data-icon="info" data-inline="true">Details</button>
+                                <button id="viewMASAS_btnMapCancelEntry" data-role="button" data-icon="delete" data-inline="true">Cancel Entry</button>
+                            </div>
+                        </div>
+
+                        <div id="viewMASAS_mapCanvas"></div>
                     </div>
 
                     <div id="viewMASAS_entryPanel">
