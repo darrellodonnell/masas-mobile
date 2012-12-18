@@ -395,8 +395,6 @@ function viewMASAS_getEntriesSuccess( xmlFeed, entries )
         entry.masasEntry = entries[i];
 
         mmApp.entryManager.AddEntry( entry );
-
-
     }
 
     // TODO: Implement proper Observer Pattern...
@@ -522,6 +520,7 @@ function viewMASAS_addMapItem( entryModel )
         }
         else if( geometry[0].type == "polygon" )
         {
+            var llBounds = new google.maps.LatLngBounds();
             var points = geometry[0].data;
             var splitPoints = points.split( " " );
 
@@ -531,8 +530,10 @@ function viewMASAS_addMapItem( entryModel )
             {
                 var latlng = new google.maps.LatLng( splitPoints[i], splitPoints[i+1] );
                 pointArray.push( latlng );
+                llBounds.extend( latlng );
             }
 
+            // Polygon...
             var polygon = new google.maps.Polygon({
                 paths: pointArray,
                 clickable: true,
@@ -545,11 +546,23 @@ function viewMASAS_addMapItem( entryModel )
                 visible: false
             });
 
+            // Centroid marker...
+            var marker = new google.maps.Marker({
+                position: llBounds.getCenter(),
+                icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
+                map: map
+            });
+
             google.maps.event.addListener( polygon, 'click', function( event ) {
                 viewMASAS_polygonClicked( event, { polygon: polygon, identifier: entryModel.identifier } );
             });
 
+            google.maps.event.addListener( marker, 'click', function( event ) {
+                viewMASAS_polygonClicked( event, { polygon: polygon, identifier: entryModel.identifier } );
+            });
+
             markers.push( { identifier: entryModel.identifier, viewObj: polygon } );
+            markers.push( { identifier: entryModel.identifier, viewObj: marker } );
         }
         else if( geometry[0].type == "box" )
         {
@@ -570,6 +583,7 @@ function viewMASAS_addMapItem( entryModel )
                     new google.maps.LatLng( splitPoints[2], splitPoints[3] ) );
             }
 
+            // Box...
             var box = new google.maps.Rectangle({
                 bounds: llBounds,
                 clickable: true,
@@ -582,11 +596,23 @@ function viewMASAS_addMapItem( entryModel )
                 visible: false
             });
 
+            // Centroid marker...
+            var marker = new google.maps.Marker({
+                position: llBounds.getCenter(),
+                icon: new google.maps.MarkerImage( app_GetSymbolPath( symbol ), null, null, null, new google.maps.Size( 32, 32 ) ),
+                map: map
+            });
+
             google.maps.event.addListener( box, 'click', function( event ) {
                 viewMASAS_boxClicked( event, { box: box, identifier: entryModel.identifier } );
             });
 
+            google.maps.event.addListener( marker, 'click', function( event ) {
+                viewMASAS_boxClicked( event, { box: box, identifier: entryModel.identifier } );
+            });
+
             markers.push( { identifier: entryModel.identifier, viewObj: box } );
+            markers.push( { identifier: entryModel.identifier, viewObj: marker } );
         }
     }
 }
