@@ -1,6 +1,6 @@
 /**
  * MASAS - Entry Model object definition
- * Updated: Dec 17, 2012
+ * Updated: Dec 18, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -401,9 +401,11 @@ MASAS.Entry = function()
         {
             returnVal = "ems.other.other";
         }
-        else if( icon == "ems/incident/meteorological/snowfall" )
-        {
+        else if( icon == "ems/incident/meteorological/snowfall" ) {
             returnVal = "ems.incident.meteorological.snowFall";
+        }
+        else if( icon == "ems/incident/meteorological/rainfall" ) {
+            returnVal = "ems.incident.meteorological.rainFall";
         }
         else
         {

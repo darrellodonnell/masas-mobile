@@ -58,8 +58,7 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <icon rim:hover="true" src="res/icon/MASAS-Mobile_icon.png" />
 
     <rim:loadingScreen backgroundColor="#CFCFCF"
-                       foregroundImage="res/screen/MASAS-Mobile.png"
-                       onFirstLaunch="true">
+                       foregroundImage="res/screen/MASAS-Mobile.png">
         <rim:transitionEffect type="fadeOut" />
     </rim:loadingScreen>
 

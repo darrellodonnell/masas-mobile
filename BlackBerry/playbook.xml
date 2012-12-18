@@ -49,7 +49,7 @@
     <!-- LOAD DEVICE -->
     
     <target name="load-device" depends="package-app">
-        <bbwp code-sign="true" />
+        <bbwp code-sign="false" />
 
         <exec executable="${blackberry-deploy}" dir="." failonerror="true">
             <arg value="-installApp" />
@@ -123,6 +123,7 @@
         <copy todir="${widget.dir}" overwrite="true">
             <fileset dir="www/playbook">
                 <include name="*.js" />
+                <include name="config.xml" />
             </fileset>
         </copy>
         

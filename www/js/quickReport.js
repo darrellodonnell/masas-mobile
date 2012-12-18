@@ -146,6 +146,8 @@ function quickReport_sendQuickReport( report, callback_success, callback_failure
         $.mobile.showPageLoadingMsg( "a", "Sending Report to MASAS..." );
         quickReport_enableControls( false );
 
+        mmApp.activeShortReport.masasEntry.SetContent( $('#quickReport_txtNotes').val() );
+
         var locationValue = $('input:radio[name=quickReport_locationChoice]:checked').val();
         if( locationValue == 'GPS' )
         {
