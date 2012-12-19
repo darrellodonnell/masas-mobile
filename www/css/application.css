@@ -210,17 +210,6 @@
         width:70%;
     }
 
-    /*#viewReport_leftPanel {*/
-        /*float:left;*/
-        /*width:35%;*/
-    /*}*/
-
-    /*#viewReport_rightPanel {*/
-        /*display: block;*/
-        /*float:right;*/
-        /*width:62%;*/
-    /*}*/
-
     #viewMASAS_lstEntries {
         margin:0px;
         padding: 0;
@@ -236,7 +225,7 @@
         width:100%;
     }
 
-    #map_canvas {
+    #viewMASAS_mapCanvas {
         padding:0;
         width:100%;
         height:100%;
