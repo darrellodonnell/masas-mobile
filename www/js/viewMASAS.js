@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - View MASAS
- * Updated: Dec 18, 2012
+ * Updated: Dec 19, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -124,6 +124,8 @@ $( document ).delegate( "#viewMASAS_lstEntries li[data-masas-entry-identifier]",
         {
             viewMASAS_map.fitBounds( marker.getBounds() );
         }
+
+        viewMASAS_updateEntryPanelById( entryId );
     }
 });
 
@@ -304,7 +306,7 @@ function viewMASAS_getSelectListItemId()
 function viewMASAS_selectListItem( selectionId )
 {
     var liCurSelect = $( "li[class*='ui-masas-list-item-selected']" );
-    var curSelectIndex = -1;
+    var curSelectId = -1;
     var markerToSelect = viewMASAS_getViewObjFromIdentifier( selectionId );
 
     // De-select the previous item...
@@ -968,10 +970,10 @@ $( document ).delegate( "#viewMASAS_entryAttachments li[data-masas-entry-attachm
     }
 });
 
-function viewMASAS_getCAPAttachmentSuccess( response )
+function viewMASAS_getCAPAttachmentSuccess( msg )
 {
     var xsl = undefined;
-    var xml = response;
+    var xml = msg;
 
     // Figure out what CAP version we are dealing with...
     var alertElement = xml.getElementsByTagName( "alert" );
@@ -984,7 +986,7 @@ function viewMASAS_getCAPAttachmentSuccess( response )
 
     if( xsl )
     {
-        xsltProcessor = new XSLTProcessor();
+        var xsltProcessor = new XSLTProcessor();
         xsltProcessor.importStylesheet( xsl );
         resultDocument = xsltProcessor.transformToFragment( xml, document );
 
@@ -994,7 +996,7 @@ function viewMASAS_getCAPAttachmentSuccess( response )
     else
     {
         var oSerializer = new XMLSerializer();
-        var xmlString = oSerializer.serializeToString( response );
+        var xmlString = oSerializer.serializeToString( msg );
         $( "#viewMASAS_previewText" ).text( xmlString );
     }
     $.mobile.loading( "hide" );
@@ -1020,10 +1022,10 @@ function viewMASAS_loadXMLDoc(dname)
     return response;
 }
 
-function viewMASAS_getTextAttachmentSuccess( response )
+function viewMASAS_getTextAttachmentSuccess( msg )
 {
     var oSerializer = new XMLSerializer();
-    var xmlString = oSerializer.serializeToString(response);
+    var xmlString = oSerializer.serializeToString( msg );
 
     $( "#viewMASAS_previewText" ).text( xmlString );
     $.mobile.loading( "hide" );

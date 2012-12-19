@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Settings Page
- * Updated: Dec 17, 2012
+ * Updated: Dec 19, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -29,7 +29,7 @@ $( document ).delegate("#settings_btnClearReports", "vclick", function(event, ui
 $( document ).delegate("#settings_btnResetSettings", "vclick", function(event, ui)
 {
     // Reset the settings...
-    appResetSettingsToDefault();
+    app_ResetSettingsToDefault();
     appSaveSettingsData();
 
     // Re-load the settings...
@@ -90,6 +90,14 @@ $( document ).delegate("#settings_mapDefaultViewZoom", "change", function(event,
     settings_saveSettings();
 });
 
+$( document ).delegate("#settings_defaultLocationLat", "change", function(event, ui) {
+    settings_saveSettings();
+});
+
+$( document ).delegate("#settings_defaultLocationLon", "change", function(event, ui) {
+    settings_saveSettings();
+});
+
 $( document ).delegate("#settings_reportStatus", "change", function(event, ui) {
     settings_saveSettings();
 });
@@ -143,6 +151,8 @@ function settings_loadSettings()
         $('#settings_mapDefaultViewZoom').val( app_Settings.map.defaultZoom );
     }
 
+    $('#settings_defaultLocationLat').val( app_Settings.defaultLocation.latitude );
+    $('#settings_defaultLocationLon').val( app_Settings.defaultLocation.longitude );
     $('#settings_reportStatus').val( app_Settings.reportStatus );
     $('#settings_reportExpiration').val( app_Settings.reportExpiresOffset );
     $('#settings_reportCheckIn').val( app_Settings.reportCheckIn );
@@ -170,6 +180,8 @@ function settings_saveSettings()
     app_Settings.map.defaultCenter.lon = parseFloat( $('#settings_mapDefaultViewLon').val() );
     app_Settings.map.defaultZoom = parseInt( $('#settings_mapDefaultViewZoom').val(), 10 );
 
+    app_Settings.defaultLocation.latitude = parseFloat( $('#settings_defaultLocationLat').val() );
+    app_Settings.defaultLocation.longitude = parseFloat( $('#settings_defaultLocationLon').val() );
     app_Settings.reportStatus = $('#settings_reportStatus').val();
     app_Settings.reportExpiresOffset = parseInt( $('#settings_reportExpiration').val(), 10 );
     app_Settings.reportCheckIn = $('#settings_reportCheckIn').val();

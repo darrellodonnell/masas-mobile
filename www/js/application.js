@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - Application Core
- * Updated: Dec 17, 2012
+ * Updated: Dec 19, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -46,13 +46,42 @@ var app = {
     }
 };
 
+var app_DefaultSettings = {
+    url: 'https://sandbox2.masas-sics.ca/hub',
+    token: '12345',
+    vehicleId: '',
+    vehicleType: 'EmergencyTeam', // EmergencyTeam, EMS, Fire, Police, Other
+    reportStatus: 'Test', // Test, Actual
+    reportExpiresOffset: 60,
+    reportExpiresContext: "Minutes", // Minutes, Hours, Days
+    reportCheckIn: "On Scene",
+    reportCheckOut: "Leaving Scene",
+    defaultLocation: {
+        latitude: 45.420833,
+        longitude: -75.69
+    },
+    map: {
+        defaultCenter: {
+            lat: 65.0,
+            lon: -109.0
+        },
+        defaultZoom: 3
+    },
+    hub : {
+        filters: [ {
+            enable: false,
+            type: 'bbox',  // box, radius
+            data: ''
+        } ]
+    }
+};
+
 var app_CordovaLoaded = false;
 var localReports = [];
 
 var app_Settings = null;
 
 var currentReport = null;
-var app_DefaultLocation = { latitude: 42.999444, longitude: -82.308889 };
 
 var app_IsAppInitialized = false;
 var app_IsMapSupported = false;
@@ -307,33 +336,19 @@ Date.prototype.toJSON = function (key) {
     return this.toISOString();
 };
 
-function appResetSettingsToDefault()
+function app_ResetSettingsToDefault()
 {
-    app_Settings = {
-        url: 'https://sandbox2.masas-sics.ca/hub',
-        token: '12345',
-        vehicleId: '',
-        vehicleType: 'EmergencyTeam', // EmergencyTeam, EMS, Fire, Police, Other
-        reportStatus: 'Test', // Test, Actual
-        reportExpiresOffset: 60,
-        reportExpiresContext: "Minutes", // Minutes, Hours, Days
-        reportCheckIn: "On Scene",
-        reportCheckOut: "Leaving Scene",
-        map: {
-            defaultCenter: {
-                lat: 65.0,
-                lon: -109.0
-            },
-            defaultZoom: 3
-        },
-        hub : {
-            filters: [ {
-                    enable: false,
-                    type: 'bbox',  // box, radius
-                    data: ''
-            } ]
-        }
-    };
+    app_Settings = jQuery.extend( true, {}, app_DefaultSettings );
+}
+
+function app_ValidateSettings( settings )
+{
+    var newSettings = undefined;
+
+    // Add to the settings any missing values...
+    newSettings = jQuery.extend( true, {}, app_DefaultSettings, settings );
+
+    return newSettings;
 }
 
 function app_loadMetaData()
@@ -376,10 +391,11 @@ function app_loadData()
     var MASAS_Settings = storage.getItem( "Settings" );
     if( MASAS_Settings == null )
     {
-        appResetSettingsToDefault();
+        app_ResetSettingsToDefault();
     }
     else {
         app_Settings = JSON.parse( MASAS_Settings );
+        app_Settings = app_ValidateSettings( app_Settings );
     }
 
     // Load Reports...

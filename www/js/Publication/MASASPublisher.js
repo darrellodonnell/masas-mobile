@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS Publisher
- * Updated: Dec 17, 2012
+ * Updated: Dec 19, 2012
  * Independent Joint Copyright (c) 2011-2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -231,9 +231,9 @@ MASASMobile.MASASPublisher = function()
         entryModel.masasEntry.icon      = app_GetSimpleReportIcon();
         entryModel.masasEntry.expires   = app_GetReportExpiration();
 
-        var location = app_DefaultLocation;
-        if( shortReport.Location != undefined && shortReport.Location != null ) {
-            location = shortReport.Location;
+        var location = app_Settings.defaultLocation;
+        if( shortReport.location != undefined && shortReport.location != null ) {
+            location = shortReport.location;
         }
 
         entryModel.masasEntry.geometry = [];
@@ -259,7 +259,7 @@ MASASMobile.MASASPublisher = function()
 
 
         // Default location...
-        var location = app_DefaultLocation;
+        var location = app_Settings.defaultLocation;
 
         // Figure out the real location, if it exists...
         if( report.UseLocation == "GPS" ) {

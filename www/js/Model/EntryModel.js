@@ -1,6 +1,6 @@
 /**
  * MASAS Mobile - MASAS Entry Model
- * Updated: Dec 17, 2012
+ * Updated: Dec 19, 2012
  * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
@@ -15,7 +15,7 @@ MASASMobile.EntryModel = function()
     this.identifier = undefined;
     this.state      = MASASMobile.EntryStateEnum.unpublished;
     this.masasEntry = undefined;
-    this.location   = app_DefaultLocation;
+    this.location   = app_Settings.defaultLocation;
 
     this.IsReadOnly = function()
     {

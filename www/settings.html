@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 MASAS View Tool
-Updated: Dec 17, 2012
+Updated: Dec 19, 2012
 Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
@@ -125,8 +125,21 @@ under the Modified BSD license.  See license.txt for the full text of the licens
 
                 <div>
                     <h3>Reporting (Advance)</h3>
-                    <h4>MASAS Reports</h4>
 
+                    <div>
+                        <h4>Default Location</h4>
+
+                        <div data-role="fieldcontain">
+                            <label for="settings_defaultLocationLat">Latitude:</label>
+                            <input type="number" id="settings_defaultLocationLat" min="-90.0" max="90.0" value="0.0"  />
+                        </div>
+                        <div data-role="fieldcontain">
+                            <label for="settings_defaultLocationLon">Longitude:</label>
+                            <input type="number"  id="settings_defaultLocationLon" min="-180.0" max="180.0" value="0.0"  />
+                        </div>
+                    </div>
+
+                    <h4>MASAS Reports</h4>
                     <div data-role="fieldcontain">
                         <label for="settings_reportStatus">Status:</label>
                         <select name="settings_reportStatus" id="settings_reportStatus">
