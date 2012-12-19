@@ -172,6 +172,14 @@
     <target name="package-app" depends="generate-cod-name, clean">
         <!-- Copy the WebWorks application -->
         <mkdir dir="${widget.dir}" />
+
+        <!-- Copy the common www folder to the widget folder -->
+        <copy todir="${widget.dir}" overwrite="true">
+            <fileset dir="${parent.dir}/www" >
+                <include name="**" />
+            </fileset>
+        </copy>
+
         <copy todir="${widget.dir}" overwrite="true">
             <fileset dir="www" >
                 <exclude name="ext-air/**"/>
@@ -179,13 +187,6 @@
                 <exclude name="playbook/**"/>
                 <exclude name="qnx/**"/>
                 <exclude name="res/resourceBundles/**" unless="${globalization}"/>
-            </fileset>
-        </copy>
-
-        <!-- Copy the common www folder to the widget folder -->
-        <copy todir="${widget.dir}" overwrite="true">
-            <fileset dir="${parent.dir}/www" >
-                <include name="**" />
             </fileset>
         </copy>
         
