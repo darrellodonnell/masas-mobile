@@ -239,7 +239,7 @@ MASAS.Entry = function()
         this.published  = new Date( $(node).find( "published" ).text() );
         this.updated    = new Date( $(node).find( "updated" ).text() );
 
-        this.expires    = new Date( $(node).find('age\\:expires').text() ); // have to escape and use namespace\:element
+        this.expires    = new Date( $(node).find('expires, age\\:expires').text() ); // have to escape and use namespace\:element
 
         // Geometry...
         var geometry = $(node).find( "point, polygon, line, box, georss\\:line, georss\\:point, georss\\:polygon" );
