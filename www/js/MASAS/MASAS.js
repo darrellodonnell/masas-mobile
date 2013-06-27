@@ -141,7 +141,16 @@ MASAS.Hub = function()
         console.log( 'GetUserData' );
 
         var masasObj = this;
-        var url = 'https://access.masas-sics.ca/api/check_access/?query_secret=' + app_Settings.token;
+
+        // Easy way to get the domainName...
+        var a = document.createElement( 'a' );
+        a.href = app_Settings.url;
+
+        // Remove the first part of the domain name, since we are going to replace it...
+        var domainName = a.host.substr( a.host.indexOf( '.' ) + 1 );
+
+        // Create the access url...
+        var url = 'https://access.' + domainName + '/api/check_access/?query_secret=' + app_Settings.token;
 
         var request = $.ajax({
             type: 'GET',
@@ -167,7 +176,7 @@ MASAS.Hub = function()
             console.log( jqXHR );
             console.log( 'Fail status: ' + textStatus );
 
-            var failureMsg = 'Failed to retrieve MASAS USer data! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
+            var failureMsg = 'Failed to retrieve MASAS User data! ' + jqXHR.statusText + ': ' + jqXHR.responseText;
             console.log( failureMsg );
 
             if( callback_fail && typeof( callback_fail ) === "function" )
