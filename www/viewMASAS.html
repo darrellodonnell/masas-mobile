@@ -55,14 +55,19 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                     <div id="viewMASAS_mapContent">
 
                         <!-- NOTE: The viewMASAS_mapPopup is a placeholder for the content of the map "Info Window".-->
-                        <div id="viewMASAS_mapPopup" style="display: none">
-                            <h3><span id="viewMASAS_mapPopupTitle">Entry Title</span></h3>
-                            <p><span id="viewMASAS_mapPopupContent">Entry Content</span></p>
+                        <div id="viewMASAS_mapPopup" style="display: none" width="100%" height="100%">
+                            <div width="100%" height="100%">
+                                <!--h3><span id="viewMASAS_mapPopupTitle">Entry Title</span></h3-->
+                                <div><span id="viewMASAS_mapPopupTitle">Entry Title</span></div>
+                                <p><span id="viewMASAS_mapPopupContent">Entry Content</span></p>
 
-                            <div style="float:right">
-                                <button id="viewMASAS_btnMapViewEntry" data-role="button" data-icon="info" data-inline="true">Details</button>
-                                <button id="viewMASAS_btnMapCancelEntry" data-role="button" data-icon="delete" data-inline="true">Cancel Entry</button>
+                                <div width="100%" style="float:right">
+                                    <button id="viewMASAS_btnMapViewEntry" data-role="button" data-icon="info" data-inline="true">Details</button>
+                                    <button id="viewMASAS_btnMapCancelEntry" data-role="button" data-icon="delete" data-inline="true">Cancel Entry</button>
+                                </div>
                             </div>
+                            <!-- This isn't the proper solution, but it works for now! -->
+                            <br><br><br>
                         </div>
 
                         <div id="viewMASAS_mapCanvas"></div>

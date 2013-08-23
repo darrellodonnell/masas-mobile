@@ -362,7 +362,9 @@ function viewMASAS_initializeMap()
 
         google.maps.event.addListener( viewMASAS_map, 'bounds_changed', viewMASAS_onMapBoundsChanged );
 
-        viewMASAS_infoWindow = new google.maps.InfoWindow( $("#viewMASAS_mapPopup")[0] );
+        var $infoWindowContent = $("#viewMASAS_mapPopup");
+        viewMASAS_infoWindow = new google.maps.InfoWindow( {maxWidth: 350} );
+        viewMASAS_infoWindow.setContent($infoWindowContent[0]);
 
         viewMASAS_mapInitialized = true;
     }
