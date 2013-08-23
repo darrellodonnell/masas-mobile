@@ -95,9 +95,19 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <access subdomains="true" uri="file:///store/home" />
     <access subdomains="true" uri="file:///accounts" />
     <access subdomains="true" uri="file:///SDCard" />
-    <access subdomains="true" uri="*" />
+
+    <access subdomains="true" uri="https://access.masas-siscs.ca" />
+    <access subdomains="true" uri="https://sandbox2.masas-sics.ca" />
+
+    <access subdomains="true" uri="https://access.masas-x.ca" />
+    <access subdomains="true" uri="https://exercise.masas-x.ca" />
+    <access subdomains="true" uri="https://training.masas-x.ca" />
+    <access subdomains="true" uri="https://common.masas-x.ca" />
+
     <access subdomains="true" uri="http://www.openstreetmap.org" />
     <access subdomains="true" uri="http://nominatim.openstreetmap.org" />
+
+    <access subdomains="true" uri="http://maps.google.com" />
 
     <rim:connection timeout="15000">
         <id>MDS</id>
