@@ -479,6 +479,9 @@ function viewMASAS_getEntriesSuccess( xmlFeed, entries )
     }
 
     viewMASAS_refreshList();
+
+    // Remove the active state on viewMASAS_btnRefreshList
+    $(".ui-btn-active").removeClass('ui-btn-active');
 }
 
 function viewMASAS_entryManager_EntryAdded( entry )
@@ -492,7 +495,8 @@ function viewMASAS_entryManager_EntryAdded( entry )
 
 function viewMASAS_getEntriesFailure()
 {
-
+    // Remove the active state on viewMASAS_btnRefreshList
+    $(".ui-btn-active").removeClass('ui-btn-active');
 }
 
 function viewMASAS_clearListOfEntries()
