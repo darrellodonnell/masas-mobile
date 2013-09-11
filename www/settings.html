@@ -26,11 +26,17 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                 <div>
 					<h3>Hub Configuration</h3>
 					<div data-role="fieldcontain">
-						<label for="settings_hubURL">Hub URI:</label>
-						<input type="text" name="settings_hubURL" id="settings_hubURL" value=""  />
+						<label for="settings_hubURL">Hub:</label>
+						<!--input type="text" name="settings_hubURL" id="settings_hubURL" value=""  /-->
+                        <select name="settings_hubURL" id="settings_hubURL">
+                            <option value="https://sandbox2.masas-sics.ca/hub">Sandbox 2</option>
+                            <option value="https://exercise.masas-x.ca/hub">Exercise</option>
+                            <option value="https://training.masas-x.ca/hub">Training</option>
+                            <option value="https://common.masas-x.ca/hub">Operations</option>
+                        </select>
 					</div>
 					<div data-role="fieldcontain">
-						<label for="settings_hubKey">Hub key:</label>
+						<label for="settings_hubKey">Access Code:</label>
 						<input type="text" name="settings_hubKey" id="settings_hubKey" value=""  />
 					</div>
 
