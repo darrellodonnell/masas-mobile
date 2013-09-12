@@ -20,7 +20,7 @@ $( document ).delegate("#location", "pagebeforeshow", function( event, ui )
     app_onCoverageChange();
 });
 
-$( document ).delegate( "#location_txtSearchQuery", "keypress", function( event )
+$( document ).delegate( "#location_txtSearchQuery", "keydown", function( event )
 {
     if ( event.which == 13 )
     {
