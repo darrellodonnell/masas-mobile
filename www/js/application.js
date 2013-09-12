@@ -608,3 +608,17 @@ function app_mapScriptLoaded()
     console.log('Google Maps script has been initialized.');
     app_MapScriptState = "READY";
 }
+
+function app_openURIInBrowser( uri )
+{
+    if( app_isDeviceBB567() || app_isDevicePlayBook() )
+    {
+        // open web link in browser
+        var args = new blackberry.invoke.BrowserArguments( uri );
+        blackberry.invoke.invoke( blackberry.invoke.APP_BROWSER, args );
+    }
+    else
+    {
+        window.open( uri, "_blank" );
+    }
+}

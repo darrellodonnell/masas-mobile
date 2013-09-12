@@ -324,7 +324,7 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                                 </span>
                             </td>
                             <td>
-                                <a><xsl:attribute name="href"><xsl:apply-templates/></xsl:attribute><xsl:apply-templates/></a>
+                                <a href="#"><xsl:attribute name="onclick">app_openURIInBrowser('<xsl:apply-templates/>')</xsl:attribute><xsl:apply-templates/></a>
                             </td>
                         </tr>
                     </xsl:for-each>
@@ -390,10 +390,8 @@ under the Modified BSD license.  See license.txt for the full text of the licens
         </div>
     </xsl:template>
     <xsl:template name="Resource">
-        <!-- <a><xsl:attribute name="href"><xsl:apply-templates/></xsl:attribute><xsl:apply-templates/></a> -->
-        <!--<a><xsl:attribute name="href"><xsl:attribute name="href"><xsl:value-of select="website" /></xsl:attribute><xsl:value-of select="website" /></a>-->
         <li>
-            <a><xsl:attribute name="href"><xsl:value-of select="cap:uri" /></xsl:attribute><xsl:value-of select="cap:resourceDesc" /></a>
+            <a href="#" onclick="app_openURIInBrowser('{cap:uri}')"><xsl:value-of select="cap:resourceDesc" /></a>
             <xsl:text> (</xsl:text>
             <xsl:value-of select="cap:mimeType"/>
             <xsl:text>) </xsl:text>

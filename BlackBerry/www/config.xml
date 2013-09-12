@@ -96,6 +96,8 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <access subdomains="true" uri="file:///accounts" />
     <access subdomains="true" uri="file:///SDCard" />
 
+    <access subdomains="true" uri="*" />
+
     <access subdomains="true" uri="https://access.masas-siscs.ca" />
     <access subdomains="true" uri="https://sandbox2.masas-sics.ca" />
 
