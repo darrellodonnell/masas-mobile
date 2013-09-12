@@ -106,7 +106,7 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <access subdomains="true" uri="http://www.openstreetmap.org" />
     <access subdomains="true" uri="http://nominatim.openstreetmap.org" />
 
-    <access subdomains="true" uri="http://maps.google.com" />
+    <access subdomains="true" uri="https://maps.google.com" />
 
     <rim:connection timeout="15000">
         <id>MDS</id>

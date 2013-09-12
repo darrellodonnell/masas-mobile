@@ -355,15 +355,18 @@ function app_loadMetaData()
 {
     // Load the meta data from the MASAS-Mobile.json file...
     jQuery.ajax( {
+            dataType: "json",
             url: "MASAS-Mobile.json",
             async: false // Wait for this call to be done before moving on!
         }
     ).done( function( msg ) {
-            // TODO: Investigate why iOS "isn't returning anything for msg".
-            if( msg.MASAS_Mobile ) //DEO - added test for defined variable here - iOS isn't returning anything for msg.
+            // TODO: This still needs to be verified on iOS
+            if( msg.MASAS_Mobile )
             {
                 app = msg.MASAS_Mobile;
             }
+      })
+        .fail( function() {
         });
 
     // Overwrite some info we are on the BlackBerry platform...
@@ -591,7 +594,7 @@ function app_loadMapScript()
         app_MapScriptState = "LOADING";
 
         // NOTE: The callback is needed, otherwise loading the script will not initialize the internal objects...
-        var googleScriptURL = "http://maps.googleapis.com/maps/api/js?key=" + app.map.token + "&sensor=false&callback=app_mapScriptLoaded";
+        var googleScriptURL = "https://maps.googleapis.com/maps/api/js?key=" + app.map.token + "&sensor=false&callback=app_mapScriptLoaded";
 
         $.getScript( googleScriptURL, function( data, textStatus, jqxhr ) {
             console.log('Google Maps script has been loaded.');
