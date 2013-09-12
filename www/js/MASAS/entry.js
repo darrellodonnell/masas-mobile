@@ -277,12 +277,20 @@ MASAS.Entry = function()
 
             var xmlSerializer = new XMLSerializer();
             entryXmlString = xmlSerializer.serializeToString( updatedNode[0] );
+
         }
 
         return entryXmlString;
     };
 
     /// Private methods
+
+    String.prototype.encodeHTML = function () {
+        return this.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    };
 
     var GenerateXML = function( entry )
     {
@@ -309,7 +317,7 @@ MASAS.Entry = function()
         xmlEntry += '<title type="xhtml">';
         xmlEntry += '<div xmlns="http://www.w3.org/1999/xhtml">';
         for( iLangCtr = 0; iLangCtr < entry.languages.length; iLangCtr++ ) {
-            xmlEntry += '<div xml:lang="'+ entry.languages[iLangCtr] +'">' + entry.GetTitle( entry.languages[iLangCtr] ) + '</div>';
+            xmlEntry += '<div xml:lang="'+ entry.languages[iLangCtr] +'">' + entry.GetTitle( entry.languages[iLangCtr]).encodeHTML() + '</div>';
         }
         xmlEntry += '</div>';
         xmlEntry += '</title>';
@@ -317,7 +325,7 @@ MASAS.Entry = function()
         xmlEntry += '<content type="xhtml">';
         xmlEntry += '<div xmlns="http://www.w3.org/1999/xhtml">';
         for( iLangCtr = 0; iLangCtr < entry.languages.length; iLangCtr++ ) {
-            xmlEntry += '<div xml:lang="'+ entry.languages[iLangCtr] +'">' + entry.GetContent( entry.languages[iLangCtr] ) + '</div>';
+            xmlEntry += '<div xml:lang="'+ entry.languages[iLangCtr] +'">' + entry.GetContent( entry.languages[iLangCtr] ).encodeHTML() + '</div>';
         }
         xmlEntry += '</div>';
         xmlEntry += '</content>';
@@ -327,7 +335,7 @@ MASAS.Entry = function()
             xmlEntry += '<summary type="xhtml">';
             xmlEntry += '<div xmlns="http://www.w3.org/1999/xhtml">';
             for( iLangCtr = 0; iLangCtr < entry.languages.length; iLangCtr++ ) {
-                xmlEntry += '<div xml:lang="'+ entry.languages[iLangCtr] +'">' + entry.GetSummary( entry.languages[iLangCtr] ) + '</div>';
+                xmlEntry += '<div xml:lang="'+ entry.languages[iLangCtr] +'">' + entry.GetSummary( entry.languages[iLangCtr] ).encodeHTML() + '</div>';
             }
             xmlEntry += '</div>';
             xmlEntry += '</summary>';
