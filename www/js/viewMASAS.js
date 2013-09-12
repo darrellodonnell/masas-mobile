@@ -10,6 +10,7 @@ var viewMASAS_map = null;
 var viewMASAS_markers = [];
 var viewMASAS_infoWindow;
 var viewMASAS_tempMapBound = undefined;
+var viewMASAS_entryToCancel = null;
 
 $( document ).delegate( "#viewMASAS", "pagebeforecreate", function( event, ui )
 {
@@ -218,15 +219,26 @@ $( document ).delegate( "#viewMASAS_btnCancelEntry", "vclick", function( event )
     viewMASAS_cancelEntry( selectedEntry );
 });
 
-function viewMASAS_cancelEntry( entryModel )
+$( document ).delegate( "#viewMasas_popupBtnCancelEntry", "vclick", function( event )
 {
+    // Close the popup...
+    $("#viewMASAS_popupCancelEntry").popup( "close" );
+
     // Open the entryPage if a proper entry is selected...
-    if( entryModel != undefined && !entryModel.IsReadOnly() )
+    if( viewMASAS_entryToCancel != undefined && !viewMASAS_entryToCancel.IsReadOnly() )
     {
         viewMASAS_enableControls( false );
         $.mobile.showPageLoadingMsg( "a", "Cancelling MASAS Entry..." );
-        mmApp.masasPublisher.CancelEntry( entryModel, viewMASAS_cancelEntrySuccess, viewMASAS_cancelEntryFailed );
+        mmApp.masasPublisher.CancelEntry( viewMASAS_entryToCancel, viewMASAS_cancelEntrySuccess, viewMASAS_cancelEntryFailed );
     }
+
+    viewMASAS_entryToCancel = null;
+});
+
+function viewMASAS_cancelEntry( entryModel )
+{
+    viewMASAS_entryToCancel = entryModel;
+    $("#viewMASAS_popupCancelEntry").popup( "open" );
 }
 
 function viewMASAS_cancelEntrySuccess()

@@ -147,6 +147,19 @@ under the Modified BSD license.  See license.txt for the full text of the licens
                                     <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
                                     <audio id="viewMASAS_previewAudio" src="" controls="true" />
                                 </div>
+
+                                <div data-role="popup" id="viewMASAS_popupCancelEntry" data-overlay-theme="a" data-theme="c" style="max-width:400px;" class="ui-corner-all">
+                                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                                        <h1>Cancel this Entry?</h1>
+                                    </div>
+                                    <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                                        <h3 class="ui-title">Are you sure you want to cancel this Entry?</h3>
+                                        <p>This action cannot be undone.</p>
+                                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">No</a>
+                                        <a href="#" id="viewMasas_popupBtnCancelEntry" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Yes</a>
+                                    </div>
+                                </div>
+
                             </div>
                             <div id="viewMASAS_entryContentPanelXML" style="display:none">
                                 <div id="viewMASAS_entryXML"></div>
