@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 MASAS - XML TO CAP V1.2 XSL
-Updated: Dec 17, 2012
-Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+
+Independent Joint Copyright (c) 2013 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2"

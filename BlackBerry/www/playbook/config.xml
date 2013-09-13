@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
 MASAS View Tool
-Updated: Dec 18, 2012
-Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+
+Independent Joint Copyright (c) 2013 MASAS Contributors.  Published
 under the Modified BSD license.  See license.txt for the full text of the license.
 -->
 <widget xmlns:rim="http://www.blackberry.com/ns/widgets" version="0.0.0.0" rim:header="RIM-Widget:rim/widget" xmlns="http://www.w3.org/ns/widgets">
@@ -14,11 +14,11 @@ under the Modified BSD license.  See license.txt for the full text of the licens
     <description>MASAS Mobile Application for BlackBerry.</description>
     <author email=""
             href="http://www.masas-x.ca/"
-            rim:copyright="Independent Joint Copyright (c) 2012 MASAS Contributors."></author>
+            rim:copyright="Independent Joint Copyright (c) 2013 MASAS Contributors."></author>
     <license>
         Modified BSD License
 
-        Independent Joint Copyright (c) 2012 MASAS Contributors.
+        Independent Joint Copyright (c) 2013 MASAS Contributors.
         See authors.txt for a list of these Contributors.
 
         All rights reserved.

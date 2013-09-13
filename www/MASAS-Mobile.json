@@ -3,7 +3,7 @@
         "showAlert"  : true,
         "authorEmail": "author@myDomain.com",
         "description": "MASAS Mobile Application for BlackBerry.",
-        "copyright":   "Independent Joint Copyright (c) 2012 MASAS Contributors.",
+        "copyright":   "Independent Joint Copyright (c) 2013 MASAS Contributors.",
         "version":     "0.0.0.0",
         "authorURL":   "http://www.masas-x.ca/",
         "map": {

@@ -1,7 +1,7 @@
 /**
  * MASAS Mobile - Location Page
- * Updated: Nov 18, 2012
- * Independent Joint Copyright (c) 2012 MASAS Contributors.  Published
+ *
+ * Independent Joint Copyright (c) 2013 MASAS Contributors.  Published
  * under the Modified BSD license.  See license.txt for the full text of the license.
  */
 
