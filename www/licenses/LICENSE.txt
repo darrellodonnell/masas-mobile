@@ -1,6 +1,6 @@
 Modified BSD License
 
-Independent Joint Copyright (c) 2013 MASAS Contributors.
+Independent Joint Copyright (c) 2014 MASAS Contributors.
 See authors.txt for a list of these Contributors.
 
 All rights reserved.

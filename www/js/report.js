@@ -242,6 +242,8 @@ function report_updateTimeStamps()
 
 function report_updateLocation()
 {
+    $('#report_btnGPS').removeClass( "ui-disabled" )
+
     if( currentReport.Location != undefined )
     {
         $('#report_lblPosition').text( currentReport.Location.latitude + ", " + currentReport.Location.longitude );
@@ -371,10 +373,12 @@ function viewAttachment( attachment ) {
 
 function report_getCurrentPosition()
 {
-    var gpsOptions = { maximumAge: 0, timeout: 10000, enableHighAccuracy: true };
+    var gpsOptions = { maximumAge: 5000, timeout: 60000*15, enableHighAccuracy: true };
 
     $('#report_lblPosition').text( 'Waiting for location...' );
     navigator.geolocation.getCurrentPosition(report_onGetCurPosSuccess, report_onGetCurPosFail, gpsOptions);
+
+    $('#report_btnGPS').addClass( "ui-disabled" )
 }
 
 function report_onGetCurPosSuccess( position )

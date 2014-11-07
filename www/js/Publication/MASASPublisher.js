@@ -154,7 +154,7 @@ MASASMobile.MASASPublisher = function()
                     function( evt ) // START File Failure callback
                     {
                         // Failed!
-                        console.log( evt.target.error.code );
+                        console.log( evt );
                         attStatus.statusCode = -1;
                         attStatus.statusMsg = "Failed: Could not resolve the File.";
 
@@ -165,7 +165,7 @@ MASASMobile.MASASPublisher = function()
             function( evt )  // START resolveLocalFileSystemURI() Failed callback
             {
                 // Failed!
-                console.log( evt.target.error.code );
+                console.log( evt );
 
                 attStatus.statusCode = -1;
                 attStatus.statusMsg = "Failed: Could not resolve the Local File System URI.";

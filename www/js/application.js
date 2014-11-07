@@ -307,7 +307,7 @@ function app_hasDataCoverage()
         if( app_CordovaLoaded )
         {
             var networkState = navigator.connection.type;
-            hasDataCoverage = !( networkState == 'none' );
+            hasDataCoverage = !( networkState == Connection.NONE );
         }
     }
 

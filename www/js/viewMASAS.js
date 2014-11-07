@@ -858,6 +858,18 @@ function viewMASAS_updateEntryPanel( entryModel )
     }
     $("#viewMASAS_entryCategory").text( categories );
 
+    // Releated link...
+    var relatedLink = masasEntry.GetLink( "related" );
+    if( relatedLink != undefined ) {
+        $("#viewMASAS_relatedLink").prop( "href", relatedLink );
+        $("#viewMASAS_relatedText").text( relatedLink );
+    }
+    else {
+        $("#viewMASAS_relatedLink").prop( "href", "" );
+        $("#viewMASAS_relatedText").text( "" );
+    }
+
+
     if( masasEntry.published != undefined ) {
         $("#viewMASAS_entryPublished").text( masasEntry.published.toDateString() + ' ' + masasEntry.published.toLocaleTimeString() );
     }
@@ -888,6 +900,13 @@ function viewMASAS_updateEntryPanel( entryModel )
     $('#viewMASAS_entryAttachmentsCount').text( masasEntry.attachments.length );
     $('#viewMASAS_entryAttachments').listview('refresh');
 }
+
+$( document ).delegate( "#viewMASAS_relatedLink", "vclick", function( event )
+{
+    event.preventDefault();
+    window.open($(this).attr("href"),"_system");
+    return false;
+});
 
 function viewMASAS_resetAttachmentList()
 {

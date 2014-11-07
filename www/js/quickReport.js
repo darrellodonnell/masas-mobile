@@ -218,14 +218,18 @@ function quickReport_updateLocation()
     {
         $('#quickReport_lblPosition').text( "N/A" );
     }
+
+    $('#quickReport_btnGPS').removeClass( "ui-disabled" )
 }
 
 function quickReport_getCurrentPosition()
 {
-    var gpsOptions = { maximumAge: 0, timeout: 10000, enableHighAccuracy: true };
+    var gpsOptions = { maximumAge: 5000, timeout: 60000*15, enableHighAccuracy: true };
 
     $('#quickReport_lblPosition').text( 'Waiting for location...' );
     navigator.geolocation.getCurrentPosition(quickReport_onGetCurPosSuccess, quickReport_onGetCurPosFail, gpsOptions);
+
+    $('#quickReport_btnGPS').addClass( "ui-disabled" )
 }
 
 function quickReport_onGetCurPosSuccess( position ) {
